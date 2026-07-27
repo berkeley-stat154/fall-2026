@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Generalization and uniform laws</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#uniform-laws-of-large-numbers-for-smooth-function-classes" id="toc-uniform-laws-of-large-numbers-for-smooth-function-classes" class="nav-link" data-scroll-target="#uniform-laws-of-large-numbers-for-smooth-function-classes">Uniform laws of large numbers for smooth function classes</a>
+  <ul class="collapse">
+  <li><a href="#a-finite-set-of-functions" id="toc-a-finite-set-of-functions" class="nav-link" data-scroll-target="#a-finite-set-of-functions">A finite set of functions</a></li>
+  <li><a href="#a-covering" id="toc-a-covering" class="nav-link" data-scroll-target="#a-covering">A covering</a></li>
+  <li><a href="#using-the-tiling-to-produce-a-ulln" id="toc-using-the-tiling-to-produce-a-ulln" class="nav-link" data-scroll-target="#using-the-tiling-to-produce-a-ulln">Using the tiling to produce a ULLN</a></li>
+  <li><a href="#general-covering-arguments" id="toc-general-covering-arguments" class="nav-link" data-scroll-target="#general-covering-arguments">General covering arguments</a></li>
+  <li><a href="#proving-the-integrable-lipschitz-condition" id="toc-proving-the-integrable-lipschitz-condition" class="nav-link" data-scroll-target="#proving-the-integrable-lipschitz-condition">Proving the Integrable Lipschitz condition</a></li>
+  <li><a href="#ols-loss-example" id="toc-ols-loss-example" class="nav-link" data-scroll-target="#ols-loss-example">OLS loss example</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Generalization and uniform laws</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><span class="math display">\[
+% Generalization error
+\def\err{\textrm{Error}}
+\]</span></p>
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Prove a ULLN for sufficiently smooth parametric function classes</li>
+<li>Introduce a covering argument to do so</li>
+</ul>
+</section>
+<section id="reading" class="level1">
+<h1>Reading</h1>
+<p>This is a simplified exposition of <span class="citation" data-cites="van:2000:asymptotic">Van der Vaart (<a href="#ref-van:2000:asymptotic" role="doc-biblioref">2000</a>)</span> Example 19.7. One can find a different perspective on the same class of problems in <span class="citation" data-cites="keener:2010:theoretical">Keener (<a href="#ref-keener:2010:theoretical" role="doc-biblioref">2010</a>)</span> Chapter 9. A more advanced approach that is finite-sample but limited to bounded functions can be found in <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> Chapter 4.</p>
+</section>
+<section id="uniform-laws-of-large-numbers-for-smooth-function-classes" class="level1">
+<h1>Uniform laws of large numbers for smooth function classes</h1>
+<p>Recall that we want to find conditions under which a uniform law of large numbers (ULLN) holds:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left|\hat{\mathscr{L}}(\hat{f}) - \mathscr{L}(\hat{f})\right| \le{}&amp;
+\sup_{f\in \mathcal{F}} \left|\hat{\mathscr{L}}(f) - \mathscr{L}(f)\right|
+\\={}&amp;
+\sup_{f\in \mathcal{F}}
+\left|
+  \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n) - \mathbb{E}_{new}\left[\mathscr{L}(f(x_\mathrm{new}), y_\mathrm{new})\right]
+\right|.
+\end{aligned}
+\]</span></p>
+<p>Note that the ULLN depends on the function <span class="math inline">\(f\)</span> only through <span class="math inline">\(f\mapsto \mathscr{L}(f(x), y)\)</span>. Given this, we can define</p>
+<p><span class="math display">\[
+\begin{aligned}
+z_n :={}&amp; (x_n, y_n)\\
+g(z_n; f) :={}&amp; \mathscr{L}(f(x_n), y_n)\\
+\mathcal{G}:={}&amp; \{ g: g(z) = g(z; f) \textrm{ for some }f\in \mathcal{F}\}.
+\end{aligned}
+\]</span></p>
+<p>With these transformations, we can rewrite our generalization error in the following more general form:</p>
+<p><span class="math display">\[
+\sup_{g\in \mathcal{G}} \left|\frac{1}{N} \sum_{n=1}^Ng(z_n) - \mathbb{E}_{\vphantom{}}\left[g(z)\right]\right|
+=\sup_{g\in \mathcal{G}} \err(g, N)
+\]</span></p>
+<p>where we define</p>
+<p><span class="math display">\[
+\err(g,N) := \left|\frac{1}{N} \sum_{n=1}^Ng(z_n) - \mathbb{E}_{\vphantom{}}\left[g(z)\right]\right|.
+\]</span></p>
+<p>Note that <span class="math inline">\(\err(g,N)\)</span> is random, since it depends on <span class="math inline">\(z_1, \ldots, z_N\)</span>.</p>
+<section id="a-finite-set-of-functions" class="level2">
+<h2 class="anchored" data-anchor-id="a-finite-set-of-functions">A finite set of functions</h2>
+<p>We first note that the problem is easy if <span class="math inline">\(\mathcal{G}\)</span> is finite, i.e., <span class="math inline">\(\mathcal{G}= \{ g_k \textrm{ for }k=1,\ldots,K &lt; \infty \}\)</span>, where each <span class="math inline">\(g_k\)</span> satisfies <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[|g_k(z)|\right] \infty\)</span>. In that case,</p>
+<p><span class="math display">\[
+\sup_{g\in \mathcal{G}} \err(f,N) = \max_{k=1,\ldots,K} \err(g_k, N).
+\]</span></p>
+<p>Since <span class="math inline">\(\err(g_k, N) \rightarrow 0\)</span> by the ordinary LLN, it follows that <span class="math inline">\(\max_{k=1,\ldots,K} \err(g_k, N) \rightarrow 0\)</span> as well, since <span class="math inline">\(K\)</span> is finite.</p>
+<p>Specifically, <span class="math inline">\(\err(g_k, N) \rightarrow 0\)</span> means that, for any <span class="math inline">\(\varepsilon &gt; 0\)</span> and <span class="math inline">\(\delta &gt; 0\)</span>, there exists an <span class="math inline">\(N_k\)</span> such that</p>
+<p><span class="math display">\[
+N &gt; N_k \Rightarrow
+\mathbb{P}_{\,}\left(\err(g_k, N) \ge \varepsilon\right) \le \delta.
+\]</span></p>
+<p>Take <span class="math inline">\(N &gt; \max_{k =1,\ldots,K} N_k\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{P}_{\,}\left(\max_{k=1,\ldots,K} \err(g_k, N) \ge \varepsilon \right) ={}&amp;
+\mathbb{P}_{\,}\left(\bigcup_{k=1}^K \err(g_k, N) \ge \varepsilon\right)
+\\\le{}&amp;
+\sum_{k=1}^K \mathbb{P}_{\,}\left(\err(g_k, N) \ge \varepsilon\right)
+\\\le{}&amp; K \delta.
+\end{aligned}
+\]</span></p>
+<p>Since we can tak <span class="math inline">\(\delta = \delta' / K\)</span> for any <span class="math inline">\(\delta'\)</span>, we have proven that <span class="math inline">\(\sup_{g\in \mathcal{G}} \err(f,N) \rightarrow 0\)</span> in probability.</p>
+</section>
+<section id="a-covering" class="level2">
+<h2 class="anchored" data-anchor-id="a-covering">A covering</h2>
+<p>The previous trick cannot be applied when <span class="math inline">\(\mathcal{G}\)</span> is infinite — as is the case in any of our examples, which are parameterized by a continuous parameter and so contain an infinite class of functions.</p>
+<p>A classical approach is to finite a finite “cover” of <span class="math inline">\(\mathcal{G}\)</span>. There are many ways to do so, but here we will focus on a particular example (<span class="citation" data-cites="van:2000:asymptotic">Van der Vaart (<a href="#ref-van:2000:asymptotic" role="doc-biblioref">2000</a>)</span> Example 19.7). Suppose that: <span class="math inline">\(\mathcal{G}= \{ f(\cdot; \theta) \textrm{ for some }\theta \in \Omega \}\)</span>. Assume:</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Integrable Lipschitz Assumption">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Integrable Lipschitz Assumption
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Assume that <span class="math inline">\(\Omega\)</span> is compact, and assume that, for each <span class="math inline">\(z\)</span>, <span class="math display">\[
+\left|g(z; \theta) - g(z; \theta')\right| \le{} M(z) \left\Vert\theta - \theta'\right\Vert,
+\]</span> where <span class="math inline">\(M(z) \ge 0\)</span> and <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[M(z)\right] &lt; \infty\)</span>.</p>
+</div>
+</div>
+<p>This means that the depednence of <span class="math inline">\(g(z; \theta)\)</span> can be decomposed into a smooth part depending on <span class="math inline">\(\theta\)</span>, and an integral part depending on <span class="math inline">\(z\)</span>. When this is true, for a fixed <span class="math inline">\(\gamma &gt; 0\)</span>, we can always find a set of <span class="math inline">\(K(\gamma)\)</span> parameters <span class="math inline">\(\theta_k\)</span> (depending on <span class="math inline">\(\gamma\)</span>) such that</p>
+<p><span class="math display">\[
+\textrm{For each }\theta \in \Omega\textrm{, there exists }\theta_k
+\textrm{ such that }\left\Vert\theta_k - \theta\right\Vert &lt; \gamma.
+\]</span></p>
+<p>The smaller <span class="math inline">\(\gamma\)</span> is, the larger <span class="math inline">\(K(\gamma)\)</span> must be. That there exist such <span class="math inline">\(\theta_k\)</span> is guaranteed by the compactness of <span class="math inline">\(\Omega\)</span>, which is a crucial assumption.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Recall that if <span class="math inline">\(\Omega\)</span> is compact, then every open cover has a finite sub–cover. Using this fact, prove that <span class="math inline">\(K(\gamma) &lt; \infty\)</span> for each <span class="math inline">\(\gamma &gt; 0\)</span>.</p>
+</div>
+</div>
+<p>Given this “covering,” for a given <span class="math inline">\(\theta\)</span> and its associated <span class="math inline">\(\theta_k\)</span> with <span class="math inline">\(\left\Vert\theta - \theta_k\right\Vert &lt; \gamma\)</span>, we can identify <span class="math inline">\(g_k(\cdot) = g(\cdot; \theta_k)\)</span>.</p>
+</section>
+<section id="using-the-tiling-to-produce-a-ulln" class="level2">
+<h2 class="anchored" data-anchor-id="using-the-tiling-to-produce-a-ulln">Using the tiling to produce a ULLN</h2>
+<p><span class="math display">\[
+\begin{aligned}
+\err(g, N) ={}&amp;
+\left|\frac{1}{N} \sum_{n=1}^Ng(z_n; \theta) - \mathbb{E}_{\vphantom{}}\left[g(z; \theta)\right]\right|
+\\={}&amp;
+\left|\frac{1}{N} \sum_{n=1}^Ng(z_n; \theta) - g(z_n; \theta_k) - \mathbb{E}_{\vphantom{}}\left[g(z; \theta) - g(z; \theta_k)\right] + g(z_n; \theta_k) - \mathbb{E}_{\vphantom{}}\left[g(z; \theta_k)\right]\right|
+\\ \le{}&amp;
+\frac{1}{N} \sum_{n=1}^N\left|g(z_n; \theta) - g(z_n; \theta_k)\right|  +
+\mathbb{E}_{\vphantom{}}\left[\left|g(z; \theta) - g(z; \theta_k)\right|\right] +
+\err(g_k, N)
+\\ \le{}&amp;
+\left( \frac{1}{N} \sum_{n=1}^NM(z_n) + \mathbb{E}_{\vphantom{}}\left[M(z)\right] \right)  \left\Vert\theta - \theta_k\right\Vert +
+\err(g_k, N)
+\\ \le{}&amp;
+\left( \frac{1}{N} \sum_{n=1}^NM(z_n) + \mathbb{E}_{\vphantom{}}\left[M(z)\right] \right)  \gamma +
+\max_{k=1,\ldots,K} \err(g_k, N).
+\end{aligned}
+\]</span></p>
+<p>The right hand side now does not depend on <span class="math inline">\(g\)</span>, so</p>
+<p><span class="math display">\[
+\sup_{g\in \mathcal{G}} \err(g, N) \le
+\left( \frac{1}{N} \sum_{n=1}^NM(z_n) + \mathbb{E}_{\vphantom{}}\left[M(z)\right] \right)  \gamma +
+\max_{k=1,\ldots,K} \err(g_k, N).
+\]</span></p>
+<p>For any fixed <span class="math inline">\(\gamma\)</span>, <span class="math inline">\(\max_{k=1,\ldots,K} \err(g_k, N) \rightarrow 0\)</span>, as shown above. So since <span class="math inline">\(\frac{1}{N} \sum_{n=1}^NM(z_n) \rightarrow \mathbb{E}_{\vphantom{}}\left[M(z)\right]\)</span>, we have that, for any fixed <span class="math inline">\(\gamma\)</span>,</p>
+<p><span class="math display">\[
+\left( \frac{1}{N} \sum_{n=1}^NM(z_n) + \mathbb{E}_{\vphantom{}}\left[M(z)\right] \right)  \gamma +
+\max_{k=1,\ldots,K} \err(g_k, N) \rightarrow 2 \mathbb{E}_{\vphantom{}}\left[M(z)\right] \gamma.
+\]</span></p>
+<p>Since <span class="math inline">\(\gamma\)</span> can be made arbitrarily small (at the cost of requiring even greater <span class="math inline">\(N\)</span> to make <span class="math inline">\(\max_{k=1,\ldots,K} \err(g_k, N)\)</span> small), for any <span class="math inline">\(\varepsilon\)</span> and <span class="math inline">\(\delta\)</span> we can choose <span class="math inline">\(\gamma = \varepsilon / 2 \mathbb{E}_{\vphantom{}}\left[M(z)\right]\)</span> and find an <span class="math inline">\(N\)</span> large enough that</p>
+<p><span class="math display">\[
+\mathbb{P}_{\,}\left(\sup_{g\in \mathcal{G}} \err(g, N) \ge \varepsilon\right) \le \delta.
+\]</span></p>
+<p>It follows that <span class="math inline">\(\sup_{g\in \mathcal{G}} \err(g, N) \rightarrow 0\)</span> in probability.</p>
+</section>
+<section id="general-covering-arguments" class="level2">
+<h2 class="anchored" data-anchor-id="general-covering-arguments">General covering arguments</h2>
+<p>Note that the above argument relied on having a covering of the parameter space to give a covering of the function space. The key idea is the covering, not the parameters! Many ULLNs for generic function classes proceed by studying the number of functions it takes to “cover” the function class <span class="math inline">\(\mathcal{G}\)</span> using some notion of distance between functions, rather than the distance between parameters.</p>
+</section>
+<section id="proving-the-integrable-lipschitz-condition" class="level2">
+<h2 class="anchored" data-anchor-id="proving-the-integrable-lipschitz-condition">Proving the Integrable Lipschitz condition</h2>
+<p>It may seem mysterious how to show that a problem satisfies the IL condition directly. An easy way is to bound the derivative with respect to <span class="math inline">\(\theta\)</span> in terms of a function of <span class="math inline">\(z\)</span> with finite expectation. Specifically,</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Integrable Lipschitz Sufficient condition">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Integrable Lipschitz Sufficient condition
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Assume that <span class="math inline">\(\Omega\)</span> is compact. Assume that, for each <span class="math inline">\(z\)</span>, <span class="math display">\[
+\frac{\partial g(z; \theta)}{\partial \theta} \textrm{ exists and }
+\left\Vert\frac{\partial g(z; \theta)}{\partial \theta}\right\Vert_2^2 \le M(z)
+\]</span> where <span class="math inline">\(M(z) \ge 0\)</span> and <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[M(z)\right] &lt; \infty\)</span>. Then <span class="math inline">\(g(z; \theta)\)</span> satisfies the integrable Lipschitz condition.</p>
+</div>
+</div>
+<p>The proof goes via the fundamental theroem of calculus. For any <span class="math inline">\(\theta\)</span> and <span class="math inline">\(\theta'\)</span> in <span class="math inline">\(\Omega\)</span>, let <span class="math inline">\(\theta(t) = \theta' t+ (1 - t) \theta\)</span> for <span class="math inline">\(t\in [0,1]\)</span> denote a parameterized path from <span class="math inline">\(\theta\)</span> to <span class="math inline">\(\theta'\)</span>. Then, for any <span class="math inline">\(z\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left|g(z; \theta') - g(z; \theta)\right| ={}&amp;
+\left|g(z; \theta(1)) - g(z; \theta(0))\right| \\={}&amp;
+\left|\int_{0}^1 \frac{\partial g(z; \theta(t))}{\partial t} dt\right|
+&amp; \textrm{(by the fundamental theorem of calculus)} \\={}&amp;
+\left|\int_{0}^1 \left. \frac{\partial g(z; \theta)}{\partial \theta^\intercal} \right|_{\theta = \theta(t)}
+  \frac{\partial \theta(t)}{\partial t} dt\right| &amp; \textrm{(by the chain rule)} \\={}&amp;
+\left|\left( \int_{0}^1
+  \left. \frac{\partial g(z; \theta)}{\partial \theta^\intercal} \right|_{\theta = \theta(t)}
+  dt\right) (\theta' - \theta)\right|   &amp; \textrm{(by the definition of $\theta(t)$)}
+  \\\le{}&amp;
+\left\Vert\sup_{t\in [0,1]} \left. \frac{\partial g(z; \theta)}{\partial \theta^\intercal} \right|_{\theta = \theta(t)} \right\Vert_2
+  \left\Vert\theta' - \theta\right\Vert_2  &amp; \textrm{(by Cauchy-Schwarz)}\\\le{}&amp;
+M(z) \left\Vert\theta' - \theta\right\Vert_2. &amp; \textrm{(by assumption)}
+\end{aligned}
+\]</span></p>
+<p>Often it’s easier to show that the norm of the partial derivative is bounded by a function of <span class="math inline">\(z\)</span> (that is, of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>) with finite expectation than to prove the stronger IL condition.</p>
+</section>
+<section id="ols-loss-example" class="level2">
+<h2 class="anchored" data-anchor-id="ols-loss-example">OLS loss example</h2>
+<p>For example, taking squared loss and linear regression, we get</p>
+<p><span class="math display">\[
+g(z, \theta) = \mathscr{L}(f(\boldsymbol{x}), y) = (\boldsymbol{x}^\intercal\theta - y)^2 = y^2 - 2 y\boldsymbol{x}^\intercal\theta + \mathrm{trace}\left(\boldsymbol{x}\boldsymbol{x}^\intercal\theta \theta^\intercal\right).
+\]</span></p>
+<p>Let us assume that <span class="math inline">\(\Omega\)</span> is compact. (One can show that <span class="math inline">\(\Omega\)</span> can be safely taken to be compact with high probability as <span class="math inline">\(N\)</span> grows, but I will leave that as a potential homework problem.)</p>
+<p>Recall that we can show directly in your homework that this loss obeys a ULLN. We can also the IL condition directly by the triangle inequality and Cauchy–Schwartz:</p>
+<p><span class="math display">\[
+\begin{aligned}
+g(z, \theta) - g(z, \theta')
+={}&amp;
+- 2 y\boldsymbol{x}^\intercal(\theta - \theta') + \mathrm{trace}\left(\boldsymbol{x}\boldsymbol{x}^\intercal(\theta \theta^\intercal- \theta' {\theta'}^\intercal)\right).
+\\={}&amp;
+- 2 y\boldsymbol{x}^\intercal(\theta - \theta') + \mathrm{trace}\left(\boldsymbol{x}\boldsymbol{x}^\intercal(\theta + \theta') (\theta - \theta')^\intercal\right)
+\quad\Rightarrow\\
+\left|g(z, \theta) - g(z, \theta')\right|
+\le{}&amp;
+  2 \left|y\right| \left\Vert\boldsymbol{x}\right\Vert_2 \left\Vert\theta - \theta'\right\Vert_2 +
+  \left\Vert\boldsymbol{x}\right\Vert^2_2 \left\Vert\theta + \theta'\right\Vert_2 \left\Vert\theta - \theta'\right\Vert_2
+\\\le{}&amp;
+\left(
+2 \left|y\right| \left\Vert\boldsymbol{x}\right\Vert_2  +
+  \left\Vert\boldsymbol{x}\right\Vert^2_2 \left\Vert\theta + \theta'\right\Vert_2
+\right) \left\Vert\theta - \theta'\right\Vert_2
+\\\le{}&amp;
+2 \left(
+  \left|y\right| \left\Vert\boldsymbol{x}\right\Vert_2 +
+  \left\Vert\boldsymbol{x}\right\Vert^2_2 \sup_{\theta \in \Omega} \left\Vert\theta\right\Vert_2
+\right) \left\Vert\theta - \theta'\right\Vert_2
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\sup_{\theta \in \Omega} \left\Vert\theta\right\Vert\)</span> is finite because <span class="math inline">\(\Omega\)</span> is compact, and the operator norm of <span class="math inline">\(\boldsymbol{x}\boldsymbol{x}\intercal\)</span> is equal to <span class="math inline">\(\left\Vert\boldsymbol{x}\right\Vert_2^2\)</span>. We can thus take</p>
+<p><span class="math display">\[
+M(z) = 2 \left(
+  \left|y\right| \left\Vert\boldsymbol{x}\right\Vert_2  +
+  \left\Vert\boldsymbol{x}\right\Vert^2_2 \sup_{\theta \in \Omega} \left\Vert\theta\right\Vert_2
+\right),
+\]</span></p>
+<p>and see that quadratic loss satisfies the IL condition, and so a ULLN, under standard conditions on the moments of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y\)</span>.</p>
+<p>Alternatively, we can prove the IL condition by simply taking the derivative,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left\Vert\frac{\partial g(z, \theta)}{\partial \theta}\right\Vert_2 ={}&amp;
+\left\Vert-2 y\boldsymbol{x}+ 2 \boldsymbol{x}\boldsymbol{x}^\intercal\theta\right\Vert_2 \\\le{}&amp;
+2 \left|y\right| \left\Vert\boldsymbol{x}\right\Vert_2 + 2 \left\Vert\boldsymbol{x}\right\Vert_2^2 \sup_{\theta \in \Omega} \left\Vert\theta\right\Vert_2,
+\end{aligned}
+\]</span> which in this case gives the same bound as the more tedious computation above.</p>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-keener:2010:theoretical" class="csl-entry" role="listitem">
+Keener, R. 2010. <em>Theoretical Statistics: <span>Topics</span> for a Core Course</em>. Springer Science &amp; Business Media.
+</div>
+<div id="ref-van:2000:asymptotic" class="csl-entry" role="listitem">
+Van der Vaart, A. 2000. <em>Asymptotic Statistics</em>. Vol. 3. Cambridge university press.
+</div>
+<div id="ref-wainwright:2019:high" class="csl-entry" role="listitem">
+Wainwright, M. 2019. <em>High-Dimensional Statistics: <span>A</span> Non-Asymptotic Viewpoint</em>. Vol. 48. Cambridge university press.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

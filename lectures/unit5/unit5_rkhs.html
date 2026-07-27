@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Reproducing kernel Hilbert spaces</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a></li>
+  <li><a href="#review-inner-products-on-function-spaces" id="toc-review-inner-products-on-function-spaces" class="nav-link" data-scroll-target="#review-inner-products-on-function-spaces">Review: Inner products on function spaces</a></li>
+  <li><a href="#reproducing-kernel-hilbert-space" id="toc-reproducing-kernel-hilbert-space" class="nav-link" data-scroll-target="#reproducing-kernel-hilbert-space">Reproducing kernel Hilbert space</a>
+  <ul class="collapse">
+  <li><a href="#the-reproducing-property" id="toc-the-reproducing-property" class="nav-link" data-scroll-target="#the-reproducing-property">The reproducing property</a></li>
+  <li><a href="#an-example-ols-as-an-rkhs" id="toc-an-example-ols-as-an-rkhs" class="nav-link" data-scroll-target="#an-example-ols-as-an-rkhs">An example: OLS as an RKHS</a></li>
+  </ul></li>
+  <li><a href="#the-representer-theorem" id="toc-the-representer-theorem" class="nav-link" data-scroll-target="#the-representer-theorem">The representer theorem</a></li>
+  <li><a href="#gaussian-processes" id="toc-gaussian-processes" class="nav-link" data-scroll-target="#gaussian-processes">Gaussian processes</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Reproducing kernel Hilbert spaces</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Define and apply reproducing kernel Hilbert spaces</li>
+<li>Define (rather forcibly) a feature space and inner product from a given symmetric positive definite kernel</li>
+<li>Show that this norms in this feature space generalize the <span class="math inline">\(L_2\)</span> penalty in ridge regression</li>
+<li>Connect the norm to the feature expansions guaranteed by Mercer’s theorem</li>
+<li>State and prove the representer theorem, which guarantees computationally tractable solutions to infinite–dimensional problems</li>
+</ul>
+</section>
+<section id="reading" class="level1">
+<h1>Reading</h1>
+<p>I will be taking readings from <span class="citation" data-cites="scholkopf:2002:learningwithkernels">Schölkopf and Smola (<a href="#ref-scholkopf:2002:learningwithkernels" role="doc-biblioref">2002</a>)</span> and <span class="citation" data-cites="rasmussen:2006:gpml">Rasmussen and Williams (<a href="#ref-rasmussen:2006:gpml" role="doc-biblioref">2006</a>)</span>, both of which are available digitally from the UC Berkeley library website. I’ll also use <span class="citation" data-cites="esl:2009:hastie">Hastie, Tibshirani, and Friedman (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> Chapter 12.</p>
+</section>
+<section id="roadmap" class="level1">
+<h1>Roadmap</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../assets/rkhs_meme.png" class="img-fluid figure-img"></p>
+<figcaption>RKHS meme</figcaption>
+</figure>
+</div>
+<p>Suppose we have a symmetric, positive definite kernel <span class="math inline">\(\mathcal{K}_{\,}: \mathcal{Z}\times\mathcal{Z}\mapsto \mathbb{R}^{}\)</span> (hereafer referred to as a PD kernel). We would like to use this as part of generic ML algorithms, not only ones that are reducible formally to inner products — this will give us a true generally applicable “kernel trick.”</p>
+<p>We will do this by using a kernel to define a bespoke space of functions and a corresponding inner product which the kernel evaluates by construction. This space will be a “reproducing kernel Hilbert space” (RKHS). Though this will seem artificial, we can connect it to the feature expansions given by Mercer’s theorem and see that the RKHS inner product imposes smoothness on ordinary L2 functions relative to the standard L2 norm.</p>
+<p>Finally, we show that any ML problem that regularizes using the RKHS norm admits a finite–dimensional solution, and so is computationally tractable. This result is known as the “representer theorem.”</p>
+</section>
+<section id="review-inner-products-on-function-spaces" class="level1">
+<h1>Review: Inner products on function spaces</h1>
+<p>We’re going to define function–valued regression features, and that will require using inner products on function spaces.</p>
+<p>Assume for this lecture that we have a fixed density <span class="math inline">\(\mu(\cdot)\)</span> defined on <span class="math inline">\(\mathcal{Z}\)</span> (we require <span class="math inline">\(\int \mu(z) dz&lt; \infty\)</span>, but <span class="math inline">\(\mu(\cdot)\)</span> need not be a probability density). This density need have nothing to do with the data, though it is most useful if <span class="math inline">\(\mu(A) &gt; 0\)</span> for any set <span class="math inline">\(A\)</span> that has positive probability in the data generating process. Consider <span class="math inline">\(\mathcal{F}= \{ f: \mathcal{Z}\mapsto \mathbb{R}^{}: \int f(z)^2 \mu(z) dz&lt; \infty \}\)</span>, together with the inner product</p>
+<p><span class="math display">\[
+\left&lt;f, g\right&gt;_\mu = \int f(z) g(z) \mu(z) dz.
+\]</span></p>
+<p>If the domain <span class="math inline">\(\mathcal{Z}\)</span> is finite, you can just take <span class="math inline">\(\mu(\cdot) = 1\)</span>. We’ll actually work with the completion of this space, which we will call <span class="math inline">\(L_2(\mu)\)</span>; this is a <strong>Hilbert space</strong>, meaning a vector space, with an inner product, that contains all its limit points.</p>
+<p>Note that the inner product defines the “size” of a function — we can say <span class="math inline">\(\left\Vert f\right\Vert_\mu^2 = \left&lt;f, f\right&gt;_\mu = \int f(z)^2 \mu(z) dz\)</span>. Some functions are bigger than others. This particular norm considers functions large if they are pointwise large in magnitude over large regions as measured by <span class="math inline">\(\mu(\cdot)\)</span>.</p>
+<p>Of course, you can define other inner products on <span class="math inline">\(L_2(\mu)\)</span>, just like you can define other inner products on <span class="math inline">\(\mathbb{R}^{P}\)</span> using PSD matices. In fact, defining a new norm on <span class="math inline">\(L_2(\mu)\)</span> is the primary task for today.</p>
+</section>
+<section id="reproducing-kernel-hilbert-space" class="level1">
+<h1>Reproducing kernel Hilbert space</h1>
+<p>Suppose we have PD kernel <span class="math inline">\(\mathcal{K}_{\,}\)</span> defined on <span class="math inline">\(\mathcal{Z}\times \mathcal{Z}\)</span>. Here’s our first trick: for a fixed <span class="math inline">\(z_n\)</span>, we note that the map <span class="math inline">\(\mathcal{K}_{\,}(\cdot, z_n)\)</span> is itself a function <span class="math inline">\(\mathcal{Z}\mapsto \mathbb{R}^{}\)</span>. If we further assume that <span class="math inline">\(\int \mathcal{K}_{\,}(z, z_n)^2 \mu(z) dz&lt; \infty\)</span>, then <span class="math inline">\(\mathcal{K}_{\,}(\cdot, z_n) \in \mathcal{F}\)</span>; we will assume that going forward.</p>
+<p>Now, consider all functions <span class="math inline">\(f\)</span> that take the following form. Fix <span class="math inline">\(\boldsymbol{a}= (a_1, \ldots, a_K)\)</span>, and fix <span class="math inline">\(\boldsymbol{Z}= (z_1, \ldots, z_K)\)</span>. These can be anything, but they each need to be the same length. Then, using these, define the function: <span class="math display">\[
+f(z; \boldsymbol{a}, \boldsymbol{Z}, K) := \sum_{k=1}^K a_k \mathcal{K}_{\,}(z, z_n).
+\]</span> One can show that <span class="math inline">\(f(z; \boldsymbol{a}, \boldsymbol{Z}, K) \in \mathcal{F}\)</span> as well.</p>
+<p>Now comes the big trick. Given two functions <span class="math inline">\(\mathcal{K}_{\,}(\cdot, z_n)\)</span> and <span class="math inline">\(\mathcal{K}_{\,}(\cdot, z_m)\)</span>, we <em>define</em> the inner product:</p>
+<p><span class="math display">\[
+\left&lt;\mathcal{K}_{\,}(\cdot, z_n), \mathcal{K}_{\,}(\cdot, z_m)\right&gt;_\mathcal{H}:= \mathcal{K}_{\,}(z_n, z_m).
+\]</span></p>
+<p>Note that this norm is different from the L2 norm — we will be precise about this difference and give an example in the homework. In general,</p>
+<p><span class="math display">\[
+\left&lt;\mathcal{K}_{\,}(\cdot, z_n), \mathcal{K}_{\,}(\cdot, z_m)\right&gt;_\mathcal{H}\ne \left&lt;\mathcal{K}_{\,}(\cdot, z_n), \mathcal{K}_{\,}(\cdot, z_m)\right&gt;_\mu.
+\]</span></p>
+<p>We can additionally define our inner product to be linear:</p>
+<p><span class="math display">\[
+\left&lt;a \mathcal{K}_{\,}(\cdot, z_n) + b \mathcal{K}_{\,}(\cdot, z_p), \mathcal{K}_{\,}(\cdot, z_m)\right&gt;_\mathcal{H}:=
+a \left&lt;\mathcal{K}_{\,}(\cdot, z_n), \mathcal{K}_{\,}(z_n, z_m)\right&gt;_\mathcal{H}+
+b \left&lt;\mathcal{K}_{\,}(\cdot, z_p), \mathcal{K}_{\,}(z_n, z_m)\right&gt;_\mathcal{H}.
+\]</span></p>
+<p>The only thing left to show is whether the inner product is positive definite. But it is, as long as the kernel is PD:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left&lt;f(\cdot; \boldsymbol{a}, \boldsymbol{Z}, K), f(\cdot; \boldsymbol{a}, \boldsymbol{Z}, K)\right&gt;_\mathcal{H}={}&amp;
+\left&lt;\sum_{k=1}^K a_k \mathcal{K}_{\,}(\cdot, z_k), \sum_{k=1}^K a_k \mathcal{K}_{\,}(\cdot, z_k)\right&gt;_\mathcal{H}
+\\={}&amp;
+\sum_{k=1}^K \sum_{k'=1}^K
+    a_k a_{k'} \left&lt;\mathcal{K}_{\,}(\cdot, z_k), \mathcal{K}_{\,}(\cdot, z_{k'})\right&gt;_\mathcal{H}
+\\={}&amp;
+\sum_{k=1}^K \sum_{k'=1}^K a_k a_{k'} \mathcal{K}_{\,}(z_{k'}, z_k)
+\\={}&amp;
+\boldsymbol{a}^\intercal\mathcal{K}_{\boldsymbol{Z}} \boldsymbol{a}\ge 0,
+\end{aligned}
+\]</span></p>
+<p>where we note the appearance of the gram matrix, and where the final line relies on positive definitess of <span class="math inline">\(\mathcal{K}_{\,}\)</span>.</p>
+<p>The only real mathematical difficulty lies in the completion of this space, and in showing that these properties continue to hold for functions that are limits of finite sums of this form. They do — see Chapter 12 of <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> for these kinds of details. Presuming those results, we can define the Hilbert space <span class="math inline">\(\mathcal{H}\)</span> to be the space of all functions of the form <span class="math inline">\(f(\cdot; \boldsymbol{a}, \boldsymbol{Z}, K)\)</span>, plus their limits, all equipped with (and under) the inner product <span class="math inline">\(&lt;\cdot,\cdot&gt;_\mathcal{H}\)</span>.</p>
+<section id="the-reproducing-property" class="level2">
+<h2 class="anchored" data-anchor-id="the-reproducing-property">The reproducing property</h2>
+<p>Why is this called a “reproducing kernel” Hilbert space? It’s because the inner product with the kernel “evaluates” or “reproduces” a function. For <span class="math inline">\(f\in \mathcal{H}\)</span>,</p>
+<p><span class="math display">\[
+\left&lt;\mathcal{K}_{\,}(\cdot, z), f\right&gt;_\mathcal{H}= f(z).
+\]</span></p>
+<p>This is not just a matter of nomenclature — it shows that <span class="math inline">\(L_2(\mu)\)</span> cannot be a RKHS, since you cannot find any function <span class="math inline">\(\mathcal{E}_\ \in L_2(\mu)\)</span> such that <span class="math inline">\({\mathcal{E}_z, f} = f(z)\)</span> for all <span class="math inline">\(f\in L_2(\mu)\)</span>. (You can probably convince yourself of this, but to prove it formally, you can show that the evaluation operator <span class="math inline">\(z\mapsto f(z)\)</span> is discontinuous, and so cannot be represented by a bounded linear operator.)</p>
+</section>
+<section id="an-example-ols-as-an-rkhs" class="level2">
+<h2 class="anchored" data-anchor-id="an-example-ols-as-an-rkhs">An example: OLS as an RKHS</h2>
+<p>As a simple example, let us derive the RKHS corresponding to the OLS model <span class="math inline">\(\mathcal{F}= \{ f(\boldsymbol{z}) = \boldsymbol{z}^\intercal\boldsymbol{\beta}\textrm{ for some }\boldsymbol{\beta}\in \mathbb{R}^{D}\}\)</span>. (The general case for regressing on <span class="math inline">\(\boldsymbol{x}= \phi(\boldsymbol{z})\)</span> is an exercise.) We will take the kernel <span class="math inline">\(\mathcal{K}_{OLS}(\boldsymbol{z}, \boldsymbol{z}') = \boldsymbol{z}^\intercal\boldsymbol{z}'\)</span>, show that RKHS corresponds to <span class="math inline">\(\mathcal{F}\)</span> with the inner product <span class="math inline">\(\left&lt;f, g\right&gt;_\mathcal{H}= \boldsymbol{\beta}^\intercal\boldsymbol{\beta}'\)</span> when <span class="math inline">\(f(\boldsymbol{z}) = \boldsymbol{\beta}^\intercal\boldsymbol{z}\)</span> and <span class="math inline">\(g(\boldsymbol{z}) = {\boldsymbol{\beta}'}^\intercal\boldsymbol{z}\)</span>.</p>
+<p>First, note that <span class="math inline">\(f(\boldsymbol{z}) = \mathcal{K}_{OLS}(\boldsymbol{z}_k, \boldsymbol{z}) = \boldsymbol{z}_k^\intercal\boldsymbol{z}\)</span>. So functions in <span class="math inline">\(\mathcal{H}\)</span> take the following form (or their limits): <span class="math display">\[
+\begin{aligned}
+f(\boldsymbol{z}; \boldsymbol{a}, \boldsymbol{Z}, K) ={}&amp;
+\sum_{k=1}^K a_k \mathcal{K}_{OLS}(\boldsymbol{z}_k, \boldsymbol{z}) \\={}&amp;
+\sum_{k=1}^K a_k \boldsymbol{z}_k^\intercal\boldsymbol{z}\\={}&amp;
+\left(\boldsymbol{Z}^\intercal\boldsymbol{a}\right)^\intercal\boldsymbol{z}.
+\end{aligned}
+\]</span></p>
+<p>As long as there <em>exist</em> <span class="math inline">\(D\)</span> linearly independent <span class="math inline">\(\boldsymbol{z}_k\)</span> (they need not be in the observed data), then we can take <span class="math inline">\(K=D\)</span> and find <span class="math inline">\(\boldsymbol{a}\)</span> such that <span class="math inline">\(\boldsymbol{Z}^\intercal\boldsymbol{z}= \boldsymbol{\beta}\)</span> for any <span class="math inline">\(\boldsymbol{\beta}\)</span>. (If there do not exist <span class="math inline">\(D\)</span> linearly independent <span class="math inline">\(\boldsymbol{z}_k\)</span>, then we can eliminate the redundant dimensions and redefine <span class="math inline">\(\mathcal{F}\)</span> using only linearly independent components of <span class="math inline">\(\boldsymbol{z}\)</span>.) So the elements of <span class="math inline">\(\mathcal{H}\)</span> correspond to the elements of <span class="math inline">\(\mathcal{F}\)</span>. (It can be an exercise to show that different choices of <span class="math inline">\(\boldsymbol{Z}\)</span> and <span class="math inline">\(\boldsymbol{a}\)</span> that lead to the same <span class="math inline">\(\boldsymbol{\beta}\)</span> also lead to the same element of <span class="math inline">\(\mathcal{H}\)</span> as far as the inner product <span class="math inline">\(&lt;\cdot,\cdot&gt;_\mathcal{H}\)</span> is concerned.)</p>
+<p>Suppose now that we have two elements of <span class="math inline">\(\mathcal{H}\)</span>, <span class="math inline">\(f(\boldsymbol{z}; \boldsymbol{a}, \boldsymbol{Z}, K)\)</span> and <span class="math inline">\(f(\boldsymbol{z}; \boldsymbol{a}', \boldsymbol{Z}, K')\)</span>. Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left&lt;f(\cdot; \boldsymbol{a}, \boldsymbol{Z}, K), f(\cdot; \boldsymbol{a}', \boldsymbol{Z}, K')\right&gt;_\mathcal{H}
+={}&amp;
+\left&lt;\sum_{k=1}^K a_k \mathcal{K}_{OLS}(\boldsymbol{z}_k, \cdot), \sum_{k=1}^{K'} a_k' \mathcal{K}_{OLS}(\boldsymbol{z}_k', \cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\sum_{k=1}^K \sum_{k'=1}^{K'} a_k a_{k'}'  \left&lt; \mathcal{K}_{OLS}(\boldsymbol{z}_k, \cdot),  \mathcal{K}_{OLS}(\boldsymbol{z}_{k'}', \cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\sum_{k=1}^K \sum_{k'=1}^{K'} a_k a_{k'}'  \mathcal{K}_{OLS}(\boldsymbol{z}_k, \boldsymbol{z}_{k'}')
+\\={}&amp;
+\sum_{k=1}^K \sum_{k'=1}^{K'} a_k a_{k'}'  \boldsymbol{z}_k^\intercal\boldsymbol{z}_{k'}'
+\\={}&amp;
+\sum_{k=1}^K  a_k \boldsymbol{z}_k^\intercal\sum_{k'=1}^{K'} a_{k'}'\boldsymbol{z}_{k'}'
+\\={}&amp;
+(\boldsymbol{Z}^\intercal\boldsymbol{a})^\intercal({\boldsymbol{Z}'}^\intercal\boldsymbol{a}').
+\end{aligned}
+\]</span></p>
+<p>It follows that if <span class="math inline">\(f(\boldsymbol{z}; \boldsymbol{\beta}) = \boldsymbol{\beta}^\intercal\boldsymbol{z}\)</span>, then <span class="math inline">\(f(\boldsymbol{z}; \boldsymbol{\beta}) = f(\boldsymbol{z}; \boldsymbol{a}, \boldsymbol{Z}, D)\)</span> where <span class="math inline">\(\boldsymbol{Z}^\intercal\boldsymbol{a}= \boldsymbol{\beta}\)</span>, and likewise for <span class="math inline">\(f(\boldsymbol{z}; \boldsymbol{\beta}')\)</span>, and so <span class="math inline">\(&lt;f(\cdot; \boldsymbol{\beta}), f(\cdot, \boldsymbol{\beta}')&gt;_\mathcal{H}= \boldsymbol{\beta}^\intercal\boldsymbol{\beta}'\)</span>. In particular, the “size” of <span class="math inline">\(f(\boldsymbol{z}; \boldsymbol{\beta})\)</span> in <span class="math inline">\(\mathcal{H}\)</span> is given by</p>
+<p><span class="math display">\[
+\left\Vert f(\cdot; \boldsymbol{\beta})\right\Vert_\mathcal{H}^2 = \left&lt;f(\cdot; \boldsymbol{\beta}), f(\cdot; \boldsymbol{\beta})\right&gt;_\mathcal{H}^ = \left\Vert\boldsymbol{\beta}\right\Vert_2^2.
+\]</span></p>
+<p>Intriguingly, this means that ridge regression,</p>
+<p><span class="math display">\[
+\mathscr{L}(\boldsymbol{\beta}; \lambda) = \frac{1}{2} \sum_{n=1}^N(y_n - \boldsymbol{\beta}^\intercal\boldsymbol{z})^2 + \frac{\lambda}{2} \left\Vert\boldsymbol{\beta}\right\Vert_2^2
+\quad\textrm{for}\quad\boldsymbol{\beta}\in \mathbb{R}^{D}.
+\]</span></p>
+<p>is equivalent to the RKHS objective</p>
+<p><span class="math display">\[
+\mathscr{L}(f; \lambda) = \frac{1}{2} \sum_{n=1}^N(y_n - f(\boldsymbol{z}))^2 + \frac{\lambda}{2} \left\Vert f\right\Vert_\mathcal{H}^2
+\quad\textrm{for}\quad f\in \mathcal{H}.
+\]</span></p>
+<p>That is, ridge regression is trading the least–squares loss against the “size” of the prediction function, where “size” is measured by the RKHS norm.</p>
+<p>This strongly suggests the possibility of (a) replacing the OLS RKHS with another one, possibly one with an infinite–dimensional basis, and even (b) replace the squared loss with a generic loss. The missing piece to make this rigorous — as well as to guarantee computable solutions even in infinite–dimensional problems — is the representer theorem.</p>
+</section>
+</section>
+<section id="the-representer-theorem" class="level1">
+<h1>The representer theorem</h1>
+<p>For simplicity, I will state a special case of a more general version of the representer theorem given in Theorem 4.2 in section 4.2 of <span class="citation" data-cites="scholkopf:2002:learningwithkernels">Schölkopf and Smola (<a href="#ref-scholkopf:2002:learningwithkernels" role="doc-biblioref">2002</a>)</span>.</p>
+<p>Let <span class="math inline">\(\mathcal{H}\)</span> be an RKHS defined on functions from <span class="math inline">\(\mathcal{Z}\)</span> to the domain of the response variable <span class="math inline">\(y\)</span>, and let Let <span class="math inline">\(\mathscr{L}(\boldsymbol{z}_n, y_n, f(\cdot))\)</span> denote the loss for using <span class="math inline">\(f\in \mathcal{H}\)</span> to predict <span class="math inline">\(f(\boldsymbol{z}_n)\)</span> for <span class="math inline">\(y_n\)</span>. Importantly, we require that <span class="math inline">\(\mathscr{L}\)</span> depends on <span class="math inline">\(f(\cdot)\)</span> only through its evaluation <span class="math inline">\(f(\boldsymbol{z}_n)\)</span>, which is the case for every example we have seen in the class so far.</p>
+<p>Then the solution to the optimization problem</p>
+<p><span class="math display">\[
+f^{\star}:= \underset{f\in \mathcal{H}}{\mathrm{argmin}}\,\left( \sum_{n=1}^N\mathscr{L}(\boldsymbol{z}_n, y_n, f(\cdot)) + \frac{1}{2}\left\Vert f\right\Vert_\mathcal{H}\right)
+\]</span></p>
+<p>takes the form <span class="math inline">\(f(\boldsymbol{z}) = \sum_{n=1}^Na^*_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \boldsymbol{z})\)</span> for some <span class="math inline">\(\boldsymbol{a}^*\)</span>.</p>
+<p>The proof relies on the fact that, since <span class="math inline">\(\mathcal{H}\)</span> is a Hilbert space, we can decompose any <span class="math inline">\(f\in \mathcal{H}\)</span> into <span class="math inline">\(f= \sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot) + f^\perp(\cdot)\)</span> for some <span class="math inline">\(\boldsymbol{a}\)</span>, where <span class="math inline">\(\left&lt;f^\perp(\cdot), \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot)\right&gt;_\mathcal{H}= 0\)</span> for all <span class="math inline">\(\boldsymbol{z}_n\)</span>. (That you can do this is an exercise for the reader.)</p>
+<p>The next step is to show that, for any <span class="math inline">\(f\)</span>, the regularized loss is minimized by setting <span class="math inline">\(f^\perp = 0\)</span>. First, for any <span class="math inline">\(f\)</span>, by the reproducing property, <span class="math inline">\(f(\boldsymbol{z}_m) = \left&lt;f(\cdot), \mathcal{K}_{\,}(\boldsymbol{z}_m, \cdot)\right&gt;_\mathcal{H}\)</span>, and so the loss does not depend on <span class="math inline">\(f^\perp\)</span>:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(\boldsymbol{z}_m) ={}&amp;
+\left&lt;f(\cdot), \mathcal{K}_{\,}(\boldsymbol{z}_m, \cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\left&lt;\sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot) + f^\perp(\cdot), \mathcal{K}_{\,}(\boldsymbol{z}_m, \cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\left&lt;\sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot), \mathcal{K}_{\,}(\boldsymbol{z}_m, \cdot)\right&gt;_\mathcal{H}+ \left&lt;f^\perp(\cdot), \mathcal{K}_{\,}(\boldsymbol{z}_m, \cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \boldsymbol{z}_m).
+\end{aligned}
+\]</span></p>
+<p>Next, the regularizing term is minimized at <span class="math inline">\(f^\perp = 0\)</span>, since</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left\Vert f\right\Vert_\mathcal{H}={}&amp;
+\left&lt;f(\cdot), f(\cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\left&lt;\sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot) + f^\perp(\cdot), \sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot) + f^\perp(\cdot)\right&gt;_\mathcal{H}
+\\={}&amp;
+\left&lt;\sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot), \sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot)\right&gt;_\mathcal{H}+
+\left&lt;f^\perp(\cdot), f^\perp(\cdot)\right&gt;_\mathcal{H}
+\\\ge{}&amp;
+\left&lt;\sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot), \sum_{n=1}^Na_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \cdot)\right&gt;_\mathcal{H}.
+\end{aligned}
+\]</span></p>
+<p>The implication is incredible — it follows that any empirical risk minimizer with an RKHS norm regularizer admits an <span class="math inline">\(N\)</span>–dimensional solution, expressible in terms of <span class="math inline">\(\boldsymbol{a}\)</span>, despite being formally an optimization problem over infinite–dimensional space.</p>
+<p>As a brief note, Theorem 4.2 of <span class="citation" data-cites="scholkopf:2002:learningwithkernels">Schölkopf and Smola (<a href="#ref-scholkopf:2002:learningwithkernels" role="doc-biblioref">2002</a>)</span> points out that neither the L2 regularization nor empirical risk are essential to the above proof; all that matters is the monotonicity of the reguliarization term and the fact that the loss depends on <span class="math inline">\(f\)</span> only through evaluations <span class="math inline">\(f(\boldsymbol{z}_n)\)</span> at a finite number of observations.</p>
+</section>
+<section id="gaussian-processes" class="level1">
+<h1>Gaussian processes</h1>
+<p>A final question remains: which kernel should I choose for a particular problem? Most kernels have hyperparameters — for example, the length scale <span class="math inline">\(\ell\)</span> in the RBF kernel <span class="math inline">\(\mathcal{K}_{RBF}(\boldsymbol{z}, \boldsymbol{s}) = \exp\left(-\frac{\ell}{2}\left\Vert\boldsymbol{z}- \boldsymbol{s}\right\Vert_2^2\right)\)</span>. These hyperparameters can be chosen by cross validation, or by direct optimization. But which of the infinte set of families of kernels is the right one for your problem? How do you think about this? One helpful perspective is that of Gaussian processes (GPs).</p>
+<p>As usual, let’s begin with ordinary least squares and the family of candidate functions <span class="math inline">\(\mathcal{F}= \{ f(\boldsymbol{x}; \boldsymbol{\beta}) = \boldsymbol{\beta}^\intercal\boldsymbol{x}\textrm{ for some }\boldsymbol{\beta}\in \mathbb{R}^{P}\}\)</span>. Imagine drawing drawing IID Gaussian coefficients, <span class="math inline">\(\boldsymbol{\beta}\sim \mathcal{N}\left(\boldsymbol{0}, \sigma^2 {\boldsymbol{I}_{\,}}{P}\right)\)</span>. Since the coefficient is random, and a coefficient corresponds to a function, this is the same as drawing a <em>random function</em> from <span class="math inline">\(\mathcal{F}\)</span>.</p>
+<p>In general, you cannot really write down densities for infinite–dimensional objects like functions, so a random function is a more abstract random object than you might have seen in introductory classes. However, in this construction, we can still take expectations and compute variances. Note that, for fixed evaluation points <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(\boldsymbol{x}'\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{\mathbb{P}_{\,}\left(f\right)}\left[f(\boldsymbol{x})\right] ={}&amp; \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{\beta}\right)}\left[\boldsymbol{\beta}^\intercal\boldsymbol{x}\right] =
+  \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{\beta}\right)}\left[\boldsymbol{\beta}^\intercal\right]  \boldsymbol{x}= \boldsymbol{0}\quad\textrm{and}\\
+\mathrm{Cov}_{\mathbb{P}_{\,}\left(f\right)}\left(f(\boldsymbol{x}), f(\boldsymbol{x}')\right) ={}&amp; \mathrm{Cov}_{\mathbb{P}_{\,}\left(\boldsymbol{\beta}\right)}\left(\boldsymbol{\beta}^\intercal\boldsymbol{x}, \boldsymbol{\beta}^\intercal\boldsymbol{x}'\right) =
+  \boldsymbol{x}^\intercal\mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{\beta}\right)}\left[\boldsymbol{\beta}\boldsymbol{\beta}^\intercal\right]  \boldsymbol{x}' =
+  \sigma^2 \boldsymbol{x}^\intercal{\boldsymbol{I}_{\,}}{P} \boldsymbol{x}' =  \sigma^2 \boldsymbol{x}^\intercal\boldsymbol{x}'.
+\end{aligned}
+\]</span></p>
+<p>More generally, one can show that the vector of function evaluations at any finite set of points is Gaussian with covariance given by <span class="math inline">\(\boldsymbol{X}\boldsymbol{X}^\intercal\)</span>, where <span class="math inline">\(\boldsymbol{X}\)</span> is the usual matrix with the observations <span class="math inline">\(\boldsymbol{x}_n\)</span> in the rows. We say that <span class="math inline">\(f\)</span> is a <em>Gaussian process</em> with mean function zero and covariance function given by <span class="math inline">\(\mathrm{Cov}_{\mathbb{P}_{\,}\left(f\right)}\left(f(\boldsymbol{x}), f(\boldsymbol{x}')\right) = \sigma^2 \boldsymbol{x}^\intercal\boldsymbol{x}'\)</span>. The details are beyond the scope of the present course, but, by Kolmogorov’s extension theorem, these finite–dimensional distributions are enough to fully characterize the infinite–dimensional distribution of <span class="math inline">\(f\)</span> (See, e.g., Chapter 2 of <span class="citation" data-cites="rasmussen:2006:gpml">Rasmussen and Williams (<a href="#ref-rasmussen:2006:gpml" role="doc-biblioref">2006</a>)</span>).</p>
+<p>We see in the finite–dimensional case that the covariance of our GP involved an inner product. And, indeed, we can extend this definition to use kernels instead of dot products, defining</p>
+<p><span class="math display">\[
+\begin{aligned}
+f\sim{}&amp; \mathcal{GP}\left(\mu(\cdot), \mathcal{K}_{\,}(\cdot, \cdot)\right) \textrm{ meaning }\\
+\mathbb{E}_{f\sim \mathcal{GP}}\left[f(\boldsymbol{x})\right] ={}&amp; \mu(\boldsymbol{x}) \\
+\mathrm{Cov}_{f\sim \mathcal{GP}}\left(f(\boldsymbol{x}), f(\boldsymbol{x}')\right) ={}&amp; \mathcal{K}_{\,}(\boldsymbol{x}, \boldsymbol{x}').
+\end{aligned}
+\]</span></p>
+<p>Further, we require the covariance matrix of the GP evaluated at any finite set of points <span class="math inline">\(\boldsymbol{x}_1, \ldots, \boldsymbol{x}_N\)</span> to be the gram matrix <span class="math inline">\(\mathcal{K}_{\boldsymbol{X}}\)</span>.</p>
+<p>Using a particular kernel for an ML problem is formally similar to expressing the belief that the function of interest comes from a GP with covariance function <span class="math inline">\(\mathcal{K}_{\,}\)</span>. Again, formalizing this carefully is beyond the scope of this course, but thinking this way can provide some intuition. Here are pictures of draws from some common kernels:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../assets/rw_fig4.1.png" class="img-fluid figure-img"></p>
+<figcaption><span class="citation" data-cites="rasmussen:2006:gpml">Rasmussen and Williams (<a href="#ref-rasmussen:2006:gpml" role="doc-biblioref">2006</a>)</span> Figure 4.1</figcaption>
+</figure>
+</div>
+<p>In this, we can see that the Matern kernels result in “wigglier” draws than the RBF kernel, which corresponds to the <span class="math inline">\(\nu\rightarrow\infty\)</span> case in the image. Choosing a Matern class of kernels thus admits wigglier solutions than choosing an RBF kernel. One way to think of your kernel, from this perspective, is how close you want nearby evaluations of your learned function to be, absent information from the training set.</p>
+</section>
+<section id="references" class="level1">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-esl:2009:hastie" class="csl-entry" role="listitem">
+Hastie, T., R. Tibshirani, and J. Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference and Prediction</em>. 2nd ed. Springer.
+</div>
+<div id="ref-rasmussen:2006:gpml" class="csl-entry" role="listitem">
+Rasmussen, C., and C. Williams. 2006. <em>Gaussian Processes for Machine Learning</em>. Vol. 2. 3. MIT press Cambridge, MA.
+</div>
+<div id="ref-scholkopf:2002:learningwithkernels" class="csl-entry" role="listitem">
+Schölkopf, B., and A. Smola. 2002. <em>Learning with Kernels: <span>Support</span> Vector Machines, Regularization, Optimization, and Beyond</em>. MIT press.
+</div>
+<div id="ref-wainwright:2019:high" class="csl-entry" role="listitem">
+Wainwright, M. 2019. <em>High-Dimensional Statistics: <span>A</span> Non-Asymptotic Viewpoint</em>. Vol. 48. Cambridge university press.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

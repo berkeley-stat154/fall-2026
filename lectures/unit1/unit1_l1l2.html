@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Ridge (L2) and Lasso (L1) Regression</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#penalizing-large-regressors-with-ridge-regression" id="toc-penalizing-large-regressors-with-ridge-regression" class="nav-link" data-scroll-target="#penalizing-large-regressors-with-ridge-regression">Penalizing large regressors with ridge regression</a>
+  <ul class="collapse">
+  <li><a href="#standardizing-regressors" id="toc-standardizing-regressors" class="nav-link" data-scroll-target="#standardizing-regressors">Standardizing regressors</a></li>
+  <li><a href="#a-complexity-penalty" id="toc-a-complexity-penalty" class="nav-link" data-scroll-target="#a-complexity-penalty">A complexity penalty</a></li>
+  <li><a href="#constrained-optimization-and-the-minimum-norm-interpolator" id="toc-constrained-optimization-and-the-minimum-norm-interpolator" class="nav-link" data-scroll-target="#constrained-optimization-and-the-minimum-norm-interpolator">Constrained optimization and the minimum norm interpolator</a></li>
+  <li><a href="#a-bayesian-posterior" id="toc-a-bayesian-posterior" class="nav-link" data-scroll-target="#a-bayesian-posterior">A Bayesian posterior</a></li>
+  </ul></li>
+  <li><a href="#sparse-regression-with-the-l1-norm-lasso" id="toc-sparse-regression-with-the-l1-norm-lasso" class="nav-link" data-scroll-target="#sparse-regression-with-the-l1-norm-lasso">Sparse regression with the L1 norm (lasso)</a>
+  <ul class="collapse">
+  <li><a href="#the-lasso-produces-sparse-solutions" id="toc-the-lasso-produces-sparse-solutions" class="nav-link" data-scroll-target="#the-lasso-produces-sparse-solutions">The Lasso produces sparse solutions</a></li>
+  <li><a href="#the-lasso-as-a-constrained-optimization-problem" id="toc-the-lasso-as-a-constrained-optimization-problem" class="nav-link" data-scroll-target="#the-lasso-as-a-constrained-optimization-problem">The Lasso as a constrained optimization problem</a></li>
+  <li><a href="#the-bayesian-lasso-is-not-sparse" id="toc-the-bayesian-lasso-is-not-sparse" class="nav-link" data-scroll-target="#the-bayesian-lasso-is-not-sparse">The Bayesian Lasso is not sparse</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Ridge (L2) and Lasso (L1) Regression</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><span class="math inline">\(\,\)</span></p>
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Introduce ridge (L2) and Lasso (l1) regression
+<ul>
+<li>As a complexity penalty</li>
+<li>As a tuneable hierarchy of models to be selected by cross-validation</li>
+<li>As a Bayesian posterior estimate</li>
+</ul></li>
+</ul>
+</section>
+<section id="reading" class="level1">
+<h1>Reading</h1>
+<p>These notes are a supplement to Section 6.2 of <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span>.</p>
+</section>
+<section id="penalizing-large-regressors-with-ridge-regression" class="level1">
+<h1>Penalizing large regressors with ridge regression</h1>
+<p>Recall that one perspective on regression is that we choose <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> to minimize the empirical risk</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}:= \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \sum_{n=1}^N(y_n - \boldsymbol{\beta}^\intercal x_n)^2 =: \hat{\mathscr{R}}(\boldsymbol{\beta}).
+\]</span></p>
+<p>We motivated this as an approximation to the expected predicted risk, <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta}) = \mathbb{E}_{\vphantom{}}\left[(y_\mathrm{new}- \boldsymbol{\beta}^\intercal x_\mathrm{new})^2\right]\)</span>. But that made sense when we had a fixed set of regressors, and have shown that the correspondence breaks down when we are searching the space of regressors. In particular, <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> always decreases as we add more regressors, but <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span> may not.</p>
+<p>Instead, let us consider minimizing <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span>, but with an additional penalty for large <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>. There are many ways to do this! But one convenient one is as follows. For now, pick a <span class="math inline">\(\lambda\)</span>, and choose <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> to minimize:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}(\lambda) := \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \mathscr{R}_{ridge}(\boldsymbol{\beta}, \lambda) :=
+\hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \left\Vert\boldsymbol{\beta}\right\Vert_2^2
+= \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \sum_{p=1}^P \boldsymbol{\beta}_p^2.
+\]</span></p>
+<p>This is known as <strong>ridge regression</strong>, <strong>L2–penalized</strong> regression. The latter is because the penalty <span class="math inline">\(\left\Vert\boldsymbol{\beta}\right\Vert_2^2\)</span> is the L2 norm of the regressor; next time we will study the L1 version, which is also known as the Lasso.</p>
+<p>The term <span class="math inline">\(\lambda \left\Vert\boldsymbol{\beta}\right\Vert_2^2\)</span> is known as a “regularizer,” since it imposes some “regularity” to the estimate <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span>. Note that</p>
+<ul>
+<li>As <span class="math inline">\(\lambda \rightarrow \infty\)</span>, then <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda) \rightarrow \boldsymbol{0}\)</span></li>
+<li>When <span class="math inline">\(\lambda = 0\)</span>, then <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda) = \hat{\boldsymbol{\beta}}\)</span>, the OLS estimator.</li>
+</ul>
+<p>So the inclusion of <span class="math inline">\(\lambda\)</span> is to “shrink” the estimate <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span> towards zero. Note that since the ridge loss has an extra penalty for the norm, it is impossible for the OLS solution to have a smaller norm than the ridge solution.</p>
+<p>The ridge regression regularizer has the considerable advantage that the optimum is available in closed form, since</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathscr{R}_{ridge}(\boldsymbol{\beta}, \lambda)
+={}&amp; (\boldsymbol{Y}- \boldsymbol{X}\boldsymbol{\beta})^\intercal(\boldsymbol{Y}- \boldsymbol{X}\boldsymbol{\beta}) + \lambda \boldsymbol{\beta}^\intercal\boldsymbol{\beta}
+\\={}&amp; \boldsymbol{Y}^\intercal\boldsymbol{Y}-2 \boldsymbol{Y}^\intercal\boldsymbol{X}\boldsymbol{\beta}+
+  \boldsymbol{\beta}^\intercal\boldsymbol{X}^\intercal\boldsymbol{X}\boldsymbol{\beta}+ \lambda \boldsymbol{\beta}^\intercal\boldsymbol{\beta}
+\\={}&amp; \boldsymbol{Y}^\intercal\boldsymbol{Y}-2 \boldsymbol{Y}^\intercal\boldsymbol{X}\boldsymbol{\beta}+
+  \boldsymbol{\beta}^\intercal\left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right) \boldsymbol{\beta}
+  \quad \Rightarrow \\
+\frac{\partial \mathscr{R}_{ridge}(\boldsymbol{\beta}, \lambda)}{\partial \boldsymbol{\beta}} ={}&amp;
+-2 \boldsymbol{X}^\intercal\boldsymbol{Y}+ 2 \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right) \boldsymbol{\beta}
+  \quad\Rightarrow \\
+\hat{\boldsymbol{\beta}}(\lambda) ={}&amp;
+  \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1} \boldsymbol{X}^\intercal\boldsymbol{Y}.
+\end{aligned}
+\]</span></p>
+<p>Note that <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\)</span> is <em>always</em> invertible if <span class="math inline">\(\lambda &gt; 0\)</span>, even if <span class="math inline">\(\boldsymbol{X}\)</span> is not full–column rank. In this sense, the ridge regression can deal safely with colinearity.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Prove that <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\)</span> is invertible if <span class="math inline">\(\lambda &gt; 0\)</span>. Hint: using the fact that <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}\)</span> positive semi–definite because it’s symmetric, find a lower bound on the smallest eigenvalue of <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\)</span>.</p>
+</div>
+</div>
+<section id="standardizing-regressors" class="level2">
+<h2 class="anchored" data-anchor-id="standardizing-regressors">Standardizing regressors</h2>
+<p>Suppose we re-scale one of the regressors <span class="math inline">\(x_{np}\)</span> by some value <span class="math inline">\(\alpha\)</span> for a very small <span class="math inline">\(\alpha \ll 1\)</span>, i.e., regressing on <span class="math inline">\(x'_{np} = \alpha x_{np}\)</span> instead of <span class="math inline">\(x_{np}\)</span>. As we know, the OLS minimizer <span class="math inline">\(\hat{\boldsymbol{\beta}}_p' = \hat{\boldsymbol{\beta}}_p / \alpha\)</span> and the fitted value <span class="math inline">\(\hat{\boldsymbol{Y}}\)</span> is unchanged at <span class="math inline">\(\lambda = 0\)</span>. But for a particular <span class="math inline">\(\lambda &gt; 0\)</span>, how does this affect the ridge solution? We can write</p>
+<p><span class="math display">\[
+\lambda  \hat{\boldsymbol{\beta}}_p'^2 = \frac{\lambda}{\alpha^2}  \hat{\boldsymbol{\beta}}_p^2.
+\]</span></p>
+<p>That is, we will effectively “punish” large values of <span class="math inline">\(\hat{\boldsymbol{\beta}}_p'\)</span> much more than we would “punish” the corresponding values of <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>. In turn, for a particular <span class="math inline">\(\lambda\)</span>, we will tend to set <span class="math inline">\(\hat{\boldsymbol{\beta}}'_p &lt; \hat{\boldsymbol{\beta}}_p\)</span> (although this is not necessarily the case).</p>
+<p>The point is that re-scaling the regressors affects the meaning of <span class="math inline">\(\lambda\)</span>. Correspondingly, if different regressors have very different typical scales, such as age versus income, then ridge regression will drive their coefficients to zero to very different degrees.</p>
+<p>Similarly, it often doesn’t make sense to penalize the constant, so we might take <span class="math inline">\(\beta_1\)</span> to be the constant (<span class="math inline">\(x_{n1} = 1\)</span>), and write</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}(\lambda) := \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \left\Vert\boldsymbol{\beta}\right\Vert_2^2
+= \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \sum_{p=2}^P \boldsymbol{\beta}_p^2.
+\]</span></p>
+<p>But this gets tedious, and assumes we have included a constant.<br>
+Instead, we might invoke the FWL theorem, center the response and regressors at their mean values, and then do penalized regression.</p>
+<p>For both these reasons, before performing ridge regression (or any other similar penalized regression), we typically standardize the regressors, defining</p>
+<p><span class="math display">\[
+x'_n := \frac{x_n - \bar{x}_n}{\sqrt{\frac{1}{N} \sum_{n=1}^N(x_n - \bar{x})^2}}.
+\]</span></p>
+<p>We then run ridge regression on <span class="math inline">\(\boldsymbol{x}'\)</span> rather than <span class="math inline">\(x\)</span>, so that we</p>
+<ul>
+<li>Don’t penalize the constant term and</li>
+<li>Penalize every coefficient the same regardless of its regressor’s typical scale.</li>
+</ul>
+</section>
+<section id="a-complexity-penalty" class="level2">
+<h2 class="anchored" data-anchor-id="a-complexity-penalty">A complexity penalty</h2>
+<p>Suppose that <span class="math inline">\(y_n = \boldsymbol{\beta}^\intercal\boldsymbol{x}_n + \varepsilon_n\)</span> for some <span class="math inline">\(\boldsymbol{\beta}\)</span>. Note that, for a fixed <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span>, <span class="math inline">\(y_\mathrm{new}\)</span>, and fixed <span class="math inline">\(\boldsymbol{X}\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}- \boldsymbol{x}_\mathrm{new}^\intercal\hat{\boldsymbol{\beta}}(\lambda)\right]  ={}&amp;
+\boldsymbol{x}_\mathrm{new}^\intercal\left(\boldsymbol{\beta}- \mathbb{E}_{\vphantom{}}\left[\hat{\boldsymbol{\beta}}(\lambda)\right]\right)
+\\={}&amp;
+\boldsymbol{x}_\mathrm{new}^\intercal\left({\boldsymbol{I}_{\,}}- \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1} (\boldsymbol{X}^\intercal\boldsymbol{X})\right) \boldsymbol{\beta}
+\end{aligned}
+\]</span></p>
+<p>That is, as <span class="math inline">\(\lambda\)</span> grows, <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span> becomes biased. However, by the same reasoning as in the standard case, under homoskedasticity,</p>
+<p><span class="math display">\[
+\mathrm{Cov}_{\,}\left(\hat{\boldsymbol{\beta}}(\lambda)\right)  = \sigma^2
+\left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1}
+  (\boldsymbol{X}^\intercal\boldsymbol{X})
+\left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1} ,
+\]</span></p>
+<p>which is smaller that <span class="math inline">\(\mathrm{Cov}_{\,}\left(\hat{\boldsymbol{\beta}}\right)\)</span> in the sense that <span class="math inline">\(\mathrm{Cov}_{\,}\left(\hat{\boldsymbol{\beta}}\right) - \mathrm{Cov}_{\,}\left(\hat{\boldsymbol{\beta}}(\lambda)\right)\)</span> is a positive definite matrix for <span class="math inline">\(\lambda &gt; 0\)</span> and full-rank <span class="math inline">\(\boldsymbol{X}\)</span>. In this sense, the family <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span> is a one-dimensional family that trades off bias and variance. We can thus use cross validation to choose <span class="math inline">\(\lambda\)</span> that minimizes estimated MSE.</p>
+</section>
+<section id="constrained-optimization-and-the-minimum-norm-interpolator" class="level2">
+<h2 class="anchored" data-anchor-id="constrained-optimization-and-the-minimum-norm-interpolator">Constrained optimization and the minimum norm interpolator</h2>
+<p>We can rewrite the ridge loss in a suggestive way. Fix <span class="math inline">\(\lambda = \hat{\lambda}\)</span>, write <span class="math inline">\(b= \left\Vert\hat{\boldsymbol{\beta}}(\hat{\lambda})\right\Vert_2^2\)</span>, and write</p>
+<p><span class="math display">\[
+\mathscr{R}_{ridge}'(\boldsymbol{\beta}, \lambda) = \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda (\left\Vert\boldsymbol{\beta}\right\Vert_2^2 - b).
+\]</span></p>
+<p>Since <span class="math inline">\(b\)</span> is fixed, <span class="math inline">\(\hat{\boldsymbol{\beta}}(\hat{\lambda})\)</span> still satisfies</p>
+<p><span class="math display">\[
+\left. \frac{\partial \mathscr{R}_{ridge}(\boldsymbol{\beta}, \lambda)}{\partial \boldsymbol{\beta}} \right|_{\hat{\boldsymbol{\beta}}, \hat{\lambda}} =
+\left. \frac{\partial \hat{\mathscr{R}}(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}} \right|_{\hat{\boldsymbol{\beta}}} +
+  \hat{\lambda}\left. \frac{\partial \left\Vert\boldsymbol{\beta}\right\Vert_2^2}{\partial \boldsymbol{\beta}} \right|_{\hat{\boldsymbol{\beta}}} = \boldsymbol{0}.
+\]</span></p>
+<p>So the optimum is actually the same. The loss <span class="math inline">\(\mathscr{R}_{ridge}'(\boldsymbol{\beta}, \lambda)\)</span> is the Lagrange multiplier version of the constrained optimization problem</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}(b) := \underset{\boldsymbol{\beta}: \left\Vert\boldsymbol{\beta}\right\Vert_2^2 \le b}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\boldsymbol{\beta}).
+\]</span></p>
+<p>Taking <span class="math inline">\(b= \left\Vert\hat{\boldsymbol{\beta}}(\lambda)\right\Vert_2^2\)</span>, we see that, for every <span class="math inline">\(\lambda\)</span>, there is a <span class="math inline">\(b\)</span>, and vice–versa. The ridge regression is thus equivalent to minimizing the squared error loss <em>subject to the constraint that it lies within an L2 ball</em>. Making the ball larger allows better fit to the data, but by using larger <span class="math inline">\(\boldsymbol{\beta}\)</span>. This intuition is particularly useful when contrasting ridge regression with the lasso.</p>
+<p>This intuition is also useful when understanding what happens as <span class="math inline">\(\lambda \rightarrow 0\)</span>. Write <span class="math inline">\(r= ESS(\hat{\boldsymbol{\beta}}(\hat{\lambda}))\)</span>, and note that we could also have written</p>
+<p><span class="math display">\[
+\mathscr{R}_{ridge}''(\boldsymbol{\beta}, \lambda) = \frac{1}{\lambda} ( \hat{\mathscr{R}}(\boldsymbol{\beta}) - r) + \left\Vert\boldsymbol{\beta}\right\Vert_2^2.
+\]</span></p>
+<p>As before, for fixed <span class="math inline">\(\lambda\)</span> (and so fixed <span class="math inline">\(r\)</span>), <span class="math inline">\(\mathscr{R}_{ridge}''(\boldsymbol{\beta}, \lambda)\)</span> has the same ridge optimum. However, we can write</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}(r) := \underset{\boldsymbol{\beta}: \hat{\mathscr{R}}(\boldsymbol{\beta}) &lt; r}{\mathrm{argmin}}\, \left\Vert\boldsymbol{\beta}\right\Vert_2^2.
+\]</span></p>
+<p>We can thus equivalently interpret the ridge estimator as the one that produces the smallest <span class="math inline">\(\boldsymbol{\beta}\)</span> in the L2 norm, subject to the residual sum of squares being no larger than <span class="math inline">\(r\)</span>. As <span class="math inline">\(\lambda \rightarrow 0\)</span>, infinite weight gets put on the <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> term, and <span class="math inline">\(r\rightarrow 0\)</span> if <span class="math inline">\(\boldsymbol{X}\)</span> is rank <span class="math inline">\(N\)</span> or higher. So we see that</p>
+<p><span class="math display">\[
+\lim_{r\rightarrow 0} \hat{\boldsymbol{\beta}}(r) = \underset{\boldsymbol{\beta}: \hat{\mathscr{R}}(\boldsymbol{\beta}) = 0}{\mathrm{argmin}}\, \left\Vert\boldsymbol{\beta}\right\Vert_2^2.
+\]</span></p>
+<p>That is, when there are many <span class="math inline">\(\boldsymbol{\beta}\)</span> that have <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta}) = 0\)</span> — i.e., which “interpolate” the data — the limiting ridge estimator chooses the one with minimum norm. This is call the “ridgeless interpolator.” (See the “ridgeless” lecture in <span class="citation" data-cites="tibshirani:2023:statmlnotes">Tibshirani (<a href="#ref-tibshirani:2023:statmlnotes" role="doc-biblioref">2023</a>)</span>.)</p>
+</section>
+<section id="a-bayesian-posterior" class="level2">
+<h2 class="anchored" data-anchor-id="a-bayesian-posterior">A Bayesian posterior</h2>
+<p>Another way to interpret the ridge penalty is as a Bayesian posterior mean. If</p>
+<p><span class="math display">\[
+\boldsymbol{\beta}\sim \mathcal{N}\left(\boldsymbol{0}, \sigma_\beta^2 {\boldsymbol{I}_{\,}}\right)
+\quad\textrm{and}\quad
+\boldsymbol{Y}\vert \boldsymbol{\beta}, \boldsymbol{X}\sim \mathcal{N}\left(\boldsymbol{X}\boldsymbol{\beta}, \sigma^2 {\boldsymbol{I}_{\,}}\right),
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+\boldsymbol{\beta}\vert \boldsymbol{Y}, \boldsymbol{X}\sim \mathcal{N}\left(
+  \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \frac{\sigma^{2}}{\sigma_\beta^{2}} {\boldsymbol{I}_{\,}}\right)^{-1}
+    \boldsymbol{X}^\intercal\boldsymbol{Y},
+  \sigma^{2}\left( \boldsymbol{X}^\intercal\boldsymbol{X}+ \frac{\sigma^{2}}{\sigma_\beta^{2}} {\boldsymbol{I}_{\,}}\right)^{-1} \right).
+\]</span></p>
+<p>One way to derive this is to recognize that, if <span class="math inline">\(\boldsymbol{\beta}\sim \mathcal{N}\left(\mu, \Sigma\right)\)</span>, then</p>
+<p><span class="math display">\[
+\log \mathbb{P}_{\,}\left(\boldsymbol{\beta}| \mu, \Sigma\right) =
+  -\frac{1}{2} \beta^\intercal\Sigma^{-1} \beta + \beta^\intercal\Sigma^{-1} \mu +
+  \textrm{Terms that do not depend on }\beta.
+\]</span></p>
+<p>We can write out the distribution of <span class="math inline">\(\mathbb{P}_{\,}\left(\beta | \boldsymbol{Y}\right) = \mathbb{P}_{\,}\left(\beta, \boldsymbol{Y}\right) / \mathbb{P}_{\,}\left(\boldsymbol{Y}\right)\)</span>, gather terms that depend on <span class="math inline">\(\beta\)</span>, and read off the mean and covariance:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\log \mathbb{P}_{\,}\left(\beta, \boldsymbol{Y}\right) ={}&amp;
+  -\frac{1}{2} \sigma^{-2} (\boldsymbol{Y}- \boldsymbol{X}\beta)^\intercal(\boldsymbol{Y}- \boldsymbol{X}\beta)
+  -\frac{1}{2} \sigma_\beta^{-2} \beta^\intercal\beta +
+  \textrm{Terms that do not depend on }\beta
+\\={}&amp;
+  -\frac{1}{2} \sigma^{-2} \beta^\intercal\boldsymbol{X}^\intercal\boldsymbol{X}\beta +
+  \sigma^{-2} \beta^\intercal\boldsymbol{X}^\intercal\boldsymbol{Y}
+  -\frac{1}{2} \sigma_\beta^{-2} \beta^\intercal\beta +
+  \textrm{Terms that do not depend on }\beta
+\\={}&amp;
+  -\frac{1}{2}  
+    \beta^\intercal\left(\sigma^{-2} \boldsymbol{X}^\intercal\boldsymbol{X}+ \sigma_\beta^{-2} {\boldsymbol{I}_{\,}}\right) \beta +
+  \sigma^{-2} \beta^\intercal\boldsymbol{X}^\intercal\boldsymbol{Y}+
+  \textrm{Terms that do not depend on }\beta.
+\end{aligned}
+\]</span></p>
+<p>From this, we can read off <span class="math inline">\(\Sigma\)</span> and <span class="math inline">\(\mu\)</span>, and get the above expression.</p>
+<p>If we take <span class="math inline">\(\lambda = \sigma^2 / \sigma_\beta^2\)</span>, then we can see that</p>
+<p><span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[\beta | \boldsymbol{Y}\right] =
+\left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1}
+    \boldsymbol{X}^\intercal\boldsymbol{Y}= \hat{\beta}(\lambda).
+\]</span></p>
+<p>This gives the ridge procedure some interpretability. First of all, the use of the ridge penalty corresponds to a prior belief that <span class="math inline">\(\beta\)</span> is not too large.</p>
+<p>Second, the ridge penalty you use reflects the relative scale of the noise variance and prior variance in a way that makes sense:</p>
+<ul>
+<li>If <span class="math inline">\(\sigma \gg \sigma_\beta\)</span>, then the data is noisy (relative to our prior beliefs). We should not take fitting the data too seriously, and so should estimate a smaller <span class="math inline">\(\beta\)</span> than <span class="math inline">\(\hat{\beta}\)</span>. And indeed, in this case <span class="math inline">\(\lambda\)</span> is large, a large <span class="math inline">\(\lambda\)</span> shrinks the estimated coefficients.</li>
+<li>If <span class="math inline">\(\sigma_\beta \gg \sigma\)</span>, then we find it plausible that <span class="math inline">\(\beta\)</span> is very large (relative to the variability in our data). We should not take our prior beliefs too seriously, and estimate a coefficient that matches <span class="math inline">\(\hat{\beta}\)</span>. And indeed, in this case, <span class="math inline">\(\lambda\)</span> is small, and we do not shrink the coefficients much.</li>
+</ul>
+</section>
+</section>
+<section id="sparse-regression-with-the-l1-norm-lasso" class="level1">
+<h1>Sparse regression with the L1 norm (lasso)</h1>
+<p>One problem with the L2 solution might be that the solution <span class="math inline">\(\hat{\boldsymbol{\beta}}_{L2}(\lambda)\)</span> is still “dense”, meaning that, in general, every entry of it is nonzero, and we still have to invert a <span class="math inline">\(P\times P\)</span> matrix.</p>
+<p>For example, consider our highly correlated regressor example from the previous lecture. The ridge regression will still include both regressors, and their coefficient estimates will still be highly negatively correlated, but both will be shrunk towards zero. Maybe it would make more sense to select only one variable to include. Let us try to think of how we can change the penalty term to achieve this.</p>
+<div class="callout-info" title="Notation">
+<p>A “sparse” solution is an estimator <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> in which many of the entries are zero — that is, an estimated regression line that does not use many of the available regressors.</p>
+</div>
+<p>In a word — ridge regression estimates are not sparse. Let’s try to derive one that is by changing the penalty.</p>
+<p>A very intuitive way to produce a sparse estimate is as follows: <span class="math display">\[
+\hat{\boldsymbol{\beta}}_{L0}(\lambda) := \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\,\left(  
+  \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \sum_{p} 1\left(\beta_p \ne 0\right) \right)
+  \quad\textrm{(practically difficult)}
+\]</span></p>
+<p>This finds a tradeoff between the best fit to the data, but with a penalty for using more regressors. This makes sense, but is very difficult to compute. In particular, this objective is very non-convex. Bayesian statisticians do attempt to estimate models with a similar kind of penalty (they are called “spike and slab” models), but they are extremeley computationally intensive and beyond the scope of this course.</p>
+<p>A convex approximation to the preceding loss is the L1 or Lasso loss, leading to Lasso or L1 regression:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}_{L1}(\lambda) := \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\,\left(  
+  \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \sum_{p} \left|\beta_b\right| \right) =
+\underset{\boldsymbol{\beta}}{\mathrm{argmin}}\,\left(  
+  \hat{\mathscr{R}}(\boldsymbol{\beta}) + \lambda \left\Vert\boldsymbol{\beta}\right\Vert_1 \right).
+\]</span></p>
+<p>This loss is convex (beacuse it is the sum of two convex functions), and so is much easier to minimize. Furthermore, as <span class="math inline">\(\lambda\)</span> grows, it does produce sparser and sparser solutions — though it may not be obvious at first.</p>
+<p>Just as with the ridge regression, you should standardize variables before appyling the Lasso.</p>
+<section id="the-lasso-produces-sparse-solutions" class="level2">
+<h2 class="anchored" data-anchor-id="the-lasso-produces-sparse-solutions">The Lasso produces sparse solutions</h2>
+<p>One way to see that the Lasso produces sparse solutions is to start with a very large <span class="math inline">\(\lambda\)</span> and see what happens as it is slowly decreased.</p>
+<p>Start at <span class="math inline">\(\lambda\)</span> very large, so that <span class="math inline">\(\hat{\boldsymbol{\beta}}_{L1}(\lambda) = \boldsymbol{0}\)</span>. If we take small step of size <span class="math inline">\(\delta\)</span> in a particular direction away from zero in entry <span class="math inline">\(\beta_p\)</span>, then <span class="math inline">\(\lambda \left\Vert\hat{\beta}\right\Vert_1\)</span> increases by <span class="math inline">\(\delta \lambda\)</span>, and the empirical risk changes by the gradient of the squared error,</p>
+<p><span class="math display">\[
+\delta \sum_{n=1}^N(y_n - \hat{\boldsymbol{\beta}}(\lambda)^\intercal\boldsymbol{x}_n) \boldsymbol{x}_{np} =
+\delta \sum_{n=1}^N\hat{\varepsilon}_n \boldsymbol{x}_{np} =
+\delta \sum_{n=1}^Ny_n \boldsymbol{x}_{np}  
+\quad
+\textrm{ (because $\hat{\boldsymbol{\beta}}(\lambda) = \boldsymbol{0}$)}.
+\]</span></p>
+<p>As long as <span class="math inline">\(\left| \sum_{n=1}^Ny_n \boldsymbol{x}_{np}\right| &lt; \lambda\)</span> for all <span class="math inline">\(p\)</span>, we cannot improve the loss by moving away from <span class="math inline">\(\boldsymbol{0}\)</span>. Since the loss is convex, that means <span class="math inline">\(\boldsymbol{0}\)</span> is the minimum.</p>
+<p>Eventually, we decrease <span class="math inline">\(\lambda\)</span> until <span class="math inline">\(\sum_{n=1}^Ny_n \boldsymbol{x}_{np} = \lambda\)</span> for some <span class="math inline">\(p\)</span>. At that point, <span class="math inline">\(\beta_p\)</span> moves away from zero as <span class="math inline">\(\lambda\)</span> decreases, and the <span class="math inline">\(\hat{\varepsilon}_n\)</span> also change. However, until <span class="math inline">\(\sum_{n=1}^N\hat{\varepsilon}_n \boldsymbol{x}_{nq} = \lambda\)</span> for some other <span class="math inline">\(q\)</span>, only <span class="math inline">\(\beta_p\)</span> will be nonzero. As <span class="math inline">\(\lambda\)</span> decreases more and more variables tend to get added to the model, until <span class="math inline">\(\lambda = 0\)</span>, when of course <span class="math inline">\(\hat{\boldsymbol{\beta}}_{L1}(0) = \hat{\boldsymbol{\beta}}\)</span>, the OLS solution. Along the path, variables may come in and out of the regression in complex ways.</p>
+</section>
+<section id="the-lasso-as-a-constrained-optimization-problem" class="level2">
+<h2 class="anchored" data-anchor-id="the-lasso-as-a-constrained-optimization-problem">The Lasso as a constrained optimization problem</h2>
+<p>See figure 6.7 from <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> for an interpretation of the Lasso as a constrained optimization problem. The shape of the L1 ball provides an intuitive way to understand the sparsity of the solution compared to ridge.</p>
+</section>
+<section id="the-bayesian-lasso-is-not-sparse" class="level2">
+<h2 class="anchored" data-anchor-id="the-bayesian-lasso-is-not-sparse">The Bayesian Lasso is not sparse</h2>
+<p>In contrast to the ridge case, it is not hard to show that if you take a prior</p>
+<p><span class="math display">\[
+\mathbb{P}_{\,}\left(\boldsymbol{\beta}\right) \propto \exp\left( \lambda \left\Vert\boldsymbol{\beta}\right\Vert_1 \right)
+\]</span></p>
+<p>you do not recover a sparse solution for the posterior mean! The difference is that, for the ridge prior, the posterior remained normal, so that the “maximum a–posteriori” (MAP) estimator was equal to the mean. In the Lasso case, the MAP is sparse, but the mean is not, and the two do not coincide because the posterior is not normal.</p>
+<p>A more Bayesian way to produce sparse posteriors is by setting a non–zero probability that <span class="math inline">\(\beta_p = 0\)</span>. These are called “spike and slab priors,” and are beyond the scope of this course.</p>
+</section>
+</section>
+<section id="references" class="level1">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-isl:2021:gareth" class="csl-entry" role="listitem">
+Gareth, J., W. Daniela, H. Trevor, and T. Robert. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
+</div>
+<div id="ref-tibshirani:2023:statmlnotes" class="csl-entry" role="listitem">
+Tibshirani, R. 2023. <span>“Advanced Topics in Statistical Learning: Spring 2023.”</span> <a href="https://www.stat.berkeley.edu/~ryantibs/statlearn-s23/" class="uri">https://www.stat.berkeley.edu/~ryantibs/statlearn-s23/</a>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

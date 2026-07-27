@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Linear regression in an ML setting</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#ordinary-least-squares-under-misspecification" id="toc-ordinary-least-squares-under-misspecification" class="nav-link" data-scroll-target="#ordinary-least-squares-under-misspecification">Ordinary least squares under misspecification</a></li>
+  <li><a href="#regression-as-risk-minimization" id="toc-regression-as-risk-minimization" class="nav-link" data-scroll-target="#regression-as-risk-minimization">Regression as risk minimization</a></li>
+  <li><a href="#linear-regression-and-least-squares-loss" id="toc-linear-regression-and-least-squares-loss" class="nav-link" data-scroll-target="#linear-regression-and-least-squares-loss">Linear regression and least squares loss</a>
+  <ul class="collapse">
+  <li><a href="#approximating-the-conditional-expectation" id="toc-approximating-the-conditional-expectation" class="nav-link" data-scroll-target="#approximating-the-conditional-expectation">Approximating the conditional expectation</a></li>
+  <li><a href="#linear-approximation" id="toc-linear-approximation" class="nav-link" data-scroll-target="#linear-approximation">Linear approximation</a></li>
+  </ul></li>
+  <li><a href="#regret-minimization-and-basis-expansions" id="toc-regret-minimization-and-basis-expansions" class="nav-link" data-scroll-target="#regret-minimization-and-basis-expansions">Regret minimization and basis expansions</a>
+  <ul class="collapse">
+  <li><a href="#ulln-preview" id="toc-ulln-preview" class="nav-link" data-scroll-target="#ulln-preview">ULLN preview</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Linear regression in an ML setting</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!--
+    beamer:
+        fig-width: 6
+        fig-height: 4
+        echo: false
+        include_before_header: ../macros.tex
+-->
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Express ordinary least squares as loss minimization for IID data</li>
+<li>Discuss the advantages (but arbitrariness) of squared error</li>
+<li>Compare empirical and population losses</li>
+<li>Show consistency of OLS when we can use the LLN</li>
+</ul>
+</section>
+<section id="ordinary-least-squares-under-misspecification" class="level1">
+<h1>Ordinary least squares under misspecification</h1>
+<p>Suppose we observe IID data,</p>
+<p><span class="math display">\[
+\mathcal{D}:= \left\{ (\boldsymbol{x}_n, y_n) \textrm{ for }n=1,\ldots,N \right\}.
+\]</span></p>
+<p>Later, we expect to observe one (or more) values <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span>, but not the corresponding <span class="math inline">\(y_\mathrm{new}\)</span>. We’ll assume (tentatively) that the pair <span class="math inline">\((\boldsymbol{x}_\mathrm{new}, y_\mathrm{new})\)</span> come from the same distribution as the data, and are independent of the data. But for now, let’s think about the OLS estimator,</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}= (\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{X}^\intercal\boldsymbol{Y}
+\]</span></p>
+<p>under the assumption only of IID pairs of <span class="math inline">\((x_n, y_n)\)</span> and that certain moments exist (specifically that all covariances are finite, and <span class="math inline">\(x_n\)</span> has an invertible covariance matrix, but we won’t worry too much about technical conditions for now).</p>
+<p>You might be used to making an assumption about <span class="math inline">\(y_n\)</span> that looks something like</p>
+<p><span class="math display">\[
+y_n = {\boldsymbol{\beta}_{\mathrm{true}}}^\intercal\boldsymbol{x}_n + \varepsilon_n
+\textrm{ for }\varepsilon_n \overset{\mathrm{IID}}{\sim}\mathcal{N}\left(0,\sigma^2\right)
+\quad \leftarrow \textrm{ We do not assume this!}
+\]</span></p>
+<p>Now we have no such assumption! In particular, there is no “true” <span class="math inline">\(\boldsymbol{\beta}_{\mathrm{true}}\)</span> to estimate. We can still define mean zero “residuals” as</p>
+<p><span class="math display">\[
+\varepsilon_n := y_n - \mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}_n\right]
+\quad\Leftrightarrow\quad
+y_n = \mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}_n\right] + \varepsilon_n,
+\]</span></p>
+<p>but there is no reason to believe the function <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}_n\right]\)</span> is linear in <span class="math inline">\(\boldsymbol{x}_n\)</span>. We might say that our regression model is <strong>misspecified</strong> in the sense the we are fitting a model of the form that does not match the actual process that generated the data.</p>
+<p>Some things that you may have learned about OLS in introductory classes are no longer true under misspecification. The big one is the (now fals) assertion that <span class="math inline">\(\hat{\boldsymbol{\beta}}\sim \mathcal{N}\left(\boldsymbol{\beta}_{\mathrm{true}}, \sigma^2 (\boldsymbol{X}^\intercal\boldsymbol{X})^{-1}\right)\)</span>. There are a lot of things wrong with this one:</p>
+<ul>
+<li>There is no such thing as <span class="math inline">\(\boldsymbol{\beta}_{\mathrm{true}}\)</span></li>
+<li>There is no reason to think that <span class="math inline">\(\mathrm{Var}_{\,}\left(\varepsilon_n\right)\)</span> is a constant <span class="math inline">\(\sigma^2\)</span> that does not depend on <span class="math inline">\(\boldsymbol{x}_n\)</span> (heteroskedasticity)</li>
+<li>This derivation relies on <span class="math inline">\(\varepsilon_n\)</span> being normal, but <span class="math inline">\(\varepsilon_n\)</span> can have essentially any distribution (we assume it has finite variance though)</li>
+<li><span class="math inline">\(\boldsymbol{X}\)</span> is actually random here (they too are IID), and so it cannot be a parameter in a distribution. (Typically this formula is derived conditional on <span class="math inline">\(\boldsymbol{X}\)</span>.)</li>
+</ul>
+<p>Similarly, you might have learned that “OLS is unbiased,” meaning <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\hat{\boldsymbol{\beta}}\right] = \boldsymbol{\beta}_{\mathrm{true}}\)</span>. This no longer makes sense, again because there is no <span class="math inline">\(\boldsymbol{\beta}_{\mathrm{true}}\)</span>. But even the predictions are biased. Taking <span class="math inline">\(\hat{\boldsymbol{Y}}:= \boldsymbol{X}\hat{\boldsymbol{\beta}}\)</span>, we see that</p>
+<p><span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[\hat{\boldsymbol{Y}}\right] = \mathbb{E}_{\vphantom{}}\left[\boldsymbol{X}(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{X}^\intercal\boldsymbol{Y}\right]
+= \mathbb{E}_{\vphantom{}}\left[\boldsymbol{X}(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{X}^\intercal\mathbb{E}_{\vphantom{}}\left[\boldsymbol{Y}| \boldsymbol{X}\right]\right],
+\]</span></p>
+<p>which does not equal <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\boldsymbol{Y}\right]\)</span> in general. It’s even worse: the expectation of <span class="math inline">\(\hat{y}_{\mathrm{new}}\)</span> at an IID draw <span class="math inline">\(\boldsymbol{x}_{\mathrm{new}}\)</span> is not unbiased either:</p>
+<p><span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[\hat{y}_{\mathrm{new}}\right] =
+\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_{\mathrm{new}}^\intercal\hat{\boldsymbol{\beta}}\right] =
+\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_{\mathrm{new}}\right]^\intercal\mathbb{E}_{\vphantom{}}\left[(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{X}^\intercal\boldsymbol{Y}\right],
+\]</span></p>
+<p>and since the rightmost expression is no longer a true <span class="math inline">\(\boldsymbol{\beta}_{\mathrm{true}}\)</span>, this has no guaranteed relation to <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y_{\mathrm{new}}\right]\)</span>.</p>
+<p>So what can we say? Assuming covariances are finite, we can apply a LLN, so that</p>
+<p><span class="math display">\[
+\frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{X}\rightarrow \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]
+\quad\textrm{and}\quad
+\frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{Y}\rightarrow \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}y\right],
+\]</span></p>
+<p>and so (by the continuous mapping theorem if <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]\)</span> is invertible),</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}\rightarrow \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]^{-1} \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}y\right].
+\]</span></p>
+<p>This is a mysterious expression. In order to give it meaning, let us consider the more general problem of <em>empirical risk minimization</em>. We will see at the end that this is actually quite a good quantity for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> to converge to.</p>
+</section>
+<section id="regression-as-risk-minimization" class="level1">
+<h1>Regression as risk minimization</h1>
+<p>Let us step back. Ultimately, we want to guess <span class="math inline">\(y_\mathrm{new}\)</span>, for which we want a function <span class="math inline">\(f(\boldsymbol{x}_\mathrm{new})\)</span>. We hope <span class="math inline">\(\hat{y}_\mathrm{new}:= f(\boldsymbol{x}_\mathrm{new})\)</span> is “close” to <span class="math inline">\(y_\mathrm{new}\)</span>.</p>
+<p>What does “close” mean? There are many choices for measuring a “distance” between <span class="math inline">\(\hat{y}_\mathrm{new}\)</span> and <span class="math inline">\(y_\mathrm{new}\)</span>. Here are a few:</p>
+<ul>
+<li><span class="math inline">\(|\hat{y}_\mathrm{new}- y_\mathrm{new}|\)</span></li>
+<li><span class="math inline">\(|\hat{y}_\mathrm{new}- y_\mathrm{new}|^2\)</span></li>
+<li><span class="math inline">\(|\hat{y}_\mathrm{new}- y_\mathrm{new}|^4\)</span></li>
+<li><span class="math inline">\(\exp\left(|\hat{y}_\mathrm{new}- y_\mathrm{new}|\right)\)</span></li>
+<li><span class="math inline">\(\mathrm{I}\left(|\hat{y}_\mathrm{new}- y_\mathrm{new}| &gt; 1\right)\)</span></li>
+<li><span class="math inline">\(\mathrm{I}\left(|\hat{y}_\mathrm{new}- y_\mathrm{new}| \ne 0\right)\)</span></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this course, <span class="math inline">\(\mathrm{I}\left(z\right)\)</span> will always be the “indicator function” taking value <span class="math inline">\(0\)</span> when <span class="math inline">\(z\)</span> is false and <span class="math inline">\(1\)</span> when <span class="math inline">\(z\)</span> is true.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Describe in ordinary language the implications of using each of the following loss functions.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../images/loss_functions.jpg" class="img-fluid figure-img"></p>
+<figcaption>Loss functions</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Whichever one we choose, we’ll define the “loss” of guessing <span class="math inline">\(\hat{y}\)</span> when the true value was is <span class="math inline">\(y\)</span> as <span class="math display">\[
+\mathscr{L}(\hat{y}, y) = \mathscr{L}(f(\boldsymbol{x}), y)
+\]</span></p>
+<p>We want to find <span class="math inline">\(f(\cdot)\)</span> so that <span class="math inline">\(\mathscr{L}(f(\boldsymbol{x}), y)\)</span> is as small as possible. But the loss for a particular <span class="math inline">\(f\)</span> may depend on <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span>, since different <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span> are associated with different distributions of <span class="math inline">\(y_\mathrm{new}\)</span>. It follows that it doesn’t make sense to minimize the loss — instead we want to minimize the <em>risk</em>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathscr{R}(f) :=&amp; \mathbb{E}_{\vphantom{}}\left[\mathscr{L}(f(\boldsymbol{x}), y)\right] &amp; \textrm{(Risk)}.
+\end{aligned}
+\]</span></p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In optimization, the quantity you minimize is commonly called a “loss function”. Here, we use the term “loss function” in the ML sense to measure the discrepancy between a prediction and the truth. Then we take an empirical or population average to form a risk, which in turn becomes a “loss function” in the optimization sense when we try to minimize it. This double use of “loss” is as ubiquitous as it is unfortunate. All we can do is be aware of it and keep an eye on the context to avoid abiguity.</p>
+</div>
+</div>
+<p>So we would like to find</p>
+<p><span class="math display">\[
+f^{\star}(\cdot) := \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f) = \underset{f}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\mathscr{L}(f(\boldsymbol{x}), y)\right].
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The <span class="math inline">\(\underset{\,}{\mathrm{argmin}}\,\)</span> operator finds the argument that minimizes a function, as opposed to the actual minimum, which is returned by <span class="math inline">\(\min{\,}\)</span>. For example</p>
+<p><span class="math display">\[
+\min{x}{(x - 3)^2 + 4} = 4
+\quad\textrm{and}\quad
+\underset{x}{\mathrm{argmin}}\,{(x - 3)^2 + 4} = 3,
+\]</span></p>
+<p>since the function <span class="math inline">\((x - 3)^2 + 4\)</span> is minimized at the <span class="math inline">\(\underset{\,}{\mathrm{argmin}}\,\)</span> value <span class="math inline">\(x= 3\)</span>, at which point it takes the <span class="math inline">\(\min{\,}\)</span> value <span class="math inline">\(4\)</span>.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The notation <span class="math inline">\((\cdot)\)</span> in <span class="math inline">\(f^{\star}(\cdot)\)</span> emphasizes that the object <span class="math inline">\(f^{\star}\)</span> is a function. At times I may omit it and simply write <span class="math inline">\(f^{\star}\)</span> (for example). In contrast, I will (try) to write <span class="math inline">\(f^{\star}(x)\)</span> only for the function <span class="math inline">\(f^{\star}\)</span> evaluated at a particular value <span class="math inline">\(x\)</span>.</p>
+</div>
+</div>
+<p>The problem with this definition of <span class="math inline">\(f^{\star}\)</span> is that we don’t actually know how to compute <span class="math inline">\(\mathscr{R}(f)\)</span>, since we don’t know the joint distribution of <span class="math inline">\(\boldsymbol{x},y\)</span>. In this class, we will extensively use and study the <em>empirical risk</em>,</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(f) := \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(\boldsymbol{x}_n), y_n).
+\]</span></p>
+<p>By the law of large numbers, for any particular <span class="math inline">\(f\)</span>, we might expect that <span class="math inline">\(\hat{\mathscr{R}}(f) \approx \mathscr{R}(f)\)</span>:</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(f) \rightarrow \mathscr{R}(f)
+\quad\textrm{for a particular $f$, by the LLN}.
+\]</span></p>
+<p>But that is not enough, since what we want is for</p>
+<p><span class="math display">\[
+\underset{f}{\mathrm{argmin}}\, \hat{\mathscr{R}}(f) \approx \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f).
+\]</span></p>
+<p>For example, what if <span class="math inline">\(\mathscr{R}(f') = \mathscr{R}(f)\)</span>, but, at a particular <span class="math inline">\(N\)</span>, <span class="math inline">\(\hat{\mathscr{R}}(f')\)</span> is systematically lower than <span class="math inline">\(\hat{\mathscr{R}}(f)\)</span>? This can happen when the function <span class="math inline">\(f'\)</span> <em>overfits</em> the randomness in the dataset at hand.</p>
+<p><strong>One of the key themes of statistical machine learning, and of this class, is when and why <span class="math inline">\(\hat{\mathscr{R}}\)</span> is an appropriate proxy for <span class="math inline">\(\mathscr{R}\)</span>.</strong></p>
+</section>
+<section id="linear-regression-and-least-squares-loss" class="level1">
+<h1>Linear regression and least squares loss</h1>
+<p>For the next few lectures, we will focus on least squares loss <span class="math inline">\(\mathscr{L}(\hat{y}, y) = (\hat{y}- y)^2\)</span>. This loss does not always reflect what we really want, but it is extremely computationally and analytically tractable, and so widely used.</p>
+<p>Given some <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span>, we want to find a best guess <span class="math inline">\(f(\boldsymbol{x}_\mathrm{new})\)</span> for the value of <span class="math inline">\(y_\mathrm{new}\)</span>: specifically, we want to find a function that minimizes the risk</p>
+<p><span class="math display">\[
+f^{\star}(\cdot) :=
+\underset{f}{\mathrm{argmin}}\, \mathscr{R}(f) =
+\underset{f}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\mathscr{L}(f(\boldsymbol{x}_\mathrm{new}), y_\mathrm{new})\right] =
+\underset{f}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f(\boldsymbol{x}_\mathrm{new}) \right)^2\right].
+\]</span></p>
+<p>This is a functional optimization problem over an infinite dimensional space! You can solve this using some fancy math, but you can also prove directly that the best choice is</p>
+<p><span class="math display">\[
+f^{\star}(\boldsymbol{x}_\mathrm{new})  = \mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}| \boldsymbol{x}_\mathrm{new}\right].
+\]</span></p>
+<p>Suppose we consider any other function <span class="math inline">\(f(\cdot)\)</span>. The loss is larger, since</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f(\boldsymbol{x}_\mathrm{new}) \right)^2\right]
+={}&amp;
+\mathbb{E}_{\vphantom{}}\left[
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f(\boldsymbol{x}_\mathrm{new}) \right)^2 | \boldsymbol{x}_\mathrm{new}\right]
+\right]
+&amp;\textrm{(Tower property)}
+\\={}&amp;
+\mathbb{E}_{\vphantom{}}\left[
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) + f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)^2 |
+    \boldsymbol{x}_\mathrm{new}\right]
+\right]
+&amp;\textrm{(add and subtract)}
+\\={}&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) \right)^2\right] +
+\\&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)^2\right] +
+\\&amp;
+2 \mathbb{E}_{\vphantom{}}\left[
+  \mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) | \boldsymbol{x}_\mathrm{new}\right]
+          \left( f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)
+\right]
+&amp;\textrm{(expand the quadratic, use conditioning)}
+\\={}&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) \right)^2\right] +
+\\&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)^2\right]
+&amp;
+\textrm{($\mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) | \boldsymbol{x}_\mathrm{new}\right]=0$ by definition)}
+\\\ge&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) \right)^2\right].
+&amp;
+\textrm{(anything squared is greater than $0$)}
+\end{aligned}
+\]</span></p>
+<section id="approximating-the-conditional-expectation" class="level2">
+<h2 class="anchored" data-anchor-id="approximating-the-conditional-expectation">Approximating the conditional expectation</h2>
+<p>We now know that the optimal regression function is given by <span class="math inline">\(f^{\star}(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]\)</span>. The problem is how to estimate it.</p>
+<p>We have been imagining that we know the full joint distribution of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y\)</span>. In that case, we can read off the conditional distribution by “slicing” through a particular <span class="math inline">\(\boldsymbol{x}\)</span>:</p>
+<div id="d7bab334" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unit1_ols_files/figure-html/cell-3-output-1.png" width="495" height="337" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>However, in practice, we don’t actually observe the full joint distribution, we observe data points. How should we proceed?</p>
+<div id="f1c5c72b" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="unit1_ols_files/figure-html/cell-4-output-1.png" width="494" height="337" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="linear-approximation" class="level2">
+<h2 class="anchored" data-anchor-id="linear-approximation">Linear approximation</h2>
+<p>Typically, we don’t know the functional form of <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]\)</span>, because we don’t know the joint distribution of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y\)</span>. But suppose we approximate it with</p>
+<p><span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right] \approx \boldsymbol{\beta}^\intercal\boldsymbol{x}.
+\]</span></p>
+<p>Note that we are not assuming this is true — we do not expect that <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]\)</span> is a linear function of <span class="math inline">\(\boldsymbol{x}\)</span>. Rather, we are finding the best approximation to the unknown <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}| \boldsymbol{x}_\mathrm{new}\right]\)</span> amongst the class of functions of the form <span class="math inline">\(\boldsymbol{\beta}^\intercal\boldsymbol{x}_\mathrm{new}\)</span>.</p>
+<p>The linear assumption gives us a finite–dimensional class of candidate functions, which gives us a tractable optimization problem. Under this approximation, the problem becomes <span class="math display">\[
+\begin{aligned}
+\beta^{*}:={}&amp; \underset{\beta}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\left( y- \boldsymbol{\beta}^\intercal\boldsymbol{x}\right)^2\right] \\
+={}&amp; \underset{\beta}{\mathrm{argmin}}\, \left(\mathbb{E}_{\vphantom{}}\left[y^2\right] - 2 \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[y\boldsymbol{x}\right] +
+  \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right] \boldsymbol{\beta}\right).
+\end{aligned}
+\]</span></p>
+<p>Differentiating with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> and solving gives</p>
+<p><span class="math display">\[
+\boldsymbol{\beta}^{*}= \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right] ^{-1} \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}y\right].
+\]</span></p>
+<p>Note that this is the limiting quantity for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>, the OLS estimator! We have shown that, as <span class="math inline">\(N \rightarrow \infty\)</span>,</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}.
+\]</span></p>
+<p>That is, the OLS estimator converges to the <em>best linear estimator</em> of the risk function! That is, in fact, the best quantity you could hope for it to converge to.</p>
+<p>This is not a coincidence, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is minimizing an objective function that is closely related to <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span>. Note that we cannot actually compute <span class="math inline">\(\beta^{*}\)</span> directly, since we still don’t know the joint distribution of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y\)</span>, and so cannot compute the preceding expectations. However, if we have a training set, we can <em>approximate</em> the expected loss:</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(\boldsymbol{\beta}) :=
+\frac{1}{N} \sum_{n=1}^N\mathscr{L}(\boldsymbol{\beta}^\intercal\boldsymbol{x}_n, y_n) =
+\frac{1}{N} \sum_{n=1}^N\left( y_n - \boldsymbol{\beta}^\intercal\boldsymbol{x}_n \right)^2.
+\]</span></p>
+<p>For any particular <span class="math inline">\(\boldsymbol{\beta}\)</span>, <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta}) \rightarrow \mathscr{R}(\boldsymbol{\beta})\)</span> by the LLN, so it might (tentatively) make sense to use <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> as a proxy for <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span>. And of course, <span class="math inline">\(\hat{\boldsymbol{\beta}}:= \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span>, and since we have shown manually that <span class="math inline">\(\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}\)</span>, we see that <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> <em>is</em> a good proxy for <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span> in this particular case, in the sense that we learn a function, <span class="math inline">\(\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}\)</span>, that converges, as <span class="math inline">\(N \rightarrow \infty\)</span>, to the best possible function in our function class: <span class="math inline">\(\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}\rightarrow {\boldsymbol{\beta}^{*}}^\intercal\boldsymbol{x}\)</span>.</p>
+</section>
+</section>
+<section id="regret-minimization-and-basis-expansions" class="level1">
+<h1>Regret minimization and basis expansions</h1>
+<p>We should not congratulate ourselves too hastily. After all, we would like to estimate <span class="math inline">\(f^{\star}(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y\vert \boldsymbol{x}\right]\)</span>, not the best linear estimator. As we will discuss in the next lecture, we can easily form new regression estimators out of old ones by regressing on non–linear transformations of <span class="math inline">\(\boldsymbol{x}\)</span>. For example, when <span class="math inline">\(x\)</span> is a scalar, we could consider the following hierarchy of linear regressions:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f_0(x; \beta) ={}&amp; \beta_0 \\
+f_1(x; \boldsymbol{\beta}) ={}&amp; \beta_0 + \beta_1 x\\
+f_2(x; \boldsymbol{\beta}) ={}&amp; \beta_0 + \beta_1 x+ \frac{1}{2} \beta_2 x^2\\
+\vdots{}&amp;\\
+f_K(x; \boldsymbol{\beta}) ={}&amp; \sum_{k=1}^K \frac{1}{k!} \beta_k x^k.
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(K\)</span> increases, <span class="math inline">\(f\)</span> becomes arbitrarily expressive — in fact, it can express any piecewise continuous function on a compact domain! However, the corresponding <span class="math inline">\(\boldsymbol{\beta}\)</span> become harder and harder to estimate. In fact, as long as <span class="math inline">\(x\)</span> takes on <span class="math inline">\(N\)</span> distinct values, when <span class="math inline">\(K &gt; N\)</span> the matrix <span class="math inline">\(\boldsymbol{X}\)</span> is not full-rank, and <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is not uniquely defined.</p>
+<p>This observation motivates a key (potential) tradeoff between model expressivness and estimability. Like many things in machine learning, the tradeoff can be seen by adding and subtracting things to the risk. First, note that we only care about <span class="math inline">\(\boldsymbol{\beta}\)</span> (or, in general, a function <span class="math inline">\(f\)</span>) through the risk. In particular, we want to minimize the “regret,” or the difference from the optimal prediction function:</p>
+<p><span class="math display">\[
+\textrm{Regret}(f) :=
+\mathscr{R}(f) - \mathscr{R}(f^{\star}) \ge 0.
+\]</span></p>
+<p>In particular, suppose we fix a particular <span class="math inline">\(K\)</span> and use the regression estimate <span class="math inline">\(\hat{f}_K(\boldsymbol{x}) = \sum_{k=1}^K \frac{1}{k!} \hat{\beta}_k x^k\)</span>. Letting <span class="math inline">\(f^*_K\)</span> denote the minimizer of <span class="math inline">\(\mathscr{R}(\cdot)\)</span> among functions of the form <span class="math inline">\(f_K(\cdot)\)</span>, the risk decomposes as</p>
+<p><span class="math display">\[
+\mathscr{R}(\hat{f}_K) - \mathscr{R}(f^{\star}) =
+\underbrace{\mathscr{R}(\hat{f}_K) - \mathscr{R}(f^{\star}_K)}_{\textrm{Estimation error $\ge 0$}} +
+\underbrace{\mathscr{R}(f^{\star}_K) - \mathscr{R}(f^{\star})}_{\textrm{Model bias $\ge 0$}}.
+\]</span></p>
+<p>Each term is positive because (a) we cannot find the optimal <span class="math inline">\(f^{\star}_K\)</span> and (b) the optimal <span class="math inline">\(f^{\star}_K\)</span> is not, in general, equal to the true <span class="math inline">\(f^{\star}\)</span>.</p>
+<p>This decomposition is useful because you might expect <span class="math inline">\(K\)</span> to act in opposite directions in these two terms — large <span class="math inline">\(K\)</span> makes the first harder, since you have more to estimate, but large <span class="math inline">\(K\)</span> makes the second easier, since you are more likely to be able to express something close to the optimal <span class="math inline">\(f^{\star}\)</span>.</p>
+<section id="ulln-preview" class="level3">
+<h3 class="anchored" data-anchor-id="ulln-preview">ULLN preview</h3>
+<p>Note that the above proof of the consistency of <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> used an explicit formula for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>. In this class, we will often discuss estimators for whom no explicit formula exists because we will find them via black–box optimization procedures. How can we reason in such cases?</p>
+<p>Recall that we argued, for a particular <span class="math inline">\(f\)</span>, that a LLN should give</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(f) \rightarrow \mathscr{R}(f).
+\]</span></p>
+<p>For the OLS case, this expression is the same as</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\mathscr{R}}(\boldsymbol{\beta}) ={}&amp;
+  \frac{1}{N} \sum_{n=1}^N(\boldsymbol{x}_n^\intercal\boldsymbol{\beta}- y_n)^2
+\\={}&amp;
+  \frac{1}{N} \sum_{n=1}^N\boldsymbol{\beta}^\intercal\boldsymbol{x}_n \boldsymbol{x}_n^\intercal\boldsymbol{\beta}-
+  2\frac{1}{N} \sum_{n=1}^N\boldsymbol{\beta}^\intercal\boldsymbol{x}_n y_n + \frac{1}{N} \sum_{n=1}^Ny_n^2
+\\={}&amp;
+  \boldsymbol{\beta}^\intercal\left(\frac{1}{N} \sum_{n=1}^N\boldsymbol{x}_n \boldsymbol{x}_n^\intercal\right) \boldsymbol{\beta}-
+  2 \boldsymbol{\beta}^\intercal\left(\frac{1}{N} \sum_{n=1}^N\boldsymbol{x}_n y_n \right) + \frac{1}{N} \sum_{n=1}^Ny_n^2
+\\\rightarrow{}&amp;
+  \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right] \boldsymbol{\beta}-
+  2 \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[ \boldsymbol{x}y\right] + \mathbb{E}_{\vphantom{}}\left[y_n^2\right]
+\\={}&amp;
+\mathbb{E}_{\vphantom{}}\left[(\boldsymbol{x}^\intercal\boldsymbol{\beta}- y)^2 \right]
+\\={}&amp;
+\mathscr{R}(\boldsymbol{\beta}).
+\end{aligned}
+\]</span></p>
+<p>Unfortunately, this does not translate directly into <span class="math inline">\(\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}\)</span>, since the preceding limit holds only for a <em>fixed</em> <span class="math inline">\(\boldsymbol{\beta}\)</span>. Different <span class="math inline">\(\boldsymbol{\beta}\)</span> will lead to convergence at different rates, so in theory it may be the case that <span class="math inline">\(\underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> does not converge to <span class="math inline">\(\underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \mathscr{R}(\boldsymbol{\beta})\)</span>.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the special case of linear regression, show explicitly that <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) \rightarrow \mathscr{R}(\boldsymbol{\beta}^{*})\)</span>. What special structure of the problem permits this result so easily?</p>
+</div>
+</div>
+<p>A useful decomposition is as follows:</p>
+<p><span class="math display">\[
+\begin{aligned}
+0 \le \mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) ={}
+\mathscr{R}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}})  &amp; \textrm{Difficult term!}\\
+&amp; + \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\boldsymbol{\beta}^{*}) &amp; \textrm{Negative term} \\
+&amp; + \hat{\mathscr{R}}(\boldsymbol{\beta}^{*}) - \mathscr{R}(\boldsymbol{\beta}^{*}) &amp; \textrm{LLN term}
+\end{aligned}
+\]</span></p>
+<p>We wish to bound the preceding equation by a quantity that goes to zero; if we do, then <span class="math inline">\(\mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) \rightarrow 0\)</span>.</p>
+<p>The second term is negative, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> minimizes <span class="math inline">\(\hat{\mathscr{R}}\)</span>, and so <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) \le \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> for any <span class="math inline">\(\boldsymbol{\beta}\)</span>, and for <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> in particular. So it is bounded above by zero, and we don’t need to consider it any further.</p>
+<p>The third term goes to zero by the LLN, since <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> is fixed.</p>
+<p>However, the first “difficult” term does not necessarily go to zero by the LLN, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is random and correlated with <span class="math inline">\(\hat{\mathscr{R}}\)</span>. Specifically, in</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) = \frac{1}{N} \sum_{n=1}^N(y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}})^2,
+\]</span></p>
+<p>the entries <span class="math inline">\((y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}})^2\)</span> are <em>not IID</em>, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> depends on all the entries.</p>
+<p>One standard way of dealing with terms of the form <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\hat{\boldsymbol{\beta}})\)</span> is <strong>uniform laws of large numbers</strong> or ULLNs. For some compact set <span class="math inline">\(K\)</span>, a ULLN for this setting would state that a LLN holds uniformly over <span class="math inline">\(K\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\textrm{For a fixed }\boldsymbol{\beta}\textrm{, }
+\left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow {}&amp; 0 &amp; \textrm{(LLN)} \\
+\sup_{\beta \in K} \left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow {}&amp; 0 &amp; \textrm{(ULLN)}.
+\end{aligned}
+\]</span></p>
+<p>If a ULLN holds, and we believe that <span class="math inline">\(\hat{\boldsymbol{\beta}}\in K\)</span>, then</p>
+<p><span class="math display">\[
+\left|\mathscr{R}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}})\right|
+\le \sup_{\boldsymbol{\beta}\in K} \left|\mathscr{R}(\boldsymbol{\beta}) - \hat{\mathscr{R}}(\boldsymbol{\beta})\right|  \rightarrow 0,
+\]</span></p>
+<p>and so</p>
+<p><span class="math display">\[
+\mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) \rightarrow 0.
+\]</span></p>
+<p>It turns out that it is easy to state condtiions under which a ULLN holds for linear regression. In general, we get a ULLN by limiting the complexity of our function class, as we will see later in the class.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

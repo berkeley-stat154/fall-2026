@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Inner prodcuts and valid kernels</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#roadmap" id="toc-roadmap" class="nav-link" data-scroll-target="#roadmap">Roadmap</a></li>
+  <li><a href="#some-common-kernels" id="toc-some-common-kernels" class="nav-link" data-scroll-target="#some-common-kernels">Some common kernels</a></li>
+  <li><a href="#inner-product-spaces" id="toc-inner-product-spaces" class="nav-link" data-scroll-target="#inner-product-spaces">Inner product spaces</a></li>
+  <li><a href="#valid-kernels" id="toc-valid-kernels" class="nav-link" data-scroll-target="#valid-kernels">Valid kernels</a></li>
+  <li><a href="#establishing-or-refuting-positive-definiteness-of-a-kernel" id="toc-establishing-or-refuting-positive-definiteness-of-a-kernel" class="nav-link" data-scroll-target="#establishing-or-refuting-positive-definiteness-of-a-kernel">Establishing (or refuting) positive definiteness of a kernel</a>
+  <ul class="collapse">
+  <li><a href="#an-example-of-an-invalid-kernel" id="toc-an-example-of-an-invalid-kernel" class="nav-link" data-scroll-target="#an-example-of-an-invalid-kernel">An example of an invalid kernel</a></li>
+  <li><a href="#stationary-kernels-and-fourier-series" id="toc-stationary-kernels-and-fourier-series" class="nav-link" data-scroll-target="#stationary-kernels-and-fourier-series">Stationary kernels and Fourier series</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Inner prodcuts and valid kernels</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Introduce some commonly used kernels</li>
+<li>Define more general notions of inner products and its key properties</li>
+<li>Specify criteria that we need a valid kernel function to satisfy (positive definiteness)</li>
+<li>Heuristically state Bochner’s and Mercer’s theorems for feature expansions of PD kernels</li>
+</ul>
+</section>
+<section id="reading" class="level1">
+<h1>Reading</h1>
+<p>I will be taking readings from <span class="citation" data-cites="scholkopf:2002:learningwithkernels">Schölkopf and Smola (<a href="#ref-scholkopf:2002:learningwithkernels" role="doc-biblioref">2002</a>)</span> and <span class="citation" data-cites="rasmussen:2006:gpml">Rasmussen and Williams (<a href="#ref-rasmussen:2006:gpml" role="doc-biblioref">2006</a>)</span>, both of which are available digitally from the UC Berkeley library website. I’ll also use <span class="citation" data-cites="esl:2009:hastie">Hastie, Tibshirani, and Friedman (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> Chapter 12.</p>
+</section>
+<section id="roadmap" class="level1">
+<h1>Roadmap</h1>
+<p>In the last lecture, we expressed ridge regression and support vector classification as kernelized procedures by reducing the problem to inner products of the feature vectors, and replacing those inner products with a kernel function. We motivated this for a particular feature expansion, that of unordered monomials.</p>
+<p>Two questions arise:</p>
+<ol type="1">
+<li>What other kernel functions can we use? Does any kernel function give a valid learning procedure?</li>
+<li>How can we generalize the kernel trick to other algorithms not obviously expressed in terms of inner products?</li>
+</ol>
+<p>The rest of the unit will answer these two questions. The purpose of this unit is to answer (1), as well as to set up some technical tools to prepare us to answer (2).</p>
+</section>
+<section id="some-common-kernels" class="level1">
+<h1>Some common kernels</h1>
+<p>See Table 4.1 (and in fact all of chapter 4) of <span class="citation" data-cites="rasmussen:2006:gpml">Rasmussen and Williams (<a href="#ref-rasmussen:2006:gpml" role="doc-biblioref">2006</a>)</span>. Some kernels to make sure you’re aware of:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathcal{K}_{Poly}(\boldsymbol{z}, \boldsymbol{z}') ={}&amp; (C + \boldsymbol{z}^\intercal\boldsymbol{z}')^K &amp; \textrm{Polynomial kernel} \\
+\mathcal{K}_{RBF}(\boldsymbol{z}, \boldsymbol{z}') ={}&amp; \exp\left( - \frac{\left\Vert\boldsymbol{z}- \boldsymbol{z}'\right\Vert_2^2}{2\ell} \right) &amp; \textrm{Radial basis function kernel} \\
+\mathcal{K}_{Mat}(\boldsymbol{z}, \boldsymbol{z}') ={}&amp; \frac{1}{2^{\nu - 1}\Gamma(\nu)}
+    \left(\frac{\sqrt{2 \nu}}{\ell} \left\Vert\boldsymbol{z}- \boldsymbol{z}'\right\Vert_2 \right)^\nu B_\nu
+        \left(\frac{\sqrt{2\nu}}{\ell} \left\Vert\boldsymbol{z}- \boldsymbol{z}'\right\Vert_2
+    \right) &amp; \textrm{Matern kernel} \\
+\mathcal{K}_{Exp}(\boldsymbol{z}, \boldsymbol{z}') ={}&amp; \exp\left(-\left\Vert\boldsymbol{z}- \boldsymbol{z}'\right\Vert_2 / \ell \right) &amp; \textrm{Exponential kernel}.
+\end{aligned}
+\]</span></p>
+<p>In the Matern kernel, <span class="math inline">\(B_\nu\)</span> is the modified Bessel function.</p>
+<p>Another nice aspect of kernels is that you can define kernels for objects that might not have an obvious vector space representation. Consider the “string kernel” (<span class="citation" data-cites="rasmussen:2006:gpml">Rasmussen and Williams (<a href="#ref-rasmussen:2006:gpml" role="doc-biblioref">2006</a>)</span> 4.4.1) on “sentences” <span class="math inline">\(s\)</span> which are ordered lists of “words” from a finite vocabulary <span class="math inline">\(\mathcal{V}\)</span>. Let <span class="math inline">\(|v|\)</span> denote the length of word <span class="math inline">\(v \in \mathcal{V}\)</span>, e.g., the number of letters. We can define a kernel</p>
+<p><span class="math display">\[
+\mathcal{K}_{String}(s, s') = \sum_{v \in \mathcal{V}}
+    \lambda^{|v|} (\textrm{\# of times $v$ occurs in $s$}) \times (\textrm{\# of times $v$ occurs in $s'$}).
+\]</span></p>
+<p>We will see below that the string kernel is a valid kernel, and so can be used to run regression or classification algorithms on sentences, e.g.&nbsp;to predict a continuous sentiment value, without any further modification of the kernelized algorithm.</p>
+<p>Most kernels have tuning parameters, which may be chosen by cross–validation and guided by intuition which we will hopefully develop over the course of the rest of the unit.</p>
+<p>Kernels that are functions only of the difference <span class="math inline">\(\boldsymbol{z}- \boldsymbol{z}'\)</span> are called “stationary kernels,” for reasons that will become clearer later from the perspective of Gaussian processes.</p>
+<p>Finally, I will introduce an invalid kernel:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathcal{K}_{Bad}(\boldsymbol{z}, \boldsymbol{z}') ={}&amp; F(\left\Vert\boldsymbol{z}- \boldsymbol{z}\right\Vert_2)
+\textrm{ where }F(0) &lt; F(1)
+&amp; \textrm{Invalid kernel}.
+\end{aligned}
+\]</span></p>
+<p>Below, we will show that there can be no feature representation <span class="math inline">\(\boldsymbol{x}= \phi(\boldsymbol{z})\)</span> and inner product such that <span class="math inline">\(\mathcal{K}_{Bad}(\boldsymbol{z}, \boldsymbol{z}') = \left&lt;\phi(\boldsymbol{z}), \phi(\boldsymbol{z}')\right&gt;\)</span>, in any space.</p>
+</section>
+<section id="inner-product-spaces" class="level1">
+<h1>Inner product spaces</h1>
+<p>To proceed, we need to move beyond the dot product <span class="math inline">\(\boldsymbol{x}^\intercal\boldsymbol{x}\)</span>, which is defined in terms of a mechanical operation on finite vectors, and define an abstract inner product, as well as an inner product space.</p>
+<p>An inner product on a space <span class="math inline">\(\mathcal{X}\)</span> is a function <span class="math inline">\(\left&lt;\cdot, \cdot\right&gt;: \mathcal{X}\times \mathcal{X}\mapsto \mathbb{R}^{}\)</span> that satisfies the following properties:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left&lt;x, x'\right&gt; ={}&amp; \left&lt;x', x\right&gt; &amp; \textrm{Symmetry} \\
+\left&lt;a x+ b x'', x'\right&gt; ={}&amp; a \left&lt;x, x'\right&gt; + b \left&lt;x'', x'\right&gt; &amp; \textrm{Linearity} \\
+\left&lt;x, x\right&gt; \ge{}&amp; 0 \textrm{ with }\left&lt;x, x\right&gt; = 0 \textrm{ only if }x= 0.  &amp; \textrm{Positive definiteness}.
+\end{aligned}
+\]</span></p>
+<p>Note that the dot product <span class="math inline">\(\boldsymbol{x}^\intercal\boldsymbol{x}\)</span> is an inner product when <span class="math inline">\(\mathcal{X}= \mathbb{R}^{P}\)</span>, but so is <span class="math inline">\(\left&lt;\boldsymbol{x}, \boldsymbol{x}\right&gt;_\boldsymbol{A}:= \boldsymbol{x}^\intercal\boldsymbol{A}\boldsymbol{x}\)</span> when <span class="math inline">\(\boldsymbol{A}\)</span> is any positive definite matrix.</p>
+<p>A vector space is a set of objects (e.g.&nbsp;<span class="math inline">\(\mathbb{R}^{P}\)</span>, where the objects are lists of <span class="math inline">\(P\)</span> real numbers), together with rules for adding those objects and multiplying them by scalars. An <em>inner product space</em> is a vector space associated with an inner product, which we can write as the pair <span class="math inline">\((\mathcal{X}, \left&lt;\cdot, \cdot\right&gt;)\)</span>. An inner product space that is complete with respect to the norm induced by <span class="math inline">\(\left&lt;\cdot, \cdot\right&gt;\)</span> is called a “Hilbert space.”</p>
+<p>Note that a given vector space could be associated with many different inner product spaces! These inner product spaces contain the same objects, but have different metrics, meaning different notions of distance and size. For example, if <span class="math inline">\(A\)</span> is a positive definite matrix not equal to the identity, the inner product spaces <span class="math inline">\((\mathcal{X}, \left&lt;\cdot, \cdot\right&gt;_{{\boldsymbol{I}_{P}}})\)</span> and <span class="math inline">\((\mathcal{X}, \left&lt;\cdot, \cdot\right&gt;_{\boldsymbol{A}})\)</span> both contain <span class="math inline">\(P\)</span>–vectors, but in general have different measures of the “size” of <span class="math inline">\(\boldsymbol{x}\)</span>: <span class="math inline">\(\left&lt;\boldsymbol{x}, \boldsymbol{x}\right&gt;_{{\boldsymbol{I}_{P}}} = \boldsymbol{x}^\intercal\boldsymbol{x}\)</span> and <span class="math inline">\(\left&lt;\boldsymbol{x}, \boldsymbol{x}\right&gt;_{\boldsymbol{A}} = \boldsymbol{x}^\intercal\boldsymbol{A}\boldsymbol{x}\)</span>, respectively.</p>
+<p>Similarly, if you have objects which you wish to associate with a well–defined size and similarity, the same measurement of size and similarity could be equally represented by different inner product spaces. As an example, consider the second–order monomials on <span class="math inline">\(\mathcal{Z}= \mathbb{R}^{2}\)</span>, where <span class="math inline">\(\boldsymbol{z}\in \mathcal{Z}\)</span> is written <span class="math inline">\(\boldsymbol{z}= (z_1, z_2)^\intercal\)</span>. Last lectures, we studied the ordered second–order monomial feature map <span class="math inline">\(\phi(\boldsymbol{z}): \mathbb{R}^{2} \mapsto \mathbb{R}^{4}\)</span> as <span class="math inline">\(\phi(\boldsymbol{z}) = (z_1^2, z_1 z_2, z_2 z_1, z_2^2)^\intercal\)</span>, which we use to define the inner product</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathcal{K}_{poly}(\boldsymbol{z}, \boldsymbol{s}) ={}&amp;
+\left&lt;\phi(\boldsymbol{z}), \phi(\boldsymbol{s})\right&gt;
+\\={}&amp; z_1^2 s_1^2 + z_1 z_2 s_1 s_2 + z_2 z_1 s_2 s_1 + z_2^2 s_2^2
+\\={}&amp; z_1^2 s_1^2 + 2 z_1 z_2 s_1 s_2  + z_2^2 s_2^2
+\\={}&amp; \left&lt;\tilde{\phi}(\boldsymbol{z}), \tilde{\phi}(\boldsymbol{s})\right&gt;_{\boldsymbol{A}},
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\tilde{\phi}(\boldsymbol{z}) = (z_1^2, z_1 z_2, z_2^2) \in \mathbb{R}^{3}\)</span> is the <em>unordered</em> monomial map that treats <span class="math inline">\(z_1 z_2\)</span> the same as <span class="math inline">\(z_2 z_1\)</span>, and the matrix</p>
+<p><span class="math display">\[
+\boldsymbol{A}=
+\begin{pmatrix}
+1 &amp; 0 &amp; 0 \\
+0 &amp; 2 &amp; 0 \\
+0 &amp; 0 &amp; 1 \\
+\end{pmatrix}
+\]</span></p>
+<p>appropriately accounts for the double counting of the mixed term. Our notion of size and distance could equally well be represented by <span class="math inline">\((\mathbb{R}^{4}, \left&lt;\cdot,\cdot\right&gt;)\)</span> or <span class="math inline">\((\mathbb{R}^{3}, \left&lt;\cdot,\cdot\right&gt;)_\boldsymbol{A}\)</span>.</p>
+<p>We can also define inner products on spaces that are not <span class="math inline">\(\mathbb{R}^{P}\)</span>. For example, we could take <span class="math inline">\(\mathcal{X}= \{\boldsymbol{x}= (x_1, x_2, \ldots): \sum_{p=1}^\infty x_p^2 &lt; \infty\}\)</span> to be square–summable, infinitely long sequences of numbers, and define <span class="math inline">\(\left&lt;\boldsymbol{x}, \boldsymbol{x}'\right&gt; := \sum_{p=1}^\infty x_p x_p'\)</span>. This is sometimes called <span class="math inline">\(\ell_2\)</span>.</p>
+<p>We can also take spaces of functions. Loosely speaking, we can let <span class="math inline">\(\mathcal{X}= \{ f(\boldsymbol{x}): \int f(\boldsymbol{x})^2 d\boldsymbol{x}&lt; \infty \}\)</span>, and define <span class="math inline">\(\left&lt;f, g\right&gt; = \int f(\boldsymbol{x}), g(\boldsymbol{x}) d\boldsymbol{x}\)</span>. Up to measure theoretic details, this space is sometimes called <span class="math inline">\(L_2\)</span>.</p>
+</section>
+<section id="valid-kernels" class="level1">
+<h1>Valid kernels</h1>
+<p>For a given kernel <span class="math inline">\(\mathcal{K}_{\,}: \mathcal{Z}\times\mathcal{Z}\mapsto\mathbb{R}^{}\)</span>, we would like to establish whether there exists any inner product space <span class="math inline">\((\mathcal{X}, \left&lt;\cdot, \cdot\right&gt;)\)</span> such that <span class="math inline">\(\mathcal{X}\supseteq \{ \boldsymbol{x}: \boldsymbol{x}= \phi(\boldsymbol{z}), \boldsymbol{z}\in \mathcal{Z}\}\)</span>, and <span class="math inline">\(\mathcal{K}_{\,}(\boldsymbol{z}, \boldsymbol{s}) = \left&lt;\phi(\boldsymbol{z}), \phi(\boldsymbol{s})\right&gt;\)</span>. Per our discussion above, there may be many such spaces, but if there isn’t at least one, then it does not make much sense to use <span class="math inline">\(\mathcal{K}_{\,}\)</span> for the kernel trick.</p>
+<p>Obviously it would be enough to identify a particular <span class="math inline">\(\phi\)</span> and <span class="math inline">\(\left&lt;\cdot,\cdot\right&gt;\)</span> that does the trick. But that may be hard in general, and we need a way of proving the converse, which is that there exists no such <span class="math inline">\(\phi\)</span>.</p>
+<p>The key is to define the quantity called the <strong>gram matrix</strong>, which is the kernel evaluated at a set of observations <span class="math inline">\(\boldsymbol{Z}= (\boldsymbol{z}_1, \ldots, \boldsymbol{z}_N)^\intercal\)</span>:</p>
+<p><span class="math display">\[
+\mathcal{K}_{\boldsymbol{Z}} =
+\begin{pmatrix}
+\mathcal{K}_{\,}(\boldsymbol{z}_1, \boldsymbol{z}_1) &amp; \mathcal{K}_{\,}(\boldsymbol{z}_1, \boldsymbol{z}_2) &amp; \ldots \mathcal{K}_{\,}(\boldsymbol{z}_1, \boldsymbol{z}_N) \\
+\mathcal{K}_{\,}(\boldsymbol{z}_2, \boldsymbol{z}_1) &amp; \mathcal{K}_{\,}(\boldsymbol{z}_2, \boldsymbol{z}_2) &amp; \ldots \mathcal{K}_{\,}(\boldsymbol{z}_2, \boldsymbol{z}_N) \\
+\vdots &amp; \vdots &amp; \vdots \\
+\mathcal{K}_{\,}(\boldsymbol{z}_N, \boldsymbol{z}_1) &amp; \mathcal{K}_{\,}(\boldsymbol{z}_N, \boldsymbol{z}_2) &amp; \ldots \mathcal{K}_{\,}(\boldsymbol{z}_N, \boldsymbol{z}_N) \\
+\end{pmatrix}.
+\]</span></p>
+<p>If there exists a <span class="math inline">\(\phi\)</span> and inner product that fits the bill, then every gram matrix must be positive semidefinite for the following reason:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\boldsymbol{v}^\intercal\mathcal{K}_{\boldsymbol{Z}} \boldsymbol{v}
+={}&amp;
+\sum_{n=1}^N\sum_{m=1}^N \boldsymbol{v}_n \mathcal{K}_{\,}(\boldsymbol{z}_n, \boldsymbol{z}_m) \boldsymbol{v}_m
+\\={}&amp;
+\sum_{n=1}^N\sum_{m=1}^N \boldsymbol{v}_n \left&lt;\phi(\boldsymbol{z}_n), \phi(\boldsymbol{z}_m)\right&gt; \boldsymbol{v}_m &amp; \textrm{(by assumption)}
+\\={}&amp;
+\sum_{n=1}^N\sum_{m=1}^N \left&lt;\boldsymbol{v}_n \phi(\boldsymbol{z}_n), \boldsymbol{v}_m\right&gt; \phi(\boldsymbol{z}_m)   &amp; \textrm{(linearity)}
+\\={}&amp;
+\left&lt;\sum_{n=1}^N\boldsymbol{v}_n \phi(\boldsymbol{z}_n), \sum_{m=1}^N \boldsymbol{v}_m \phi(\boldsymbol{z}_m) \right&gt; &amp; \textrm{(linearity again)}
+\\={}&amp;
+\left&lt;\sum_{n=1}^N\boldsymbol{v}_n \phi(\boldsymbol{z}_n), \sum_{n=1}^N\boldsymbol{v}_n \phi(\boldsymbol{z}_n) \right&gt;  &amp; \textrm{(renaming an index)}
+\\\ge{}&amp; 0. &amp; \textrm{(positive definiteness)}
+\end{aligned}
+\]</span></p>
+<p>Note that the preceding construction never used any properties of the feature vector itself, not even the dimension — it only used properties that <span class="math inline">\(\mathcal{K}_{\,}\)</span> must have if it represents an inner product in some space. Note also that we are not guaranteed that the final line is strictly greater than zero since the feature map may discard information from <span class="math inline">\(\mathcal{Z}\)</span>. For example, we might take <span class="math inline">\(\boldsymbol{z}= (z_1, z_2)\)</span> and <span class="math inline">\(\phi(\boldsymbol{z}) = (z_1)\)</span>, in which case <span class="math inline">\(\mathcal{K}_{\,}((0, 1), (0,1)) = 0\)</span>.</p>
+<p>From this we conclude that <em>if</em> <span class="math inline">\(\mathcal{K}_{\,}\)</span> represents an inner product in some space, <em>then</em> every gram matrix is positive semi–definite. This leads to the following definition:</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Defintiion: Positive definite kernels">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Defintiion: Positive definite kernels
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>A kernel function <span class="math inline">\(\mathcal{K}_{\,}: \mathcal{Z}\times \mathcal{Z}\mapsto \mathbb{R}^{}\)</span> is a “positive definite kernel” if every gram matrix is symmetric and positive semi–definite.</p>
+</div>
+</div>
+<p>Note the unfortunate disconnect in notation between “positive definite” kernels and “positive semi–definite” matrices. We call a kernel that leads to positive definite matrices as a “strictly positive definite kernel”.</p>
+<p>We will see in the coming lectures that positive definite kernels always define feature maps in an appropriate inner product space — that is, positive semi–definiteness of the gram matrix is also sufficient. We will show this two different ways: first by choosing an inner product space and finding a feature vector, and second by defining an inner product space in which the feature vectors can be identified trivially.</p>
+</section>
+<section id="establishing-or-refuting-positive-definiteness-of-a-kernel" class="level1">
+<h1>Establishing (or refuting) positive definiteness of a kernel</h1>
+<p>So if we’re given a candidate kernel, how can we discover whether it is postive definite? For a general black–box kernel, this is not necessarily easy. The techniques I am aware of essentially amount to identifying a feature expansion of the form:</p>
+<p><span class="math display">\[
+\mathcal{K}_{\,}(\boldsymbol{z}, \boldsymbol{s}) = \sum_{k=1}^\infty \lambda_k \phi_k(\boldsymbol{z}) \phi_k(\boldsymbol{s})
+\quad\textrm{for}\quad\lambda_k &gt; 0.
+\]</span></p>
+<p>Compare this with writing a matrix <span class="math inline">\(\boldsymbol{A}\)</span> as a sum of rank–one matrices:</p>
+<p><span class="math display">\[
+\boldsymbol{A}= \sum_{k=1}^K \lambda_k v_k v_k^\intercal.
+\]</span></p>
+<p>There are three things to note:</p>
+<ul>
+<li>There are many different ways to write <span class="math inline">\(\boldsymbol{A}\)</span> in this way</li>
+<li>No matter how you write it, <span class="math inline">\(\boldsymbol{A}\)</span> is positive semi–definite if and only if <span class="math inline">\(\lambda_k \ge 0\)</span></li>
+<li>Up to re-indexing and repeated <span class="math inline">\(\lambda_k\)</span>, there is only one way to write this where <span class="math inline">\(v_k\)</span> are orthogonal, and that is the eigen representation.</li>
+</ul>
+<p>All these facts, familiar from matrices, extend to the case of kernel functions. In fact, though we will not prove it here, <strong>Mercer’s theorem</strong> states that any positive definite kernel admits a feature expansion with orthogonal features, where orthogonality is with respect to a function space inner product.</p>
+<p>Note that an expansion of the above form is little more than identifying the (possibly infinite–dimensional) feature vector <span class="math inline">\(\boldsymbol{z}\mapsto \sqrt{\lambda_k} \phi_k(\boldsymbol{z})\)</span>. But it does point to the possibility of using standard series expansion techniques. For example, taking <span class="math inline">\(z\in \mathbb{R}^{}\)</span>, we can find a series expansion for <span class="math inline">\(\mathcal{K}_{RBF}(z, s) = \exp\left(-\frac{1}{2}(z- s)^2\right)\)</span> using a Taylor series:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\exp\left(-\frac{1}{2}(z- s)^2\right) ={}&amp;
+\exp\left(-\frac{1}{2}z^2 \right) \exp\left(-\frac{1}{2}s^2 \right)\exp\left(zs\right) \\={}&amp;
+\exp\left(-\frac{1}{2}z^2 \right) \exp\left(-\frac{1}{2}s^2 \right)
+\sum_{k=1}^\infty \frac{1}{k!} (zs)^k \\={}&amp;
+\\={}&amp;
+\sum_{k=1}^\infty \frac{1}{k!}
+    \left(\exp\left(-\frac{1}{2}z^2 \right) z^k \right)
+    \left(\exp\left(-\frac{1}{2}s^2 \right) s^k \right).
+\end{aligned}
+\]</span></p>
+<p>From this it follows that the kernel <span class="math inline">\(\mathcal{K}_{RBF}(z, s)\)</span> can be featurized with <span class="math inline">\(\phi_k(z) = \exp\left(-\frac{1}{2}z^2 \right) z^k\)</span>, and so must be a postive definite kernel.</p>
+<p>Below, we will use Fourier series to find series expansions for stationary kernels.</p>
+<section id="an-example-of-an-invalid-kernel" class="level2">
+<h2 class="anchored" data-anchor-id="an-example-of-an-invalid-kernel">An example of an invalid kernel</h2>
+<p>It is often easier to prove that a kernel is <em>not</em> positive definite, since it suffices to find a single set of points for which the gram matrix is not positive definite. This can lead to some necessary conditions on kernels, as we now see.</p>
+<p>First, we show that <span class="math inline">\(\mathcal{K}_{Bad}\)</span> is an invalid kernel by our definition. Recall that</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathcal{K}_{Bad}(\boldsymbol{z}, \boldsymbol{z}') ={}&amp; F(\left\Vert\boldsymbol{z}- \boldsymbol{z}\right\Vert_2)
+\textrm{ where }F(0) &lt; F(1)
+&amp; \textrm{Invalid kernel}.
+\end{aligned}
+\]</span></p>
+<p>Take <span class="math inline">\(\boldsymbol{z}_A\)</span> and <span class="math inline">\(\boldsymbol{z}_B\)</span> such that <span class="math inline">\(\left\Vert\boldsymbol{z}_A - \boldsymbol{z}_B\right\Vert_2 = 1\)</span>. Then the gram matrix for these two matrices is</p>
+<p><span class="math display">\[
+\mathcal{K}_{Bad,\boldsymbol{Z}} =
+\begin{pmatrix}
+\mathcal{K}_{Bad}(\boldsymbol{z}_A, \boldsymbol{z}_A) &amp; \mathcal{K}_{Bad}(\boldsymbol{z}_A, \boldsymbol{z}_B)  \\
+\mathcal{K}_{Bad}(\boldsymbol{z}_B, \boldsymbol{z}_A) &amp; \mathcal{K}_{Bad}(\boldsymbol{z}_B, \boldsymbol{z}_B)  \\
+\end{pmatrix}
+={}
+\begin{pmatrix}
+F(0) &amp; F(1)  \\
+F(1) &amp; F(0) \\
+\end{pmatrix}.
+\]</span></p>
+<p>This gram matrix is not positive definite. In particular, its determinant is <span class="math inline">\(F(0)^2 - F(1)^2 &lt; 0\)</span>, and the determinant is the product of the eigenvalues, so exactly one eigenvalue is negative.</p>
+<p>We can conclude from this that a valid stationary kernel always achieves its maximum at zero.</p>
+</section>
+<section id="stationary-kernels-and-fourier-series" class="level2">
+<h2 class="anchored" data-anchor-id="stationary-kernels-and-fourier-series">Stationary kernels and Fourier series</h2>
+<p>For stationary kernels on a bounded domain, the Fourier series provides a natural basis expansion.</p>
+<p>To begin, one might wonder how you could possibly have feature vectors for a stationary kernel: a stationary kernel is a function only of the difference <span class="math inline">\(\mathcal{K}_{\,}{\boldsymbol{z},\boldsymbol{s}} = \kappa(\boldsymbol{z}- \boldsymbol{s})\)</span> for some <span class="math inline">\(\kappa\)</span>, but the feature vectors <span class="math inline">\(\phi_k(\boldsymbol{z}) \phi_k(\boldsymbol{z})\)</span> are not functions of the difference.</p>
+<p>To resolve this apparent contrdiction, take <span class="math inline">\(zv = z\in \mathbb{R}^{}\)</span> and consider the feature vector <span class="math display">\[
+\begin{aligned}
+\phi_{\omega}(z) =
+\begin{pmatrix}
+\cos(\omega z) \\
+\sin(\omega z) \\
+\end{pmatrix}
+\end{aligned}.
+\]</span></p>
+<p>Then</p>
+<p><span class="math display">\[
+\begin{aligned}
+\phi_{\omega}(z)^\intercal\phi_{\omega}(s) ={}&amp;
+\begin{pmatrix}
+\cos(\omega z) &amp;
+\sin(\omega z)
+\end{pmatrix}
+\begin{pmatrix}
+\cos(\omega s) \\
+\sin(\omega s) \\
+\end{pmatrix}
+\\={}&amp;
+\cos(\omega z) \cos(\omega s) + \sin(\omega z) \sin(\omega s)
+\\={}&amp;
+\cos(\omega (z- s))
+\end{aligned}
+\]</span></p>
+<p>where the final line follows from a standard trig identity. It follows that if we were to write a regression function as</p>
+<p><span class="math display">\[
+f(z; \beta) = \sum_{\omega} \beta_\omega (\cos(\omega z) + \sin(\omega z))
+\]</span></p>
+<p>for some coefficients <span class="math inline">\(\beta_\omega\)</span>, then the implicit kernel corresponding to this inner product would be a stationary kernel. (If you’re bothered by the fact that this regression constrains the sine and cosine to have the same coefficient, note that you can avoid this technicality by admitting complex–valued features, use Euler’s identity, and use the standard complex number inner product <span class="math inline">\(\left&lt;\boldsymbol{z}, \boldsymbol{z}\right&gt; = \boldsymbol{z}^\intercal\overline{\boldsymbol{z}}\)</span>.)</p>
+<p>This strongly motivates looking for Fourier features as the feature expansions for stationary kernels. In fact, if <span class="math inline">\(\mathcal{K}_{\,}(z, s) = \kappa(z- s)\)</span> is stationary and defined on a finite domain, then we can define <span class="math inline">\(z- s= \Delta\)</span> and assume <span class="math inline">\(\Delta \in [-1,1]\)</span> without loss of generality by defining <span class="math inline">\(\kappa(-\Delta) = \kappa(\Delta)\)</span>. Then we can represent <span class="math inline">\(\kappa(\Delta)\)</span> with a Fourier series:</p>
+<p><span class="math display">\[
+\kappa(\Delta) = \sum_{k=0}^\infty \lambda_k \cos(2\pi k \Delta),
+\]</span></p>
+<p>where we note that the sine terms are zero because <span class="math inline">\(\kappa\)</span> is symmetric. Plugging in,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\cos(2\pi k \Delta) ={}&amp; \cos(2\pi k (z- s))
+\\={}&amp; \cos(2\pi k z) \cos(2\pi k s) + \sin(2\pi k z) \sin(2\pi k s) \Rightarrow
+\\
+\mathcal{K}_{\,}(z, s) ={}&amp;
+    \sum_{k=0}^\infty \lambda_k \cos(2\pi k z) \cos(2\pi k s) +
+    \sum_{k=0}^\infty \lambda_k \sin(2\pi k z) \sin(2\pi k s).
+\end{aligned}
+\]</span></p>
+<p>We thus see that a stationary kernel on a bounded domain is positive definite if and only if the Fourier series of <span class="math inline">\(\Delta \mapsto \kappa(\Delta)\)</span> has positive coefficients. The generalization of this to functions on the whole domain is called <strong>Bochner’s theorem</strong>. A precise statement requires Fourier transforms and some measure theory details, and so is beyond the scope of this course. But the point is that stationary kernels can be expressed using Fourier features.</p>
+<p>Interestingly, we also see that, if <span class="math inline">\(k \ne k'\)</span>, then</p>
+<p><span class="math display">\[
+\int \cos(2\pi k z) \cos(2\pi k' z) dz= \int \cos(2\pi k z) \sin(2\pi k' z) dz= 0,
+\]</span></p>
+<p>so we have found not only features, but <em>orthogonal</em> features. In fact, for bounded domains, the Fourier features are precisely the features guaranteed to exist by Mercer’s theorem.</p>
+</section>
+</section>
+<section id="references" class="level1">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-esl:2009:hastie" class="csl-entry" role="listitem">
+Hastie, T., R. Tibshirani, and J. Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference and Prediction</em>. 2nd ed. Springer.
+</div>
+<div id="ref-rasmussen:2006:gpml" class="csl-entry" role="listitem">
+Rasmussen, C., and C. Williams. 2006. <em>Gaussian Processes for Machine Learning</em>. Vol. 2. 3. MIT press Cambridge, MA.
+</div>
+<div id="ref-scholkopf:2002:learningwithkernels" class="csl-entry" role="listitem">
+Schölkopf, B., and A. Smola. 2002. <em>Learning with Kernels: <span>Support</span> Vector Machines, Regularization, Optimization, and Beyond</em>. MIT press.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

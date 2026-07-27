@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Linear regression in matrix notation (review)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#matrix-notation-for-linear-regression-review" id="toc-matrix-notation-for-linear-regression-review" class="nav-link" data-scroll-target="#matrix-notation-for-linear-regression-review">Matrix notation for linear regression (review)</a></li>
+  <li><a href="#least-squares-in-matrix-notation" id="toc-least-squares-in-matrix-notation" class="nav-link" data-scroll-target="#least-squares-in-matrix-notation">Least squares in matrix notation</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Linear regression in matrix notation (review)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!--
+    beamer:
+        fig-width: 6
+        fig-height: 4
+        echo: false
+        include_before_header: ../macros.tex
+-->
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Express ordinary least squares regression in matrix notation</li>
+</ul>
+</section>
+<section id="reading" class="level1">
+<h1>Reading</h1>
+<p>These lecture notes are a supplement for</p>
+<ul>
+<li><span class="citation" data-cites="esl:2009:hastie">Hastie, Tibshirani, and Friedman (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> Section 3.2</li>
+<li><span class="citation" data-cites="ding:2024:lme">Ding (<a href="#ref-ding:2024:lme" role="doc-biblioref">2024</a>)</span> Chapter 3</li>
+</ul>
+</section>
+<section id="matrix-notation-for-linear-regression-review" class="level1">
+<h1>Matrix notation for linear regression (review)</h1>
+<p>Here is a formal definition of a linear regression model:</p>
+<p><span id="eq-lm-scalar"><span class="math display">\[
+\begin{align*}
+y_n ={}&amp; \beta_1 x_{n1} + \beta_2 x_{n2} + \ldots + \beta_P x_{nP} + \varepsilon_{n}, \quad\textrm{For }n=1,\ldots,N.
+\end{align*}
+\tag{1}\]</span></span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I will always use <span class="math inline">\(N\)</span> for the number of observed data points, and <span class="math inline">\(P\)</span> for the dimension of the regression vector.</p>
+</div>
+</div>
+<p>For example, if we take <span class="math inline">\(x_{n1} \equiv 1\)</span>, <span class="math inline">\(x_{n2}= x_n\)</span> to be some scalar, and <span class="math inline">\(P = 2\)</span>, then <a href="#eq-lm-scalar" class="quarto-xref">Equation&nbsp;1</a> becomes simple linear regression:</p>
+<p><span class="math display">\[
+\begin{align*}
+y_n ={}&amp; \beta_1  + \beta_2 x_{n} + \varepsilon_{n}, \quad\textrm{For }n=1,\ldots,N.
+\end{align*}
+\]</span></p>
+<p>The residuals <span class="math inline">\(\varepsilon_n\)</span> measure the “misfit” of the line. If you know <span class="math inline">\(\beta_1, \ldots, \beta_P\)</span>, then you can compute</p>
+<p><span class="math display">\[
+\begin{align*}
+\varepsilon_n ={}&amp; y_n -  (\beta_1 x_{n1} + \beta_2 x_{n2} + \ldots + x_{nP}).
+\end{align*}
+\]</span></p>
+<p>But in general we only observe <span class="math inline">\(y_n\)</span> and <span class="math inline">\(x_{n1}, \ldots, x_{nP}\)</span>, and we choose <span class="math inline">\(\beta_1, \ldots, \beta_P\)</span> to make the residuals small. (How we do this precisely will be something we talk about at great length.)</p>
+<p>The general form of <a href="#eq-lm-scalar" class="quarto-xref">Equation&nbsp;1</a> can be written more compactly using matrix and vector notation. Specifically, if we let</p>
+<p><span class="math display">\[
+\begin{align*}
+\boldsymbol{x}_n :=
+\begin{pmatrix}
+  x_{n1} \\ x_{n2} \\ \vdots \\ x_{nP}
+\end{pmatrix}
+\quad
+\textrm{and}
+\quad
+\boldsymbol{\beta}:=
+\begin{pmatrix}
+  \beta_{1} \\ \beta_2 \\ \vdots \\ \beta_{P}
+\end{pmatrix}
+\end{align*}
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Bold lowercase variables are column vectors (unless otherwise specified).</p>
+</div>
+</div>
+<p>Recall that the “transpose” operator <span class="math inline">\((\cdot)^\intercal\)</span> flips the row and columns of a matrix. For example,</p>
+<p><span class="math display">\[
+\begin{align*}
+\boldsymbol{x}_n ^\intercal=
+\begin{pmatrix}
+  x_{n1} &amp; x_{n2} &amp; \ldots &amp; x_{nP}
+\end{pmatrix}.
+\end{align*}
+\]</span></p>
+<p>By matrix multiplication rules,</p>
+<p><span class="math display">\[
+\begin{align*}
+\boldsymbol{x}_n^\intercal\boldsymbol{\beta}=
+\begin{pmatrix}
+  x_{n1} &amp; x_{n2} &amp; \ldots &amp; x_{nP}
+\end{pmatrix}
+\quad\quad\quad
+\begin{pmatrix}
+  \beta_{1} \\ \beta_2 \\ \vdots \\ \beta_{P}
+\end{pmatrix}
+= \beta_1 x_{n1} + \beta_2 x_{n2} + \ldots + x_{nP}.
+\end{align*}
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I have written <span class="math inline">\(\boldsymbol{x}_n^\intercal\boldsymbol{\beta}\)</span> for the “dot product” or “inner product” between <span class="math inline">\(\boldsymbol{x}_n\)</span> and <span class="math inline">\(\boldsymbol{\beta}\)</span>. Writing it in this way clarifies the relationship with matrix notation below.</p>
+<p>There are many other ways to denote inner products in the literature, including <span class="math inline">\(\boldsymbol{x}_n \cdot \boldsymbol{\beta}\)</span> and <span class="math inline">\(&lt;\boldsymbol{x}_n, \boldsymbol{\beta}&gt;\)</span>.</p>
+</div>
+</div>
+<p>Then we can compactly write</p>
+<p><span class="math display">\[
+\begin{align*}
+y_n ={}&amp; \boldsymbol{x}_n ^\intercal\boldsymbol{\beta}+ \varepsilon_{n}, \quad\textrm{For }n=1,\ldots,N.
+\end{align*}
+\]</span></p>
+<p>We can compactify it even further if we stack the <span class="math inline">\(n\)</span> observations: % <span class="math display">\[
+\begin{align*}
+y_1 ={}&amp; \boldsymbol{x}_1 ^\intercal\boldsymbol{\beta}+ \varepsilon_{1} \\
+y_2 ={}&amp; \boldsymbol{x}_2 ^\intercal\boldsymbol{\beta}+ \varepsilon_{2} \\
+\vdots\\
+y_N ={}&amp; \boldsymbol{x}_N ^\intercal\boldsymbol{\beta}+ \varepsilon_{N} \\
+\end{align*}
+\]</span></p>
+<p>As before we can stack the responses and residuals:</p>
+<p><span class="math display">\[
+\begin{align*}
+\boldsymbol{Y}:=
+\begin{pmatrix}
+  y_{1} \\ y_2 \\ \vdots \\ y_{N}
+\end{pmatrix}
+\quad
+\textrm{and}
+\quad
+\boldsymbol{\varepsilon}:=
+\begin{pmatrix}
+  \varepsilon_{1} \\ \varepsilon_2 \\ \vdots \\ \varepsilon_{N}
+\end{pmatrix}
+\end{align*}
+\]</span></p>
+<p>We can also stack the regressors:</p>
+<p><span class="math display">\[
+\begin{align*}
+\boldsymbol{X}:=
+\begin{pmatrix}
+  x_{11} &amp; x_{12} &amp; \ldots &amp; x_{1P}\\
+  x_{21} &amp; x_{22} &amp; \ldots &amp; x_{2P}\\
+  \vdots\\
+  x_{n1} &amp; x_{n2} &amp; \ldots &amp; x_{nP}\\
+  \vdots\\
+    x_{N1} &amp; x_{N2} &amp; \ldots &amp; x_{NP}
+\end{pmatrix}
+=
+\begin{pmatrix}
+  \boldsymbol{x}_{1}^\intercal\\ \boldsymbol{x}_{2}^\intercal\\ \vdots \\ \boldsymbol{x}_n^\intercal\\ \vdots \\ \boldsymbol{x}_{N}^\intercal
+\end{pmatrix}
+\end{align*}
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I will use upper case bold letters for multi-dimensional matrices like <span class="math inline">\(\boldsymbol{X}\)</span>. But I may also use upper case bold letters even when the quantity could also be a column vector, when I think it’s more useful to think of the quantity as a matrix with a single column. Examples are <span class="math inline">\(\boldsymbol{Y}\)</span> above, or <span class="math inline">\(\boldsymbol{X}\)</span> when <span class="math inline">\(P = 1\)</span>.</p>
+</div>
+</div>
+<p>Note that by matrix multiplication rules,</p>
+<p><span class="math display">\[
+\begin{align*}
+\boldsymbol{X}=
+\begin{pmatrix}
+  \boldsymbol{x}_{1}^\intercal\\ \boldsymbol{x}_{2}^\intercal\\ \vdots \\ \boldsymbol{x}_n^\intercal\\ \vdots \\ \boldsymbol{x}_{N}^\intercal
+\end{pmatrix}
+\quad\quad\quad
+\boldsymbol{X}\boldsymbol{\beta}
+=
+\begin{pmatrix}
+  \boldsymbol{x}_{1}^\intercal\boldsymbol{\beta}\\ \boldsymbol{x}_{2}^\intercal\boldsymbol{\beta}\\ \vdots \\ \boldsymbol{x}_n^\intercal\boldsymbol{\beta}\\ \vdots \\ \boldsymbol{x}_{N}^\intercal\boldsymbol{\beta}
+\end{pmatrix}
+\end{align*}
+\]</span></p>
+<p>so we end up with the extremely tidy expression</p>
+<p><span id="eq-y-matrix"><span class="math display">\[
+\begin{align*}
+y_n ={}&amp; \beta_1 x_{n1} + \beta_2 x_{n2} + \ldots + x_{nP} + \varepsilon_{n}, \quad\textrm{For }n=1,\ldots,N
+\\\\&amp;\textrm{is the same as}\quad\\\\
+\boldsymbol{Y}={}&amp; \boldsymbol{X}\boldsymbol{\beta}+ \boldsymbol{\varepsilon}.
+\end{align*}
+\tag{2}\]</span></span></p>
+<p>In the case of simple least squares, we can write</p>
+<p><span id="eq-simple_matrix"><span class="math display">\[
+\begin{align*}
+\boldsymbol{X}:=
+\begin{pmatrix}
+  1 &amp; x_{1}\\
+  1 &amp; x_{2}\\
+  \vdots &amp; \vdots\\
+  1 &amp; x_{N}\\
+\end{pmatrix},
+\end{align*}
+\tag{3}\]</span></span></p>
+<p>and verify that the <span class="math inline">\(n\)</span>–th row of <a href="#eq-y-matrix" class="quarto-xref">Equation&nbsp;2</a> is the same as <strong>?@eq-lm-simple</strong>.</p>
+</section>
+<section id="least-squares-in-matrix-notation" class="level1">
+<h1>Least squares in matrix notation</h1>
+<p>Using our tidy expression <a href="#eq-y-matrix" class="quarto-xref">Equation&nbsp;2</a>, we can easily write out the sum of the squared errors as</p>
+<p><span class="math display">\[
+\begin{aligned}
+\sum_{n=1}^N\varepsilon_n^2 ={}&amp;
+    \boldsymbol{\varepsilon}^\intercal\boldsymbol{\varepsilon}= (\boldsymbol{Y}- \boldsymbol{X}\boldsymbol{\beta})^\intercal(\boldsymbol{Y}- \boldsymbol{X}\boldsymbol{\beta})
+    \\={}&amp;
+    \boldsymbol{Y}^\intercal\boldsymbol{Y}- \boldsymbol{\beta}^\intercal\boldsymbol{X}^\intercal\boldsymbol{Y}- \boldsymbol{Y}^\intercal\boldsymbol{X}\boldsymbol{\beta}+ \boldsymbol{\beta}^\intercal\boldsymbol{X}^\intercal\boldsymbol{X}\boldsymbol{\beta}
+    \\={}&amp;
+    \boldsymbol{Y}^\intercal\boldsymbol{Y}- 2  \boldsymbol{Y}^\intercal\boldsymbol{X}\boldsymbol{\beta}+ \boldsymbol{\beta}^\intercal\boldsymbol{X}^\intercal\boldsymbol{X}\boldsymbol{\beta}.
+\end{aligned}
+\]</span></p>
+<p>This is a quadratic function of the vector <span class="math inline">\(\boldsymbol{\beta}\)</span>. We wish to find the minimum of this quantity as a function of <span class="math inline">\(\boldsymbol{\beta}\)</span>. We might hope that the minimum occurs at a point where the gradient of this expression is zero.</p>
+<p>Rather than compute the <em>univariate</em> derivative with respect to each component, we can compute the <em>multivariate gradient</em> with respect to the vector.</p>
+<p>Let’s recall some facts from vector calculus.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Take <span class="math inline">\(\boldsymbol{z}\in \mathbb{R}^P\)</span> to be a <span class="math inline">\(P\)</span>–vector. and let <span class="math inline">\(f(\boldsymbol{z})\)</span> a scalar–valued function of the vector <span class="math inline">\(z\)</span>. We write</p>
+<p><span class="math display">\[
+\frac{\partial f(\boldsymbol{z})}{\partial \boldsymbol{z}}  =
+\begin{pmatrix}
+\frac{\partial}{\partial z_1} f(\boldsymbol{z}) \\
+\vdots\\
+\frac{\partial}{\partial z_P} f(\boldsymbol{z}) \\
+\end{pmatrix}.
+\]</span></p>
+<p>That is, the partial <span class="math inline">\(\frac{\partial f(\boldsymbol{z})}{\partial \boldsymbol{z}}\)</span> is a <span class="math inline">\(P\)</span>–vector of the stacked univariate dervatives.</p>
+</div>
+</div>
+<p>Recall a couple rules from vector calculus. Let <span class="math inline">\(\boldsymbol{v}\)</span> denote a <span class="math inline">\(P\)</span>–vector and <span class="math inline">\(\boldsymbol{A}\)</span> a symmetric matrix. Then</p>
+<p><span class="math display">\[
+\begin{align*}
+\frac{\partial \boldsymbol{v}^\intercal\boldsymbol{z}}{\partial \boldsymbol{z}}  = \boldsymbol{v}
+\quad\textrm{and}\quad
+\frac{\partial \boldsymbol{z}^\intercal\boldsymbol{A}\boldsymbol{z}}{\partial \boldsymbol{z}}  = 2 \boldsymbol{A}\boldsymbol{z}.
+\end{align*}
+\]</span></p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Prove these results above using univariate derivatives and our stacking convention.</p>
+</div>
+</div>
+<p>Applying these two rules to our least squares objective,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\frac{\partial\boldsymbol{\varepsilon}^\intercal\boldsymbol{\varepsilon}}{\partial \boldsymbol{\beta}} ={}&amp;
+    \frac{\partial }{\partial \boldsymbol{\beta}} \boldsymbol{Y}^\intercal\boldsymbol{Y}-
+    2 \frac{\partial }{\partial \boldsymbol{\beta}}  \boldsymbol{Y}^\intercal\boldsymbol{X}\boldsymbol{\beta}+
+    \frac{\partial }{\partial \boldsymbol{\beta}} \boldsymbol{\beta}^\intercal\boldsymbol{X}^\intercal\boldsymbol{X}\boldsymbol{\beta}
+    \\ ={}&amp;
+    0 - 2 \boldsymbol{X}^\intercal\boldsymbol{Y}+ 2 \boldsymbol{X}^\intercal\boldsymbol{X}\boldsymbol{\beta}.
+\end{aligned}
+\]</span></p>
+<p>Assuming our estimator <span class="math inline">\(\hat{\beta}\)</span> sets these partial derivatives are equal to zero, we then get</p>
+<p><span id="eq-ols-esteq"><span class="math display">\[
+\begin{align*}
+\boldsymbol{X}^\intercal\boldsymbol{X}\hat{\boldsymbol{\beta}}={}&amp; \boldsymbol{X}^\intercal\boldsymbol{Y}.
+\end{align*}
+\tag{4}\]</span></span></p>
+<p>This is a set of <span class="math inline">\(P\)</span> equations in <span class="math inline">\(P\)</span> unknowns. If it is not degenerate, one can solve for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>. That is, if the matrix <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}\)</span> is invertible, then we can multiply both sides of <a href="#eq-ols-esteq" class="quarto-xref">Equation&nbsp;4</a> by <span class="math inline">\((\boldsymbol{X}^\intercal\boldsymbol{X})^{-1}\)</span> to get</p>
+<p><span id="eq-ols-betahat"><span class="math display">\[
+\hat{\boldsymbol{\beta}}= (\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{X}^\intercal\boldsymbol{Y}
+\tag{5}\]</span></span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Notation">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Notation
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Unlike many other regression texts (and the <code>lm</code> function), I will <em>not</em> necessarily assume that a constant is included in the regression. One can always take a generic regression <span class="math inline">\(y_n \sim \boldsymbol{x}_n\)</span> to include a constant by assuming that one of the entries of <span class="math inline">\(\boldsymbol{x}_n\)</span> is one. At some points my convention of not including a constant by default will lead to formulas that may be at odds with some textbooks. But these differences are superficial, and are, in my mind, more than made up for by the generality and simplicity of treating constants as just another regressor.</p>
+</div>
+</div>
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-ding:2024:lme" class="csl-entry" role="listitem">
+Ding, P. 2024. <span>“Linear Model and Extensions.”</span> <a href="https://arxiv.org/abs/2401.00649">https://arxiv.org/abs/2401.00649</a>.
+</div>
+<div id="ref-esl:2009:hastie" class="csl-entry" role="listitem">
+Hastie, T., R. Tibshirani, and J. Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference and Prediction</em>. 2nd ed. Springer.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

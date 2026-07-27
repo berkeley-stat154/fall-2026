@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Classification and Regression Trees (CART)</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
+  <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#context" id="toc-context" class="nav-link" data-scroll-target="#context">Context</a></li>
+  <li><a href="#regression-trees-as-partition-selectors" id="toc-regression-trees-as-partition-selectors" class="nav-link" data-scroll-target="#regression-trees-as-partition-selectors">Regression trees as partition selectors</a>
+  <ul class="collapse">
+  <li><a href="#regression-trees-for-greedy-partition-selection" id="toc-regression-trees-for-greedy-partition-selection" class="nav-link" data-scroll-target="#regression-trees-for-greedy-partition-selection">Regression trees for greedy partition selection</a></li>
+  <li><a href="#when-to-stop" id="toc-when-to-stop" class="nav-link" data-scroll-target="#when-to-stop">When to stop?</a></li>
+  <li><a href="#tree-trimming" id="toc-tree-trimming" class="nav-link" data-scroll-target="#tree-trimming">Tree trimming</a></li>
+  <li><a href="#in-higher-dimesions" id="toc-in-higher-dimesions" class="nav-link" data-scroll-target="#in-higher-dimesions">In higher dimesions</a></li>
+  </ul></li>
+  <li><a href="#node-impurity" id="toc-node-impurity" class="nav-link" data-scroll-target="#node-impurity">Node impurity</a></li>
+  <li><a href="#the-arboretum-tree-zoo" id="toc-the-arboretum-tree-zoo" class="nav-link" data-scroll-target="#the-arboretum-tree-zoo">The arboretum (tree zoo)</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Classification and Regression Trees (CART)</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="goals" class="level1">
+<h1>Goals</h1>
+<ul>
+<li>Introduce CART (“classifiation and regression trees”)</li>
+<li>Interepret CART as a variable selection procedure for (linear or logistic) regression</li>
+<li>Briefly survey the zoo of related procedures
+<ul>
+<li>Node purity measure</li>
+<li>Tree complexity</li>
+<li>Branching rules</li>
+</ul></li>
+</ul>
+</section>
+<section id="reading" class="level1">
+<h1>Reading</h1>
+<p>The primary reading is <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.1. The reading in <span class="citation" data-cites="esl:2009:hastie">Hastie, Tibshirani, and Friedman (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> section 9.2 may also be useful. These notes are intended only as a supplement to the primary reading and a reminder to myself of what to talk about in lecture.</p>
+</section>
+<section id="context" class="level1">
+<h1>Context</h1>
+<p>Up to this point, we have effectively studied learning algorithms that take the form of some modification of a linear function of a fixed set of regressors, both for regression and classification. We learned how to expand this set of regressors without bound using via non–linear transformations, and to choose among them using regularization and cross–validation. A key problem with such methods is that they require <em>enumeration of the set of transformations</em> in advance. This can be computationally prohibitive, and is also conceptually unsatisfying. Why can’t we <em>learn</em> the best transformation rather than choosing it from a predetermined set?</p>
+<p>For the remainder of the class, we will study learning procedures that can be seen as determining the set of transformations algorithmically. Of course they do not <em>need</em> to be seen this way, and can instead simply be treated as distinct learning procedures in their own right. The increased complexity of these procedures means they (a) they will be less amenable to theoretical analysis, and (b) they often take the form of a “zoo” or “menu” of similar–looking procedures offering different practical and conceptual tradeoffs.</p>
+</section>
+<section id="regression-trees-as-partition-selectors" class="level1">
+<h1>Regression trees as partition selectors</h1>
+<!-- Images generated in  _code/lecture_examples/trees.ipynb -->
+<p>Suppose we are regressing <span class="math inline">\(y\in \mathbb{R}^{}\)</span> on <span class="math inline">\(x\in \mathbb{R}^{}\)</span>, suppose that <span class="math inline">\(y\)</span> is observed without noise, and that <span class="math inline">\(y= f(x)\)</span> looks like this:</p>
+<p><img src="../../assets/unit4_cart/original_function.png" class="img-fluid"></p>
+<p>If we wanted to fit this function with basis functions of width <span class="math inline">\(\Delta\)</span>, we need a different <span class="math inline">\(\Delta\)</span> for different parts of the space, and choosing a fixed <span class="math inline">\(\Delta\)</span> will be wasteful. Note how we used too many indicator for the left part and too few for the right part:</p>
+<p><img src="../../assets/unit4_cart/indicator_fit.png" class="img-fluid"></p>
+<p>Of course in this example we know the right thing to do, but in high–dimensions you typically can’t just look and figure this out.</p>
+<section id="regression-trees-for-greedy-partition-selection" class="level2">
+<h2 class="anchored" data-anchor-id="regression-trees-for-greedy-partition-selection">Regression trees for greedy partition selection</h2>
+<p>It turns out that selecting the optimal partition of a given side is computationally hard. <strong>Regression trees</strong> can be thought of as an automatic way to form indicator basis functions that do well for the particular function at hand.</p>
+<p>Suppose to begin with that we are only willing to use one indicator function. The best spot to split is the one that produces the largest decrease in squared error. This can be found by brute force just by sorting <span class="math inline">\(x\)</span>.</p>
+<p><img src="../../assets/unit4_cart/tree_single_split_fit.png" class="img-fluid"></p>
+<p>We can represent this split as a tree:</p>
+<p><img src="../../assets/unit4_cart/tree_single_split_diagram.png" class="img-fluid"></p>
+<p>Given this first split, we can <em>successively</em> split the later regions. That is, we can divide each region into sub–regions, choosing the optimal split at each point. Here, the next split looks like this:</p>
+<p><img src="../../assets/unit4_cart/tree_two_splits_fit.png" class="img-fluid"></p>
+<p>We can represent this split as a tree as well:</p>
+<p><img src="../../assets/unit4_cart/tree_two_splits_diagram.png" class="img-fluid"></p>
+<p>Note that if we don’t split <em>successively</em>, we don’t get a tree. In one dimension every partition is a tree, but in higher dimensions this isn’t true, as we see below.</p>
+<p>By adding more and more splits, we get more and more regions. Here, I have added up to eight splits:</p>
+<p><img src="../../assets/unit4_cart/tree_all_fit.png" class="img-fluid"></p>
+</section>
+<section id="when-to-stop" class="level2">
+<h2 class="anchored" data-anchor-id="when-to-stop">When to stop?</h2>
+<p>Note that you can get exponentially many regions in the number of splits, and that (by default) all the splits are generated — with <span class="math inline">\(8\)</span> splits there are <span class="math inline">\(2^8\)</span> terminal or “leaf” nodes. As the number of splits increases, the expressivity of the tree function increases.</p>
+<p>The rules for when to stop splitting are flexible. A common choice is to stop splitting when a leaf node falls beneath some number of observations. Another reasonable choice is to stop splitting when the split is not able to achieve a particular increase in the loss function (or, equivalently, a sufficient decrease in “node impurity” as defined below).</p>
+</section>
+<section id="tree-trimming" class="level2">
+<h2 class="anchored" data-anchor-id="tree-trimming">Tree trimming</h2>
+<p>The generated trees in our example are still not very efficient, in that we use more splits than are necessary for the left than for the right. (Note that in this case I happened to generate every possible split up to the specified depth.)</p>
+<p>In order to choose a more optimal tree, we “trim” the tree back by regularizing the size of the tree. Given a starting tree <span class="math inline">\(T\)</span> and a cost complexity parameter <span class="math inline">\(\alpha\)</span>, we find the subtree that minimizes</p>
+<p><span class="math display">\[
+\textrm{Cost complexity empirical risk}(T') = \sum_{t\in T'} \sum_{n \in t} (y_n - \hat{y}_{t})^2 + \alpha |T'|,
+\]</span></p>
+<p>where <span class="math inline">\(t\in T'\)</span> means <span class="math inline">\(t\)</span> is a leaf node of <span class="math inline">\(T'\)</span>, <span class="math inline">\(n \in t\)</span> means <span class="math inline">\(\boldsymbol{x}_n\)</span> is assigned to leaf node <span class="math inline">\(t\)</span>, and <span class="math inline">\(|T'|\)</span> counts the number of leaf nodes.</p>
+<p><img src="../../assets/unit4_cart/tree_fits_combined.png" class="img-fluid"></p>
+<p>Here’s one trimmed tree for our function of interest. Note that there’s more trimming on the left than on the right, since the function is smoother there.</p>
+<p><img src="../../assets/unit4_cart/tree_trimmed_diagram.png" class="img-fluid"></p>
+<p>In practice, you’d choose the best <span class="math inline">\(\alpha\)</span> using cross–validation. Here, I just picked one that looks good, since there is no noise in the data.</p>
+</section>
+<section id="in-higher-dimesions" class="level2">
+<h2 class="anchored" data-anchor-id="in-higher-dimesions">In higher dimesions</h2>
+<p>The one–dimensional example above is simple but a little misleading, since in one dimension every partition is a tree. In higher dimensions, tree–based partitions are a subset of all partitions, as shown in this picture from <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span>. (The bottom right plot of the figure is misleading — it seems like the prediction surface slopes up between partitions, but this is only an artifact of how the authors plotted the surface using a coarse, finite grid and a plotter that automatically interpolates.)</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../assets/unit4_cart/isl_2d.png" class="img-fluid figure-img" style="width:6in"></p>
+<figcaption>Figure 8.3 from <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span></figcaption>
+</figure>
+</div>
+</section>
+</section>
+<section id="node-impurity" class="level1">
+<h1>Node impurity</h1>
+<p>The above example is for regression, but trees can be used for classification as well. The main reference is <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> chapter 8, but I will review the procedure in lecture. These details can be readily extended to regression trees where squared loss replaces classification losses.</p>
+<p>Given a tree, we can produce a classifier by just taking the majority vote in the leaf. However, it can also be useful to produce a probability estimate <span class="math inline">\(\hat{\pi}_t\)</span> which is the proportion of <span class="math inline">\(y_n = 1\)</span> among <span class="math inline">\(n \in t\)</span>. Note that these correspond exactly to optimizing cross–entropy or least–squared classification loss using the partition indicators as regressors.</p>
+<p>The tree is built greedily by minimizing a notion of “node impurity” at each step. Suppose you are considering how to split a leaf <span class="math inline">\(t\)</span> (applying the same reasoning to the root node tells how to start the tree). For a given regressor <span class="math inline">\(x_{nk}\)</span>, and a given split point <span class="math inline">\(c\)</span>, let</p>
+<p><span class="math display">\[
+\begin{aligned}
+N_{c}^{-} ={}&amp; \textrm{\# of data points in $t$ with }x_{nk} &lt; c \\
+N_{c}^{+} ={}&amp; \textrm{\# of data points in $t$ with }x_{nk} \ge c \\
+N_{t} ={}&amp; \textrm{\# of data points in $t$} \\
+\bar{y}_c^- ={}&amp; \textrm{average of $y_n$ for  $n \in t$ with }x_{nk} &lt; c \\
+\bar{y}_c^+ ={}&amp; \textrm{average of $y_n$ for  $n \in t$ with }x_{nk} \ge c. \\
+\bar{y}_t={}&amp; \textrm{average of $y_n$ for all $n \in t$}. \\
+\end{aligned}
+\]</span></p>
+<p>(How we break ties doesn’t matter much.) Then by splitting the node usign <span class="math inline">\(x_{nk}\)</span> at <span class="math inline">\(c\)</span> we decrease the total loss by</p>
+<p><span class="math display">\[
+\underbrace{
+  \sum_{n \in t,x_{nk} &lt; c} (y_n - \bar{y}_c^-)^2 +
+  \sum_{n \in t,x_{nk} \ge c} (y_n - \bar{y}_c^+)^2
+}_{\textrm{Loss after splitting}} -
+\underbrace{
+  \sum_{n \in t} (y_n - \bar{y}_t)^2
+}_{\textrm{Loss before splitting}}
+\]</span></p>
+<p>For each variable, the variable <span class="math inline">\(c\)</span> can be chosen by brute force by sorting <span class="math inline">\(x_{nk}\)</span> for <span class="math inline">\(n \in t\)</span>, which is computationally tractable because it’s only a one–dimensional problem. The CART algorithm chooses splits by finding a <span class="math inline">\(c\)</span> and <span class="math inline">\(k\)</span> optimally over all possible choices.</p>
+<p>We can rewrite this as</p>
+<p><span class="math display">\[
+N_c^{-} R_c^{-} + N_c^{-} R_C^{+} - N_tR_t,
+\]</span></p>
+<p>where <span class="math inline">\(R\)</span> measures the “impurity” of the node — in this case by using the sample variance. (Note that splitting can never decrease the purity of the node as long as the fit within the node is chosen to minimize the measure of purity.)</p>
+<p>Suppose we are considering the node purity with <span class="math inline">\(K\)</span> classes, each of which is estimated within the node to occur with probability <span class="math inline">\(\hat{\pi}_k\)</span>. As with loss functions there are different common choices for classification node impurity. Three common choices are</p>
+<ul>
+<li>Misclassification rate</li>
+<li>Entropy loss</li>
+<li>Gini index</li>
+</ul>
+<p>The misclassification rate is simply the number of observations that do not match the majority class.</p>
+<p>The entropy is given by</p>
+<p><span class="math display">\[
+\textrm{Entropy} = \sum_{k} \hat{\pi}_{k} \log \hat{\pi}_{k}.
+\]</span></p>
+<p>The Gini index is the implied probability of making a classification error if the predicted class is chosen with probability proportional to its marginal probability within the class. The Gini loss is</p>
+<p><span class="math display">\[
+\textrm{Gini}(\hat{\pi}) = \sum_{k} \sum_{k' \ne k} \hat{\pi}_{k} \hat{\pi}_{k'}
+\]</span></p>
+<p>That is, if we guess class <span class="math inline">\(k\)</span> with probability <span class="math inline">\(\hat{\pi}_{k}\)</span>, and draw a true class <span class="math inline">\(k'\)</span> with probability <span class="math inline">\(\hat{\pi}_{k'}\)</span>, the Gini loss measures how likely we are to guess wrong. We can also rewrite the Gini loss as</p>
+<p><span class="math display">\[
+\textrm{Gini}(\hat{\pi}) = \sum_{k} \hat{\pi}_{k} (1 - \hat{\pi}_{k}),
+\]</span></p>
+<p>which is the sum of the variances of each indicator. The Gini index can be seen to be minimal with <span class="math inline">\(\hat{\pi}_{k} = 1\)</span> for some <span class="math inline">\(k\)</span>, so the “purest” node has only a single class in it.</p>
+</section>
+<section id="the-arboretum-tree-zoo" class="level1">
+<h1>The arboretum (tree zoo)</h1>
+<p>Over the years, a lot of variants of the above procedure have been developed. Even a coarse survey is beyond the scope of the class, but <span class="citation" data-cites="loh:2014:fiftyyearsoftrees">Loh (<a href="#ref-loh:2014:fiftyyearsoftrees" role="doc-biblioref">2014</a>)</span> is a nice survey.</p>
+<p>Some variants include:</p>
+<ul>
+<li>More complex decision rules in a leaf (e.g.&nbsp;affine rules)</li>
+<li>Multiple splits per node</li>
+<li>Rules for whether or not to make a particular split (e.g.&nbsp;using statistical significance)</li>
+<li>Different measures of node purity</li>
+<li>Different pruning mechanisms (including Bayesian methods!)</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../assets/unit4_cart/trees_loh.png" class="img-fluid figure-img" style="width:6in"></p>
+<figcaption>Fifty years of trees (from <span class="citation" data-cites="loh:2014:fiftyyearsoftrees">Loh (<a href="#ref-loh:2014:fiftyyearsoftrees" role="doc-biblioref">2014</a>)</span>)</figcaption>
+</figure>
+</div>
+</section>
+<section id="references" class="level1">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-isl:2021:gareth" class="csl-entry" role="listitem">
+Gareth, J., W. Daniela, H. Trevor, and T. Robert. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
+</div>
+<div id="ref-esl:2009:hastie" class="csl-entry" role="listitem">
+Hastie, T., R. Tibshirani, and J. Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference and Prediction</em>. 2nd ed. Springer.
+</div>
+<div id="ref-loh:2014:fiftyyearsoftrees" class="csl-entry" role="listitem">
+Loh, W. 2014. <span>“Fifty Years of Classification and Regression Trees.”</span> <em>International Statistical Review</em> 82 (3): 329–48.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

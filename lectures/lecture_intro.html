@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ryan Giordano">
+
+<title>Class introduction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-23b5c256280ffa50a98b9d6412a1b4dc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/stat_bear.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Spring 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#what-is-this-class" id="toc-what-is-this-class" class="nav-link active" data-scroll-target="#what-is-this-class">What is this class?</a></li>
+  <li><a href="#obligatory-ml-intro-slide" id="toc-obligatory-ml-intro-slide" class="nav-link" data-scroll-target="#obligatory-ml-intro-slide">Obligatory ML intro slide</a></li>
+  <li><a href="#a-simple-example" id="toc-a-simple-example" class="nav-link" data-scroll-target="#a-simple-example">A simple example</a></li>
+  <li><a href="#plot-of-the-data" id="toc-plot-of-the-data" class="nav-link" data-scroll-target="#plot-of-the-data">Plot of the data</a></li>
+  <li><a href="#three-things-we-could-do-with-this-dataset" id="toc-three-things-we-could-do-with-this-dataset" class="nav-link" data-scroll-target="#three-things-we-could-do-with-this-dataset">Three things we could do with this dataset</a>
+  <ul class="collapse">
+  <li><a href="#questions" id="toc-questions" class="nav-link" data-scroll-target="#questions">Questions:</a></li>
+  </ul></li>
+  <li><a href="#prediction-versus-inference" id="toc-prediction-versus-inference" class="nav-link" data-scroll-target="#prediction-versus-inference">Prediction versus inference</a></li>
+  <li><a href="#prediction-and-supervised-learning" id="toc-prediction-and-supervised-learning" class="nav-link" data-scroll-target="#prediction-and-supervised-learning">Prediction and supervised learning</a></li>
+  <li><a href="#what-is-machine-learning-what-is-prediction" id="toc-what-is-machine-learning-what-is-prediction" class="nav-link" data-scroll-target="#what-is-machine-learning-what-is-prediction">What is machine learning? What is prediction?</a></li>
+  <li><a href="#classification-versus-regression" id="toc-classification-versus-regression" class="nav-link" data-scroll-target="#classification-versus-regression">Classification versus regression</a></li>
+  <li><a href="#what-is-statistical" id="toc-what-is-statistical" class="nav-link" data-scroll-target="#what-is-statistical">What is statistical?</a></li>
+  <li><a href="#what-is-statistical-1" id="toc-what-is-statistical-1" class="nav-link" data-scroll-target="#what-is-statistical-1">What is statistical?</a></li>
+  <li><a href="#an-urgent-example" id="toc-an-urgent-example" class="nav-link" data-scroll-target="#an-urgent-example">An urgent example</a></li>
+  <li><a href="#what-is-statistical-2" id="toc-what-is-statistical-2" class="nav-link" data-scroll-target="#what-is-statistical-2">What is statistical?</a></li>
+  <li><a href="#what-is-modern" id="toc-what-is-modern" class="nav-link" data-scroll-target="#what-is-modern">What is modern?</a></li>
+  <li><a href="#ml-theory-and-ml-engineering" id="toc-ml-theory-and-ml-engineering" class="nav-link" data-scroll-target="#ml-theory-and-ml-engineering">ML theory and ML engineering</a></li>
+  <li><a href="#the-bitter-lesson" id="toc-the-bitter-lesson" class="nav-link" data-scroll-target="#the-bitter-lesson">The bitter lesson</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">Bibliography</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="lecture_intro.pdf"><i class="bi bi-file-pdf"></i>Beamer</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Class introduction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="what-is-this-class" class="level1">
+<h1>What is this class?</h1>
+<p>This class is called “Modern Statistical Prediction and Machine Learning.”</p>
+<p>What do these words mean?</p>
+</section>
+<section id="obligatory-ml-intro-slide" class="level1">
+<h1>Obligatory ML intro slide</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assets/gemini_ml.png" style="height:80.0%" class="figure-img"></p>
+<figcaption>Modern machine learning is amazing!</figcaption>
+</figure>
+</div>
+</section>
+<section id="a-simple-example" class="level1">
+<h1>A simple example</h1>
+<p>Beginning with these complex applications can obscure what we mean by “statistical prediction.” So let’s begin with a much simpler example.</p>
+<p>Every year, the US releases to the public a large data set containing information on births recorded in the country.</p>
+<p>This is a random sample of 1,000 cases from the 2014 data set.</p>
+<div id="31ff1f48" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="3">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">mage</th>
+<th style="text-align: left;">habit</th>
+<th style="text-align: right;">weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">34</td>
+<td style="text-align: left;">nonsmoker</td>
+<td style="text-align: right;">6.96</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">31</td>
+<td style="text-align: left;">nonsmoker</td>
+<td style="text-align: right;">8.86</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">36</td>
+<td style="text-align: left;">nonsmoker</td>
+<td style="text-align: right;">7.51</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">31</td>
+<td style="text-align: left;">nonsmoker</td>
+<td style="text-align: right;">6.75</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">26</td>
+<td style="text-align: left;">nonsmoker</td>
+<td style="text-align: right;">6.69</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><span class="math inline">\(\vdots\)</span></p>
+</section>
+<section id="plot-of-the-data" class="level1">
+<h1>Plot of the data</h1>
+<div id="05f7e67a" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lecture_intro_files/figure-html/cell-5-output-1.png" width="510" height="356" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="three-things-we-could-do-with-this-dataset" class="level1">
+<h1>Three things we could do with this dataset</h1>
+<ol type="A">
+<li><ol type="1">
+<li>Regress <code>weight ~ 1 + mage + habit</code>.</li>
+<li>If <code>habit</code> is statistically significant, warn mothers not to smoke.</li>
+</ol></li>
+<li><ol type="1">
+<li>Regress <code>weight ~ 1 + mage + habit</code>.</li>
+<li>For a given mother, compute the expected baby weight. If it is low, recommend extra monitoring during the pregnancy.</li>
+</ol></li>
+<li><ol type="1">
+<li>Define a variable <code>low_weight = weight &lt; 4</code>.</li>
+<li>Run the logistic regression <code>low_weight ~ 1 + mage + habit</code>.</li>
+<li>For a given mother, compute the expected probability of low birth weight. If this probability is high, recommend extra monitoring during the preganancy.</li>
+</ol></li>
+</ol>
+<section id="questions" class="level3">
+<h3 class="anchored" data-anchor-id="questions">Questions:</h3>
+<ol type="1">
+<li>Which (if any) of these tasks is prediction?</li>
+<li>Which (if any) of these tasks is machine learning?</li>
+<li>Which (if any) is statistical?</li>
+<li>Which (if any) is modern?</li>
+</ol>
+<p><em>Be prepared to discuss and justify your answers.</em></p>
+</section>
+</section>
+<section id="prediction-versus-inference" class="level1">
+<h1>Prediction versus inference</h1>
+<p>This class will study <em>prediction</em>, which is different from <em>inference</em>.</p>
+<p>Note that examples A and B both use the same statistical procedure:</p>
+<ul>
+<li>Regress <code>weight ~ 1 + mage + habit</code>.</li>
+</ul>
+<p>But one is inference and one is prediction because of how you <em>use the model</em>.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Prediction versus inference">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Prediction versus inference
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 53%">
+<col style="width: 46%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">Prediction</th>
+<th style="text-align: center;">Inference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">Predict baby weight and take an action</td>
+<td style="text-align: center;">Interpret the weight coefficient causally</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">You only care about <span class="math inline">\(\hat{f}(x_*)\)</span></td>
+<td style="text-align: center;">You give meaning to some components of <span class="math inline">\(\hat{f}(x_*)\)</span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Features correlated with the “true” features are just as good</td>
+<td style="text-align: center;">Correlation does not imply causation</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">The generative process may be misspecified</td>
+<td style="text-align: center;">The interpretation is only valid if the generative process is roughly correct</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This class is about <strong>prediction</strong> <em>not</em> <strong>inference</strong>!</p>
+</section>
+<section id="prediction-and-supervised-learning" class="level1">
+<h1>Prediction and supervised learning</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="Supervised learning">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Supervised learning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In this course, “prediction” always take the following form:</p>
+<ul>
+<li>A fixed set of observed pairs <span class="math inline">\(\{(x_n, y_n)\}\)</span>, <span class="math inline">\(n=1,\ldots,N\)</span>.</li>
+<li>A (maybe hypothetical) set of <span class="math inline">\((x_*, \cdot)\)</span> for which we want to guess or estimate the missing <span class="math inline">\(y_*\)</span>.</li>
+</ul>
+<p>We use the observed data <span class="math inline">\(\{(x_n, y_n)\}\)</span> to produce a function <span class="math inline">\(\hat{f}(\cdot)\)</span> which we hope to use as a prediction</p>
+<p><span class="math display">\[\hat{f}(x_*) =: \hat{y}_*
+\overset{\textrm{(hopefully)}}{\approx} y_*
+\]</span>.</p>
+<p>This is also called <strong>supervised learning</strong>.</p>
+</div>
+</div>
+</section>
+<section id="what-is-machine-learning-what-is-prediction" class="level1">
+<h1>What is machine learning? What is prediction?</h1>
+<div class="callout callout-style-default callout-tip callout-titled" title="Machine learning">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Machine learning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Supervised learning is a large but proper subset of machine learning (ML).</p>
+<p>ML also (at least) encompasses reinforcement learning and unsupervised learning.</p>
+</div>
+</div>
+<p>This class will almost entirely focus on supervised learning, though I will try to work some unsupervised learning problems into the homework.</p>
+<p>Here are some classical contemporary ML applications:</p>
+<ul>
+<li>Recognizing digits from pixelized images</li>
+<li>Generating human–like text</li>
+<li>Finding cancer cells in an MRI image</li>
+<li>Automatically identifying the topics in a NYT article</li>
+<li>Finding genes with similar patterns of expression over time</li>
+<li>Learning to play Go</li>
+</ul>
+<p>Which of these are supervised learning? Which are not? Among those that are, what are the <span class="math inline">\(x\)</span>? What are the <span class="math inline">\(y\)</span>?</p>
+</section>
+<section id="classification-versus-regression" class="level1">
+<h1>Classification versus regression</h1>
+<p>Both tasks B and C are being used for “classification”, since we are ultimately using our models to identify mothers who are at-risk for low birth weight babies.</p>
+<p>However, in this class we will use these terms to describe the model, not the ultimate use.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Regression and classification">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Regression and classification
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Regression</strong> will mean a case where <span class="math inline">\(y_n\)</span> takes values in <span class="math inline">\(\mathbb{R}^{}\)</span>.</p>
+<p><strong>Classification</strong> will mean a case where <span class="math inline">\(y_n\)</span> takes values in an unordered, finite set (in this class, typically <span class="math inline">\(\{0, 1\}\)</span>).</p>
+</div>
+</div>
+</section>
+<section id="what-is-statistical" class="level1">
+<h1>What is statistical?</h1>
+<p>None of these three procedures are <em>inherently statistical</em>. For example, you can use the OLS coefficients as <em>descriptive statistics</em> for this particular dataset, with no notion of random sampling.</p>
+<p>But we all intuitively know that when we <em>apply</em> these results to future mothers, those mothers will be different somehow than the mothers we observed in this dataset.</p>
+<p>How will they be different? As always, it depends how you use your model:</p>
+<ul>
+<li>The mothers may be observed at a different time (e.g.&nbsp; after these data were collected)</li>
+<li>The mothers may be from completely different populations (e.g.&nbsp; in another country)</li>
+<li>The mothers may be a different species (e.g.&nbsp;what happens if you expose a guinea pig to cigarette smoke)?</li>
+</ul>
+<p><em>Quantifying these potential differences is hard.</em></p>
+</section>
+<section id="what-is-statistical-1" class="level1">
+<h1>What is statistical?</h1>
+<p>One way to imagine how the observed sample differs from the future population is to imagine that both are <em>independent and identically distributed</em> (IID) samples from the same population.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Statistics for ML">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Statistics for ML
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><span class="math display">\[
+(x_n, y_n) \overset{\mathrm{IID}}{\sim}p(x, y) \quad\textrm{and}\quad
+(x_*, y_*) \sim p(x, y)
+\quad\textrm{for the same }p.
+\]</span></p>
+</div>
+</div>
+<p>An assumption of IID sampling is:</p>
+<ul>
+<li>Mathematically (fairly) tractable</li>
+<li>Usually false</li>
+<li>Maybe not a totally insane approximation to real–world variation</li>
+<li>Perhaps a plausible lower bound on the variation you really expect.</li>
+</ul>
+<p>In this class, we will typically assume IID sampling, but keep an eye out for the consequences if it fails to hold.</p>
+</section>
+<section id="an-urgent-example" class="level1">
+<h1>An urgent example</h1>
+<blockquote class="blockquote">
+<p>“The AI is trained on the corpus of what scholarly written work there already is about the strategy of war,” says Schneider. “And the vast majority of that work looks at escalation — there is definitely a bias toward it. There aren’t as many case studies on why war didn’t break out — the Cuban Missile Crisis is one of the few examples. The LLMs are mimicking these core themes.”</p>
+</blockquote>
+<p><a href="https://www.politico.com/news/magazine/2025/09/02/pentagon-ai-nuclear-war-00496884">“The AI Doomsday Machine Is Closer to Reality Than You Think.” Politico, Sep 2 2025</a></p>
+</section>
+<section id="what-is-statistical-2" class="level1">
+<h1>What is statistical?</h1>
+<p>A lot of statistics classes begin by assuming there is a “true” parametric model for <span class="math inline">\(p(x, y)\)</span> or for <span class="math inline">\(p(y\vert x)\)</span>.</p>
+<p>For example, in an introductory linear regression class, you might see:</p>
+<p><span class="math display">\[
+\textrm{Assume }
+y_n = \boldsymbol{\beta}^\intercal\boldsymbol{x}_n + \varepsilon_n
+\quad\textrm{for}\quad\varepsilon_n \overset{\mathrm{IID}}{\sim}\mathcal{N}\left(0, \sigma^2\right).
+\]</span></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="Statistics for ML">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Statistics for ML
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>ML <em>does not assume</em> that we have access to the correct generative model!</p>
+<p>In this sense, “statistical ML” can be thought of as the study of <strong>prediction methods</strong> under <strong>IID sampling</strong> and <strong>model misspecification</strong>.</p>
+</div>
+</div>
+<p>Despite this, studying what would happen <em>if such assumptions hold</em> can provide some nice intuition that we might hope generalizes.</p>
+</section>
+<section id="what-is-modern" class="level1">
+<h1>What is modern?</h1>
+<p><a href="https://www.argmin.net/p/apostasy-or-reformation">Ben Recht writes</a>:</p>
+<blockquote class="blockquote">
+<p>Before 2015, I believed a list of truths about machine learning:</p>
+<ul>
+<li>Good prediction balances bias and variance.</li>
+<li>You should not perfectly fit your training data as some in-sample errors can reduce out-of-sample error.</li>
+<li>High-capacity models don’t generalize.</li>
+<li>Optimizing to high precision harms generalization.</li>
+<li>Nonconvex optimization is hard in machine learning.</li>
+</ul>
+<p>None of these are true. Or certainly, none are universal truths. … Given all of this evidence, why did we teach our undergrads a paradigm completely invalidated by empirical evidence? I don’t have an answer to that question.</p>
+</blockquote>
+<p>Massive compute power, deep neural nets + stochastic gradient descent, and frictionless reproducibility have laid bare some major shortcomings in the theory we’ll be learning in this class.</p>
+</section>
+<section id="ml-theory-and-ml-engineering" class="level1">
+<h1>ML theory and ML engineering</h1>
+<p>One might imagine two different kinds of ML course:</p>
+<ul>
+<li><strong>ML Engineering:</strong>
+<ul>
+<li>Coding best practices</li>
+<li>Optimization best practices</li>
+<li>Data pipelines</li>
+<li>Matching tasks with model classes</li>
+<li>Lots of real-world practice</li>
+</ul></li>
+<li><strong>ML Theory:</strong>
+<ul>
+<li>Articulate and criticize assumptions implicit in ML practice</li>
+<li>Identify the key tradeoffs in ML methods</li>
+<li>Thorough study of simple mathematical models that one might hope are proxies for more complex situations</li>
+<li>A clear and rigorous vocabulary for comparing and analyzing ML methods</li>
+<li>Capacity to quickly learn and think about ML methods you’ve never seen before</li>
+</ul></li>
+</ul>
+<p>Ideally, you need to learn both!</p>
+<p>This will be an <strong>ML theory</strong> class with a dose of <strong>ML engineering</strong> in the labs.</p>
+</section>
+<section id="the-bitter-lesson" class="level1">
+<h1>The bitter lesson</h1>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../images/llm_scaling.png" class="img-fluid figure-img" style="width:50.0%"></p>
+<figcaption>LLM scaling</figcaption>
+</figure>
+</div>
+<p>From <span class="citation" data-cites="kaplan:2020:scaling">Kaplan et al. (<a href="#ref-kaplan:2020:scaling" role="doc-biblioref">2020</a>)</span> Figure 1. The scaling of loss with compute is real, but slow!</p>
+<p>A reliance on brute force computation puts the power of ML in the hands of private and wealthy institutions.</p>
+<p>If we are to escape this fate, theory will almost certainly have to play a role.</p>
+</section>
+<section id="bibliography" class="level1">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Bibliography</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-kaplan:2020:scaling" class="csl-entry" role="listitem">
+Kaplan, J., S. McCandlish, T. Henighan, T. Brown, B. Chess, R. Child, S. Gray, A. Radford, J. Wu, and D. Amodei. 2020. <span>“Scaling Laws for Neural Language Models.”</span> <em>arXiv Preprint arXiv:2001.08361</em>.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
