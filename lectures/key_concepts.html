@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Ryan Giordano">
 
-<title>Key concepts</title>
+<title>Class introduction</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -42,7 +43,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-aba33fca5dc416c110e28054876af7a8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-29cdbefdb627c25a34878b5e2c43b22c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -151,6 +152,10 @@ window.Quarto = {
     <a class="nav-link" href="../course_policies.html"> 
 <span class="menu-text">Course Policies</span></a>
   </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../schedule.html"> 
+<span class="menu-text">Course Schedule</span></a>
+  </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
@@ -173,29 +178,39 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#high-level-concepts" id="toc-high-level-concepts" class="nav-link active" data-scroll-target="#high-level-concepts">High level concepts</a></li>
-  <li><a href="#intermediate-level-concepts" id="toc-intermediate-level-concepts" class="nav-link" data-scroll-target="#intermediate-level-concepts">Intermediate level concepts</a></li>
-  <li><a href="#lower-level-concepts" id="toc-lower-level-concepts" class="nav-link" data-scroll-target="#lower-level-concepts">Lower level concepts</a>
-  <ul class="collapse">
-  <li><a href="#kernel-methods-not-covered-yet" id="toc-kernel-methods-not-covered-yet" class="nav-link" data-scroll-target="#kernel-methods-not-covered-yet">Kernel methods (not covered yet)</a></li>
-  </ul></li>
-  <li><a href="#study-ideas" id="toc-study-ideas" class="nav-link" data-scroll-target="#study-ideas">Study ideas</a></li>
+  <li><a href="#key-concepts" id="toc-key-concepts" class="nav-link active" data-scroll-target="#key-concepts">Key concepts</a></li>
+  <li><a href="#day-one-walkthrough" id="toc-day-one-walkthrough" class="nav-link" data-scroll-target="#day-one-walkthrough">Day one walkthrough</a></li>
+  <li><a href="#day-two-walkthrough" id="toc-day-two-walkthrough" class="nav-link" data-scroll-target="#day-two-walkthrough">Day two walkthrough</a></li>
+  <li><a href="#qsar-fish-toxicity-dataset" id="toc-qsar-fish-toxicity-dataset" class="nav-link" data-scroll-target="#qsar-fish-toxicity-dataset">QSAR Fish Toxicity Dataset</a></li>
+  <li><a href="#fitting-a-function" id="toc-fitting-a-function" class="nav-link" data-scroll-target="#fitting-a-function">Fitting a function</a></li>
+  <li><a href="#fitting-a-function-1" id="toc-fitting-a-function-1" class="nav-link" data-scroll-target="#fitting-a-function-1">Fitting a function</a></li>
+  <li><a href="#constant-functions" id="toc-constant-functions" class="nav-link" data-scroll-target="#constant-functions">Constant functions</a></li>
+  <li><a href="#constant-functions-1" id="toc-constant-functions-1" class="nav-link" data-scroll-target="#constant-functions-1">Constant functions</a></li>
+  <li><a href="#linear-functions" id="toc-linear-functions" class="nav-link" data-scroll-target="#linear-functions">Linear functions</a></li>
+  <li><a href="#function-classes" id="toc-function-classes" class="nav-link" data-scroll-target="#function-classes">Function classes</a></li>
+  <li><a href="#loss" id="toc-loss" class="nav-link" data-scroll-target="#loss">Loss</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">Bibliography</a></li>
   </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="key_concepts.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="key_concepts.pdf"><i class="bi bi-file-pdf"></i>Beamer</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Key concepts</h1>
-<p class="subtitle lead">Stat 154/254: Statistical Machine Learning</p>
+<h1 class="title">Class introduction</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Ryan Giordano </p>
+          </div>
+  </div>
     
   
     
@@ -206,149 +221,327 @@ window.Quarto = {
 </header>
 
 
-<p>For study purposes, this is a list of keywords that I consider central to the course. By the end of the course, you should have a good sense of what each word means and how it relates to other key concepts.</p>
-<section id="high-level-concepts" class="level1">
-<h1>High level concepts</h1>
-<p>Everything we do in the course is related to at least one of these connected topics.</p>
+<!--
+Note: You can open the pdf with xournalpp and annotate it live
+ -->
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors
+
+Attaching package: 'gridExtra'
+
+
+The following object is masked from 'package:dplyr':
+
+    combine</code></pre>
+</div>
+</div>
+<section id="key-concepts" class="level1">
+<h1>Key concepts</h1>
+<p>This class will focus almost entirely on <em>supervised learning</em>.</p>
+<p>Here are the key concepts:</p>
 <ul>
-<li>“Statistics”</li>
-<li>“Machine learning”</li>
-<li>“Correct specification”</li>
-<li>“Prediction”</li>
-<li>“Inference”</li>
-<li>“Loss”</li>
-<li>“Risk”</li>
-<li>“Generalization”</li>
-<li>“Overfitting”</li>
-<li>“Regularization”</li>
-<li>“Complexity”</li>
-<li>“Probabilistic models”</li>
-<li>“Computation”</li>
-</ul>
-</section>
-<section id="intermediate-level-concepts" class="level1">
-<h1>Intermediate level concepts</h1>
-<p>These topics provide detail and specificity for the high level concepts in the context of the present course. They provide a conceptual bridge between the high level topics and the actual theoretical and practical tools of the lower level topics.</p>
+<li>What does it mean to do well on a supervised learning problem?
 <ul>
-<li>“Empiricial distribution”</li>
-<li>“Population distribution”</li>
-<li>“Empiricial risk”</li>
-<li>“Population risk”</li>
-<li>“Expected loss”</li>
-<li>“IID data”</li>
-<li>“Regression model”</li>
-<li>“Probability model”</li>
-<li>“Classifier model”</li>
-<li>“Overfitting”</li>
-<li>“Bias / variance tradeoff”</li>
-<li>“Conditional expectation”</li>
-<li>“Complexity”</li>
-<li>“Smoothness”</li>
-<li>“Basis functions”</li>
-</ul>
-</section>
-<section id="lower-level-concepts" class="level1">
-<h1>Lower level concepts</h1>
-<p>These are instances of specific key theoretical or practical results from the course. If you actually solve a problem or justify a method, you’ll end up using something at this level of specificity.</p>
-<ul>
-<li>“Linear models”</li>
-<li>“Linear regression”</li>
-<li>“Squared error”</li>
-<li>“Mean absolute error”</li>
-<li>“Zero-one loss”</li>
-<li>“Cross entropy loss”</li>
-<li>“Logistic regression”</li>
-<li>“Logistic regression loss”</li>
-<li>“Residual sum of squares”</li>
-<li>“Variable selection”</li>
-<li>“Law of large numbers”</li>
-<li>“Central limit theorem”</li>
-<li>“Uniform law of large numbers”</li>
-<li>“Indicator functions”</li>
-<li>“Splines”</li>
-<li>“Nonlinear feature maps”</li>
-<li>“L2 (ridge) regularization”</li>
-<li>“L1 (lasso) regularization”</li>
-<li>“Regressor colinearity”</li>
-<li>“Existence of unique minimizers”</li>
-<li>“Series expansion”</li>
-<li>“Taylor series”</li>
-<li>“Fourier series”</li>
-<li>“Cross validation”</li>
-<li>“Test set”</li>
-<li>“Leave–one–out cross validation”</li>
-<li>“K–fold cross validation”</li>
-<li>“True positives and false positives”</li>
-<li>“True negatives and false negatives”</li>
-<li>“Receiver operating characteristic curves”</li>
-<li>“Combining estimators”</li>
-<li>“Separating hyperplanes”</li>
-<li>“Sparse regression vectors”</li>
-<li>“Optimization duality”</li>
-<li>“Generative modeling for classifiers”</li>
-<li>“Discriminative classifiers”</li>
-<li>“Shattering”</li>
-<li>“VC dimension”</li>
-<li>“Integrable Lipschitz condition”</li>
-<li>“Maximum likelihood estimation”</li>
-<li>“The CART algorithm”</li>
-<li>“Decision trees”</li>
-<li>“Partitions”</li>
-<li>“Cost-complexity pruning”</li>
-<li>“Variable importance”</li>
-<li>“Bootstrap”</li>
-<li>“Bagging”</li>
-<li>“Generalized additive models”</li>
-<li>“Weak learners”</li>
-<li>“Boosting”</li>
-<li>“Gradient boosting”</li>
-<li>“Greedy optimization”</li>
-<li>“Gradient descent”</li>
-<li>“Stochastic gradient descent”</li>
-<li>“Forward stagewise optimization”</li>
-</ul>
-<section id="kernel-methods-not-covered-yet" class="level2">
-<h2 class="anchored" data-anchor-id="kernel-methods-not-covered-yet">Kernel methods (not covered yet)</h2>
-<ul>
-<li>“Inner products”</li>
-<li>“Dot products”</li>
-<li>“The kernel trick”</li>
-<li>“The push-through identity”</li>
-<li>“Support vector machines”</li>
-<li>“Positive definite kernel”</li>
-<li>“Gram matrix”</li>
-<li>“Eigenvalues”</li>
-<li>“Eigenvectors”</li>
-<li>“Eigenfunctions”</li>
-<li>“Feature maps”</li>
-<li>“Monomial features”</li>
-<li>“Polynomial kernel”</li>
-<li>“RBF kernel”</li>
-<li>“Dot product kernel”</li>
-<li>“Reproducing kernel Hilbert space”</li>
-<li>“RKHS norm”</li>
-<li>“RKHS inner product”</li>
-<li>“The reproducing property”</li>
-<li>“Mercer’s theorem”</li>
-<li>“The representer theorem”</li>
-<li>“Inner products of functions”</li>
-<li>“Infinite-dimensional vector space”</li>
-</ul>
-</section>
-</section>
-<section id="study-ideas" class="level1">
-<h1>Study ideas</h1>
-<p>Here are some ways you can use this keyword list as a study aid.</p>
-<ul>
-<li>Put each topic in one or several units of the course</li>
-<li>Look at a given homework problem.
-<ul>
-<li>Which topics does it touch on at each level?</li>
-<li>How does the homework problem connect different topics?</li>
+<li>Random data, loss, and risk</li>
+<li><strong>Empirical risk minimization</strong>, <strong>generalization</strong></li>
 </ul></li>
-<li>Pick a low level topic and trace its “conceptual geneology” up through the intermediate and higher level concepts</li>
-<li>Make a “concept map” for some set of topics, drawing lines between connected ideas. Explain your concept map to someone else</li>
+<li>What would we do if we had an infinite amount of data?
+<ul>
+<li>Generating computational tools to fit arbitrary functions</li>
+<li><strong>Expressive function classes</strong></li>
+</ul></li>
+<li>What goes wrong when we have only a limited amount of data?
+<ul>
+<li>Avoid overfitting by limiting the expressivity of function classes</li>
+<li><strong>Regularization</strong></li>
+</ul></li>
+<li>How do we find a sweet spot between expressiveness and overfitting?
+<ul>
+<li>Theory: <strong>generalization bounds</strong></li>
+<li>Practice: <strong>out-of-sample error</strong></li>
+</ul></li>
 </ul>
+</section>
+<section id="day-one-walkthrough" class="level1">
+<h1>Day one walkthrough</h1>
+<ul>
+<li>Fitting a given function if all you can do is query it
+<ul>
+<li>Function classes
+<ul>
+<li>What if you need to make a prediction at a point you’ve never seen before?</li>
+<li>An approximation scheme comes with a class of functions that it can represent.</li>
+</ul></li>
+<li>Loss
+<ul>
+<li>You’ve chosen some approximation. How well does it do?</li>
+<li>When you observe the function exactly, is there any reason not to choose an arbitrarily expressive function class?</li>
+<li>Plot best function in class versus truth as function class increases</li>
+</ul></li>
+<li>Randomly chosen query locations
+<ul>
+<li>Where should you query?</li>
+<li>You need to know that future queries will need to look like the present queries somehow</li>
+</ul></li>
+<li>Risk (versus pointwise loss)
+<ul>
+<li>Can you guaranteed low loss on a point you’ve never seen before? (Spiky functions)</li>
+<li>Assumptions about confounders</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="day-two-walkthrough" class="level1">
+<h1>Day two walkthrough</h1>
+<ul>
+<li>Random responses
+<ul>
+<li>Conditional distributions of responses
+<ul>
+<li>What happens if you query the same point twice and get different answers? Conditional distribution</li>
+</ul></li>
+<li>Irreducible loss
+<ul>
+<li>What’s the best you can do if there’s noise in the response?</li>
+<li>Optimal prediction function, and gap with function class</li>
+</ul></li>
+<li>Overfitting
+<ul>
+<li>Suppose you have chosen a nice, expressive class, but have random y.</li>
+<li>Can you tell whether you’ve overfit just by looking at the data? (No)</li>
+<li>Plot best function in class versus truth vs data</li>
+</ul></li>
+<li>Checking for overfitting for a single x
+<ul>
+<li>For a given point, ideally check the same point multiple times</li>
+<li>For a given point, check nearby points and assume smoothness</li>
+</ul></li>
+<li>Checking for overfitting when risk is the goal
+<ul>
+<li>If all we want is risk, get a new point to check.</li>
+<li>And if your data is IID and you can’t get a new point, just leave a point out</li>
+<li>If the function class is smooth, and you can “borrow” from neighbors, you might hope that the estimate goes to the best function in the class</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="qsar-fish-toxicity-dataset" class="level1">
+<h1>QSAR Fish Toxicity Dataset</h1>
+<div class="columns">
+<div class="column" style="width:70%;">
+<p>These examples will be based on the <a href="https://archive.ics.uci.edu/dataset/504/qsar+fish+toxicity">UCI QSAR Fish Toxicity Dataset</a>.</p>
+<p>The dataset consists of a set of 908 chemicals (one row each), with data for:</p>
+<ul>
+<li><code>LC50</code>: the concentration that causes death in 50% of test fish over a test duration of 96 hours.</li>
+<li><code>MLOGP</code>: (molecular properties)</li>
+<li><code>CIC0</code>: (information indices)</li>
+<li><code>GATS1i</code>: (2D autocorrelations)</li>
+<li><code>NdssC</code>: (atom-type counts)</li>
+<li><code>NdsCH</code>: (atom-type counts)</li>
+<li><code>SM1_Dz</code>: (2D matrix-based descriptors)</li>
+</ul>
+</div><div class="column" style="width:30%;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../datasets/qsarfishtoxicity/sad_fish.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<figcaption>Sad fish</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>“Quantitative structure–activity relationship” (QSAR) models predict some chemical property (toxicity to the fathead minnow) from structural features of the molecules.</p>
+<p><strong>Task</strong>: Set <span class="math inline">\(x=\)</span><code>GATS1i</code>, <span class="math inline">\(y=\)</span><code>LC50</code>, and use ML to predict fish mortality from 2D autocorrelations.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Describe some concrete settings when you would want to use an ML model that could perform this task.</p>
+</div>
+</div>
+<!--
+Instructor notes:
+  - Ask what you should do if you need to know about a molecule already in this dataset
+  - Ask what happens if you need to know about a molecule very different than the molecules in this dataset.
+    How might you know what "very different" means?
+  - Does the answer to this question mean something different to an environmentalist,
+    factory owner, government regulator, chemisty reasearcher, or biologist?
+ -->
+<p><strong>Note:</strong> I will be simulating data using a “ground truth” that is loosely based on patterns from the actual data.</p>
+</section>
+<section id="fitting-a-function" class="level1">
+<h1>Fitting a function</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Let’s imagine that <span class="math inline">\(y\)</span> (fish toxicity) is determined exactly by <span class="math inline">\(x\)</span> (2D autocorrelations).</p>
+<p>That means <span class="math inline">\(y = f^{\star}(x)\)</span> for some <span class="math inline">\(f^{\star}\)</span>.</p>
+<p>We don’t know <span class="math inline">\(f^{\star}\)</span>, but we can <em>query</em> it by selecting <span class="math inline">\(x\)</span> (a molecule) and measuring <span class="math inline">\(y\)</span> (seeing what concentration kills minnows)</p>
+</section>
+<section id="fitting-a-function-1" class="level1">
+<h1>Fitting a function</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Task: Query <span class="math inline">\((x_n, y_n)\)</span> pairs and make a <em>program</em> that returns <span class="math inline">\(\hat{f}(x) \approx f^{\star}(x)\)</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Suppose you can query a very large number of datapoints.</p>
+<ul>
+<li>Can you ever perfectly approximate <span class="math inline">\(f^{\star}(x_\mathrm{new})\)</span> at an unseen <span class="math inline">\(x_\mathrm{new}\)</span>?</li>
+<li>Propose the simplest procedure you can think of (even if not very good).</li>
+<li>Propose a more complex procedure that will do a better job.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="constant-functions" class="level1">
+<h1>Constant functions</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The simplest approximation is arguably the constant <span class="math inline">\(\hat{f}(x) = \frac{1}{N} \sum_{n=1}^Nf^{\star}(x_n)\)</span>.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Think of an application for which a good constant is enough.</li>
+<li>Think of an application for which a good constant is not enough.</li>
+<li>Will the constant you estimate depend on which <span class="math inline">\(x_n\)</span> you select? How?</li>
+<li>Can you think of other ways to take the data and choose the constant?</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="constant-functions-1" class="level1">
+<h1>Constant functions</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Using a constant function selects <span class="math inline">\(\hat{f}\)</span> from the <em>function class</em>: <span class="math display">\[
+\mathcal{F}_{constant} := \{ f: f(x) = c \textrm{ for some real-valued }c\}
+\]</span></p>
+<p>The function class is the set of <em>all functions that you could represent</em> with your procedure.</p>
+<p>An “estimation procedure” takes in data <span class="math inline">\(\mathcal{D}= \{ (x_1, y_1), \dots, (x_N, y_N)\}\)</span> and returns a function <span class="math inline">\(\hat{f}\in \mathcal{F}_{constant}\)</span>.</p>
+<p>This is equivalent to choosing a <span class="math inline">\(\hat{c}\)</span> and taking <span class="math inline">\(\hat{f}(x) = \hat{c}\)</span>.</p>
+<p>This class is about designing and studying estimation procedures.</p>
+</section>
+<section id="linear-functions" class="level1">
+<h1>Linear functions</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We can also define the class of linear functions: <span class="math display">\[
+\begin{aligned}
+\mathcal{F}_{constant} :={}&amp; \{ f: f(x) = c \textrm{ for some real-valued }c\}\\
+\mathcal{F}_{linear} :={}&amp; \{ f: f(x) = c + b x \textrm{ for some real-valued }c, b\}\\
+\end{aligned}
+\]</span></p>
+<p>Every constant function is also a linear function, but some linear functions are not constant functions.</p>
+<p>We say that <span class="math inline">\(\mathcal{F}_{linear}\)</span> is <em>a more expressive function class</em> than <span class="math inline">\(\mathcal{F}_{constant}\)</span>.</p>
+</section>
+<section id="function-classes" class="level1">
+<h1>Function classes</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>A key theme of this class is developing expressive function classes!</strong></p>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Identify the function classes for some of the examples given earlier. Which are more expressive? Which are the least expressive?</p>
+</div>
+</div>
+</section>
+<section id="loss" class="level1">
+<h1>Loss</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We want to choose <span class="math inline">\(\hat{f}\in \mathcal{F}\)</span> that is a “good approximation,” so we have to say what “good” means.</p>
+<p>Suppose we have some <span class="math inline">\(x_\mathrm{new}\)</span> (maybe in the dataset, maybe not). Define the loss <span class="math inline">\(\mathscr{L}(\hat{f}(x_\mathrm{new}), y_\mathrm{new})\)</span>.</p>
+</section>
+<section id="bibliography" class="level1">
+<h1>Bibliography</h1>
 
 
 </section>
