@@ -202,8 +202,9 @@ window.Quarto = {
   <li><a href="#llns-and-clts" id="toc-llns-and-clts" class="nav-link" data-scroll-target="#llns-and-clts"><span class="header-section-number">4</span> LLNs and CLTs</a></li>
   <li><a href="#multivariate-calculus" id="toc-multivariate-calculus" class="nav-link" data-scroll-target="#multivariate-calculus"><span class="header-section-number">5</span> Multivariate calculus</a></li>
   <li><a href="#projections-yu2022stat154-hw-1.3" id="toc-projections-yu2022stat154-hw-1.3" class="nav-link" data-scroll-target="#projections-yu2022stat154-hw-1.3"><span class="header-section-number">6</span> Projections (<span class="citation" data-cites="yu:2022:stat154">Yu (2022)</span> HW 1.3)</a></li>
-  <li><a href="#constrained-optimization" id="toc-constrained-optimization" class="nav-link" data-scroll-target="#constrained-optimization"><span class="header-section-number">7</span> Constrained optimization</a></li>
-  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">8</span> Bibliography</a></li>
+  <li><a href="#regression-on-an-indicator" id="toc-regression-on-an-indicator" class="nav-link" data-scroll-target="#regression-on-an-indicator"><span class="header-section-number">7</span> Regression on an indicator</a></li>
+  <li><a href="#constrained-optimization-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-constrained-optimization-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#constrained-optimization-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">8</span> Constrained optimization (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">9</span> Bibliography</a></li>
   </ul>
 </nav>
     </div>
@@ -253,7 +254,7 @@ window.Quarto = {
 <p><strong>(d)</strong> Let <span class="math inline">\(f(x) = x\)</span> and let <span class="math inline">\(C = (0,1)\)</span> denote the open unit interval. Find <span class="math inline">\(\sup_{x} f(x)\)</span>, and show that <span class="math inline">\(\max_{x} f(x)\)</span> does not exist.</p>
 <p><strong>(e)</strong> Let <span class="math inline">\(f(x) = 1\)</span> be a constant, and find <span class="math inline">\(\underset{x \in (0,1)}{\mathrm{argmin}}\, f(x)\)</span>.</p>
 <p><strong>(f)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) Identify a function defined on all of <span class="math inline">\([0,1]\)</span> for which <span class="math inline">\(\sup_{x\in [0,1]} f(x) = 1\)</span> but for which the maximum does not exist.</p>
-<p><strong>(g)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) Let <span class="math inline">\(A = \begin{pmatrix}1 &amp; 0 \\ 0 &amp; 0\end{pmatrix}\)</span> and find <span class="math inline">\(\underset{x \in \mathbb{R}^{2}}{\mathrm{argmin}}\, x^\intercal A x\)</span>.</p>
+<p><strong>(g)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) Let <span class="math inline">\(A = \begin{pmatrix}1 &amp; 0 \\ 0 &amp; 0\end{pmatrix}\)</span> and find <span class="math inline">\(\underset{x\in \mathbb{R}^{2}}{\mathrm{argmin}}\, x^\intercal A x\)</span>.</p>
 <!-- ---------------------------------------------------------------- -->
 <!-- ---------------------------------------------------------------- -->
 <!-- ---------------------------------------------------------------- -->
@@ -272,13 +273,10 @@ window.Quarto = {
 <li><span class="math inline">\(\mathbb{P}_{\,}\left(y| \boldsymbol{x}\right)\)</span></li>
 <li><span class="math inline">\(\mathbb{P}_{\,}\left(y\right)\)</span></li>
 <li><span class="math inline">\(\mathbb{P}_{\,}\left(\varepsilon\vert \boldsymbol{x}\right)\)</span></li>
-<li><span class="math inline">\(\mathbb{P}_{\,}\left(\varepsilon\vert y, \boldsymbol{x}\right)\)</span></li>
-<li><span class="math inline">\(\mathbb{P}_{\,}\left(\boldsymbol{x}| y\right)\)</span></li>
 </ol>
-<p><strong>(b)</strong> When <span class="math inline">\(\boldsymbol{\beta}= \boldsymbol{0}\)</span>, how is <span class="math inline">\(\mathbb{P}_{\,}\left(\boldsymbol{x}\vert y\right)\)</span> different from <span class="math inline">\(\mathbb{P}_{\,}\left(\boldsymbol{x}\right)\)</span>? Explain this result in intuitive terms.</p>
-<p><strong>(c)</strong> When <span class="math inline">\(\sigma = 0\)</span>, what is the dimension of the support of <span class="math inline">\(\mathbb{P}_{\,}\left(\boldsymbol{x}\vert y\right)\)</span>? (Recall that the support is, informally, the region of nonzero probability.) Explain this result in intuitive terms.</p>
-<p><strong>(d)</strong> As the diagonal entries of <span class="math inline">\(\Sigma\)</span> go to infinity, how is <span class="math inline">\(\mathrm{Var}_{\,}\left(y\vert \boldsymbol{x}\right)\)</span> different from <span class="math inline">\(\mathrm{Var}_{\,}\left(y\right)\)</span>? Explain your answer in intuitive terms.</p>
-<p><strong>(e)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</p>
+<p><strong>(b)</strong> When <span class="math inline">\(\boldsymbol{\beta}\ne \boldsymbol{0}\)</span>, how is <span class="math inline">\(\mathrm{Var}_{\,}\left(y\vert \boldsymbol{x}\right)\)</span> different from <span class="math inline">\(\mathrm{Var}_{\,}\left(y\right)\)</span>? Explain this result in intuitive terms.</p>
+<p><strong>(c)</strong> What is the “distribution” of <span class="math inline">\(\mathbb{P}_{\,}\left(\varepsilon\vert \boldsymbol{x}, y\right)\)</span>?</p>
+<p><strong>(d)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</p>
 <p>Now, additionally assume that <span class="math inline">\(\boldsymbol{\beta}\sim \mathcal{N}\left(\boldsymbol{0}, \boldsymbol{V}\right)\)</span> independently of <span class="math inline">\(\boldsymbol{x}\)</span>, and that <span class="math inline">\(y= \boldsymbol{x}^\intercal\boldsymbol{\beta}+ \varepsilon\)</span> holds conditionally on <span class="math inline">\(\boldsymbol{x}\)</span>, <span class="math inline">\(\boldsymbol{\beta}\)</span>, and <span class="math inline">\(\varepsilon\)</span>. Give explicit expressions for the following distributions in terms of <span class="math inline">\(\Sigma\)</span>, <span class="math inline">\(\sigma\)</span>, and <span class="math inline">\(\boldsymbol{V}\)</span>.</p>
 <ol type="a">
 <li><span class="math inline">\(\mathbb{P}_{\,}\left((y, \boldsymbol{\beta}^\intercal)^\intercal\vert \boldsymbol{x}\right)\)</span></li>
@@ -305,8 +303,8 @@ window.Quarto = {
 <h4 class="anchored" data-anchor-id="c-1">(c)</h4>
 <p>Let <span class="math inline">\(z_n = x_n - 0.5\)</span>. What is <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\frac{1}{\sqrt{N}} \sum_{n=1}^Nz_n\right]\)</span> and <span class="math inline">\(\mathrm{Var}_{\,}\left(\frac{1}{\sqrt{N}} \sum_{n=1}^Nz_n\right)\)</span>?</p>
 </section>
-<section id="d-1" class="level4">
-<h4 class="anchored" data-anchor-id="d-1">(d)</h4>
+<section id="d" class="level4">
+<h4 class="anchored" data-anchor-id="d">(d)</h4>
 <p>What is <span class="math inline">\(\lim_{N \rightarrow \infty} \frac{1}{\sqrt{N}} \sum_{n=1}^N(x_n - 0.5)\)</span>? Explain how your answer relates to your result from (c).</p>
 </section>
 <section id="e" class="level4">
@@ -358,12 +356,12 @@ window.Quarto = {
 <h4 class="anchored" data-anchor-id="c-3">(c)</h4>
 <p>Using (a), compute <span class="math inline">\(\partial^2 \mathcal{L}(\boldsymbol{\beta}) / \partial \boldsymbol{\beta}\partial \boldsymbol{\beta}^\intercal\)</span>.</p>
 </section>
-<section id="d-3" class="level4">
-<h4 class="anchored" data-anchor-id="d-3">(d)</h4>
+<section id="d-2" class="level4">
+<h4 class="anchored" data-anchor-id="d-2">(d)</h4>
 <p>Let <span class="math inline">\(\boldsymbol{X}\)</span> denote the <span class="math inline">\(N \times P\)</span> matrix whose <span class="math inline">\(n\)</span>–th row is <span class="math inline">\(\boldsymbol{x}_n^\intercal\)</span>, and let <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> denote the <span class="math inline">\(N \times 1\)</span> column vector whose <span class="math inline">\(n\)</span>–th entry is <span class="math inline">\(y_n - \phi(\boldsymbol{x}_n^\intercal\boldsymbol{\beta})\)</span>. Write <span class="math inline">\(\partial \mathcal{L}(\boldsymbol{\beta}) / \partial \boldsymbol{\beta}\)</span> using <span class="math inline">\(\boldsymbol{X}\)</span> and <span class="math inline">\(\boldsymbol{\varepsilon}\)</span> using only matrix multiplication (i.e., without explicit summation of the form <span class="math inline">\(\sum_{n=1}^N(\cdot)\)</span>).</p>
 </section>
-<section id="e-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d-1" class="level4">
-<h4 class="anchored" data-anchor-id="e-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d-1">(e) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h4>
+<section id="e-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level4">
+<h4 class="anchored" data-anchor-id="e-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d">(e) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h4>
 <p>Sketch pseudocode for an iterative computer program to approximately find a <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> satisfying <span class="math inline">\(\left. \frac{\partial \mathcal{L}(\boldsymbol{\beta})}{\partial \boldsymbol{\beta}} \right|_{\hat{\boldsymbol{\beta}}} = \boldsymbol{0}\)</span>.</p>
 </section>
 <section id="f-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d-2" class="level4">
@@ -388,13 +386,13 @@ window.Quarto = {
 <h4 class="anchored" data-anchor-id="c-5">(c)</h4>
 <p>Write the projection matrices in the previous two cases.</p>
 </section>
-<section id="d-5" class="level4">
-<h4 class="anchored" data-anchor-id="d-5">(d)</h4>
-<p>Write the expression for the orthogonal projection of a vector <span class="math inline">\(\boldsymbol{x}\in \mathbb{R}^{d}\)</span> along any given vector <span class="math inline">\(\boldsymbol{a}\in \mathbb{R}^{d}\)</span>. What is the projection matrix in this case?</p>
+<section id="d-4" class="level4">
+<h4 class="anchored" data-anchor-id="d-4">(d)</h4>
+<p>Write the expression for the orthogonal projection of a vector <span class="math inline">\(\boldsymbol{x}\in \mathbb{R}^{D}\)</span> along any given vector <span class="math inline">\(\boldsymbol{a}\in \mathbb{R}^{D}\)</span>. What is the projection matrix in this case?</p>
 </section>
 <section id="e-2" class="level4">
 <h4 class="anchored" data-anchor-id="e-2">(e)</h4>
-<p>Given two orthogonal vectors <span class="math inline">\(\boldsymbol{a}_{1}\)</span> and <span class="math inline">\(\boldsymbol{a}_{2}\)</span> in <span class="math inline">\(\mathbb{R}^{d}\)</span>, what is the orthognal projection of a generic vector <span class="math inline">\(\boldsymbol{x}\)</span> on to the subspace spanned by these two vectors?</p>
+<p>Given two orthogonal vectors <span class="math inline">\(\boldsymbol{a}_{1}\)</span> and <span class="math inline">\(\boldsymbol{a}_{2}\)</span> in <span class="math inline">\(\mathbb{R}^{D}\)</span>, what is the orthognal projection of a generic vector <span class="math inline">\(\boldsymbol{x}\)</span> on to the subspace spanned by these two vectors?</p>
 </section>
 <section id="f" class="level4">
 <h4 class="anchored" data-anchor-id="f">(f)</h4>
@@ -402,7 +400,7 @@ window.Quarto = {
 </section>
 <section id="g" class="level4">
 <h4 class="anchored" data-anchor-id="g">(g)</h4>
-<p>Generalize the answer from (f) to the case to compute the orthogonal projection along a k-dimensional subspace spanned by the vectors <span class="math inline">\(\boldsymbol{a}_{1}, \ldots, \boldsymbol{a}_{k}\)</span> which need not be orthogonal.</p>
+<p>Generalize the answer from (f) to the case to compute the orthogonal projection along a <span class="math inline">\(K\)</span>-dimensional subspace spanned by the vectors <span class="math inline">\(\boldsymbol{a}_{1}, \ldots, \boldsymbol{a}_{K}\)</span> which need not be orthogonal.</p>
 </section>
 <section id="h" class="level4">
 <h4 class="anchored" data-anchor-id="h">(h)</h4>
@@ -426,14 +424,38 @@ window.Quarto = {
 <!-- ---------------------------------------------------------------- -->
 </section>
 </section>
-<section id="constrained-optimization" class="level1" data-number="7">
-<h1 data-number="7"><span class="header-section-number">7</span> Constrained optimization</h1>
+<section id="regression-on-an-indicator" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Regression on an indicator</h1>
+<p>For this problem, let <span class="math inline">\(z_n \in \{0, 1\}\)</span> be a binary regressor and let <span class="math inline">\(y_n \in \mathbb{R}^{}\)</span> be a bounded, continuous random variable. You may assume that the pairs <span class="math inline">\((z_n, y_n)\)</span> are independent and identically distributed for <span class="math inline">\(n=1,\ldots,N\)</span>.</p>
+<p>Let <span class="math inline">\(\boldsymbol{\beta}= (\beta_0, \beta_1)^\intercal\in \mathbb{R}^{2}\)</span>. For a fixed <span class="math inline">\(\lambda &gt; 0\)</span>, let <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta}) = \frac{1}{N} \sum_{n=1}^N(y_n - \beta_0 - \beta_1 z_n)^2 + \lambda \beta_1^2\)</span>.</p>
+<p><strong>(a)</strong> Let <span class="math inline">\(\boldsymbol{X}\)</span> denote an <span class="math inline">\(N \times 2\)</span> matrix, whose first column is all ones, and whose second column contains <span class="math inline">\(z_1, \ldots, z_N\)</span>:</p>
+<p><span class="math display">\[
+\boldsymbol{X}= \begin{pmatrix}
+1 &amp; z_1 \\
+1 &amp; z_2 \\
+\vdots \\
+1 &amp; z_N \\
+\end{pmatrix}.
+\]</span></p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}\)</span> denote the <span class="math inline">\(N \times 1\)</span> vector containing <span class="math inline">\(y_1, \ldots, y_N\)</span>. Write the squared error, <span class="math inline">\(\frac{1}{N} \sum_{n=1}^N(y_n - \beta_0 - \beta_1 z_n)^2\)</span>, in terms of <span class="math inline">\(\boldsymbol{X}\)</span>, <span class="math inline">\(\boldsymbol{Y}\)</span>, <span class="math inline">\(\boldsymbol{\beta}\)</span>, and <span class="math inline">\(N\)</span> only.</p>
+<p><strong>(b)</strong> Write an explicit expression for the gradient <span class="math inline">\(\nabla \hat{\mathscr{R}}(\boldsymbol{\beta}) := \partial \hat{\mathscr{R}}(\boldsymbol{\beta}) / \partial \boldsymbol{\beta}\)</span>.</p>
+<p><strong>(c)</strong> Write an expression for <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span>, the unique minimum of <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span>, assuming it exists.</p>
+<p><strong>(d) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</strong> Under what conditions is <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span>, defined in 1(c), unique?</p>
+<p><strong>(e) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</strong> Fix a dataset <span class="math inline">\(\boldsymbol{X}\)</span> and <span class="math inline">\(\boldsymbol{Y}\)</span>. For this dataset, what is <span class="math inline">\(\lim_{\lambda \rightarrow \infty} \hat{\boldsymbol{\beta}}(\lambda)\)</span>? <strong>Note: For this question, the limit is with respect to <span class="math inline">\(\lambda\)</span>, with <span class="math inline">\(N\)</span> and the data fixed.</strong></p>
+<p><strong>(f) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</strong> Fix <span class="math inline">\(\lambda &gt; 0\)</span>. Write an expression for <span class="math inline">\(\lim_{N\rightarrow \infty} \hat{\boldsymbol{\beta}}(\lambda)\)</span> in terms of expectations over the random variable <span class="math inline">\(x,y\)</span>. <strong>Note: For this question, the limit is with respect to <span class="math inline">\(N\)</span>, with <span class="math inline">\(\lambda\)</span> fixed.</strong></p>
+<!------------------------------------------------->
+<!-- ---------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------- -->
+<!-- ---------------------------------------------------------------- -->
+</section>
+<section id="constrained-optimization-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Constrained optimization (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
 <p>The purpose of this exercise is to justify the method of Lagrange multipliers in a special case that will come up a lot in this class. You should have seen Lagrange multipliers for constrained optimization in multivariate calculus before, though in this problem we will be particularly careful to carefully justify the method.</p>
 <p>Consider the objective function <span class="math display">\[
-\mathscr{L}(\theta) = \frac{1}{2}\boldsymbol{\theta}^\intercal\boldsymbol{A}\boldsymbol{\theta}+ \boldsymbol{b}^\intercal\boldsymbol{\theta}+ c
-\]</span> for <span class="math inline">\(\boldsymbol{\theta}\in \mathbb{R}^{P}\)</span>, a symmetric, positive definite matrix <span class="math inline">\(\boldsymbol{A}\)</span>, a given vector <span class="math inline">\(\boldsymbol{b}\in \mathbb{R}^{P}\)</span>, and a constant <span class="math inline">\(c\)</span>. We want to find the minimum of <span class="math inline">\(\mathscr{L}(\theta)\)</span> among vectors with squared norm less than some fixed, known <span class="math inline">\(t\)</span>. Let <span class="math inline">\(D = \{\theta: \left\Vert\boldsymbol{\theta}\right\Vert_2^2 \le t\}\)</span> where <span class="math inline">\(\left\Vert\boldsymbol{\theta}\right\Vert_2^2 := \boldsymbol{\theta}^\intercal\boldsymbol{\theta}\)</span>. We want to find the solution to the “primal problem”</p>
+\mathscr{L}(\boldsymbol{\theta}) = \frac{1}{2}\boldsymbol{\theta}^\intercal\boldsymbol{A}\boldsymbol{\theta}+ \boldsymbol{b}^\intercal\boldsymbol{\theta}+ c
+\]</span> for <span class="math inline">\(\boldsymbol{\theta}\in \mathbb{R}^{P}\)</span>, a symmetric, positive definite matrix <span class="math inline">\(\boldsymbol{A}\)</span>, a given vector <span class="math inline">\(\boldsymbol{b}\in \mathbb{R}^{P}\)</span>, and a constant <span class="math inline">\(c\)</span>. We want to find the minimum of <span class="math inline">\(\mathscr{L}(\theta)\)</span> among vectors with squared norm less than some fixed, known <span class="math inline">\(t\)</span>. Let <span class="math inline">\(D = \{\boldsymbol{\theta}: \left\Vert\boldsymbol{\theta}\right\Vert_2^2 \le t\}\)</span> where <span class="math inline">\(\left\Vert\boldsymbol{\theta}\right\Vert_2^2 := \boldsymbol{\theta}^\intercal\boldsymbol{\theta}\)</span>. We want to find the solution to the “primal problem”</p>
 <p><span class="math display">\[
-M_p := \inf_{\theta \in D} \mathscr{L}(\theta).
+M_p := \inf_{\boldsymbol{\theta}\in D} \mathscr{L}(\boldsymbol{\theta}).
 \]</span></p>
 <p>We will also consider the “dual problem” <span class="math display">\[
 \begin{aligned}
@@ -441,7 +463,7 @@ M_p := \inf_{\theta \in D} \mathscr{L}(\theta).
 M_d :={}&amp; \sup_{\lambda \ge 0} \inf_{\boldsymbol{\theta}\in \mathbb{R}^{P}} \mathscr{L}(\boldsymbol{\theta}, \lambda).
 \end{aligned}
 \]</span></p>
-<p>The dual problem is easier than the primal problem because it involves an infumum over all <span class="math inline">\(\theta\)</span> rather than a constrained set. The term <span class="math inline">\(\lambda\)</span> is called the “Lagrange multiplier.” Note that, in the dual problem, <span class="math inline">\(\lambda\)</span> is constrained to be positive.</p>
+<p>The dual problem is easier than the primal problem because it involves an infimum over all <span class="math inline">\(\theta\)</span> rather than a constrained set. The term <span class="math inline">\(\lambda\)</span> is called the “Lagrange multiplier.” Note that, in the dual problem, <span class="math inline">\(\lambda\)</span> is constrained to be positive.</p>
 <p>The goal of this exercise is to show carefully that <span class="math inline">\(M_p = M_d\)</span> in this case, so we can safely solve the dual problem instead of the primal problem.</p>
 <p><strong>(a)</strong> Find a closed–form expression for the unconstrained optimization problem <span class="math inline">\(\hat{\boldsymbol{\theta}}^{UC} := \underset{\boldsymbol{\theta}\in \mathbb{R}^{P}}{\mathrm{argmin}}\, \mathscr{L}(\boldsymbol{\theta})\)</span> in terms of <span class="math inline">\(\boldsymbol{A}\)</span>, <span class="math inline">\(\boldsymbol{b}\)</span>, and <span class="math inline">\(c\)</span>.</p>
 <p><strong>(b)</strong> Assuming that <span class="math inline">\(\lambda &gt; 0\)</span>, find a closed–form expression for <span class="math inline">\(\hat{\boldsymbol{\theta}}(\lambda) := \underset{\boldsymbol{\theta}\in \mathbb{R}^{P}}{\mathrm{argmin}}\, \mathscr{L}(\boldsymbol{\theta}, \lambda)\)</span>. In particular, show carefully that we can safely write <span class="math inline">\(\hat{\boldsymbol{\theta}}(\lambda)\)</span> instead of <span class="math inline">\(\hat{\boldsymbol{\theta}}(\lambda, t)\)</span> since the optimum does not depend on <span class="math inline">\(t\)</span>.</p>
@@ -475,23 +497,23 @@ M_p =
 \]</span></p>
 <p>For this exercise, verify each inequality in the preceding expression.</p>
 <p>The remainder of the problem is showing that there exists a saddle point for this problem, and so <span class="math inline">\(M_p = M_d\)</span>.</p>
-<p><strong>(f)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) By (e) it suffices to find a saddle point. We will split the problem into two cases. First, show that if <span class="math inline">\(\hat{\boldsymbol{\theta}}^{UC}\)</span> from (a) has squared norm less than <span class="math inline">\(t\)</span>, then <span class="math inline">\(\hat{\theta}= \hat{\boldsymbol{\theta}}^{UC}\)</span> and <span class="math inline">\(\hat{\lambda}= 0\)</span> is a saddle point.</p>
-<p><strong>(g)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) Now, suppose that <span class="math inline">\(\hat{\boldsymbol{\theta}}^{UC}\)</span> from (a) has squared norm greater than <span class="math inline">\(t\)</span>. Assume that there exists a <span class="math inline">\(\hat{\lambda}\)</span> such that <span class="math inline">\(\hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> from (b) satisfies <span class="math inline">\(\left\Vert\hat{\boldsymbol{\theta}}(\hat{\lambda})\right\Vert_2^2 = t\)</span>. Under this assumption, show that <span class="math inline">\(\hat{\boldsymbol{\theta}}= \hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> and <span class="math inline">\(\hat{\lambda}\)</span> are a saddle point.</p>
-<p><strong>(h)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) Show carefully that there exists there exists a <span class="math inline">\(\hat{\lambda}\)</span> such that <span class="math inline">\(\hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> from (b) satisfies <span class="math inline">\(\left\Vert\hat{\boldsymbol{\theta}}(\hat{\lambda})\right\Vert_2^2 = t\)</span>. <strong>Hint:</strong> You may argue by continuity of the matrix inverse, or you may get a more precise result by considering the eigenvalue decomposition of <span class="math inline">\(A\)</span>.</p>
+<p><strong>(f)</strong> By (e) it suffices to find a saddle point. We will split the problem into two cases. First, show that if <span class="math inline">\(\hat{\boldsymbol{\theta}}^{UC}\)</span> from (a) has squared norm less than <span class="math inline">\(t\)</span>, then <span class="math inline">\(\hat{\theta}= \hat{\boldsymbol{\theta}}^{UC}\)</span> and <span class="math inline">\(\hat{\lambda}= 0\)</span> is a saddle point.</p>
+<p><strong>(g)</strong> Now, suppose that <span class="math inline">\(\hat{\boldsymbol{\theta}}^{UC}\)</span> from (a) has squared norm greater than <span class="math inline">\(t\)</span>. Assume that there exists a <span class="math inline">\(\hat{\lambda}\)</span> such that <span class="math inline">\(\hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> from (b) satisfies <span class="math inline">\(\left\Vert\hat{\boldsymbol{\theta}}(\hat{\lambda})\right\Vert_2^2 = t\)</span>. Under this assumption, show that <span class="math inline">\(\hat{\boldsymbol{\theta}}= \hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> and <span class="math inline">\(\hat{\lambda}\)</span> are a saddle point.</p>
+<p><strong>(h)</strong> Show carefully that there exists a <span class="math inline">\(\hat{\lambda}\)</span> such that <span class="math inline">\(\hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> from (b) satisfies <span class="math inline">\(\left\Vert\hat{\boldsymbol{\theta}}(\hat{\lambda})\right\Vert_2^2 = t\)</span>. <strong>Hint:</strong> You may argue by continuity of the matrix inverse, or you may get a more precise result by considering the eigenvalue decomposition of <span class="math inline">\(A\)</span>.</p>
 <p><strong>(i)</strong> Conclude that, whether we are in case (g) or (h), that <span class="math inline">\(\hat{\boldsymbol{\theta}}(\hat{\lambda}) \in \underset{\boldsymbol{\theta}\in D}{\mathrm{argmin}}\, \mathscr{L}(\boldsymbol{\theta})\)</span>, so <span class="math inline">\(\hat{\boldsymbol{\theta}}(\hat{\lambda})\)</span> is a solution to the primal problem. (For 154 students, you may take the conclusions of the 254 questions for granted.)</p>
-<p><strong>(j)</strong> (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>) <strong>(Extra)</strong> Find an explicit expression for <span class="math inline">\(\hat{\lambda}\)</span> in case (h). <strong>Hint:</strong> Use the first–order condition for <span class="math inline">\(\underset{\boldsymbol{\theta}}{\mathrm{argmin}}\, \mathscr{L}(\boldsymbol{\theta}, \hat{\lambda})\)</span>, together with the fact that <span class="math inline">\(\left\Vert\hat{\boldsymbol{\theta}}(\hat{\lambda})\right\Vert_2^2 = t\)</span>. In light of this expression, interpret the constraint <span class="math inline">\(\hat{\lambda}\ge 0\)</span>.</p>
+<p><strong>(j)</strong> <strong>(Extra)</strong> Find an explicit expression for <span class="math inline">\(\hat{\lambda}\)</span> in case (h). <strong>Hint:</strong> Use the first–order condition for <span class="math inline">\(\underset{\boldsymbol{\theta}}{\mathrm{argmin}}\, \mathscr{L}(\boldsymbol{\theta}, \hat{\lambda})\)</span>, together with the fact that <span class="math inline">\(\left\Vert\hat{\boldsymbol{\theta}}(\hat{\lambda})\right\Vert_2^2 = t\)</span>. In light of this expression, interpret the constraint <span class="math inline">\(\hat{\lambda}\ge 0\)</span>.</p>
 <!-- ---------------------------------------------------------------- -->
 <!-- ---------------------------------------------------------------- -->
 <!-- ---------------------------------------------------------------- -->
 </section>
-<section id="bibliography" class="level1" data-number="8">
+<section id="bibliography" class="level1" data-number="9">
 
 
 
 
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">8 Bibliography</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">9 Bibliography</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-pitman:2012:probability" class="csl-entry" role="listitem">
 Pitman, J. 2012. <em>Probability</em>. Springer Science &amp; Business Media.
 </div>
