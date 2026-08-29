@@ -189,6 +189,11 @@ window.Quarto = {
   <li><a href="#linear-functions" id="toc-linear-functions" class="nav-link" data-scroll-target="#linear-functions">Linear functions</a></li>
   <li><a href="#function-classes" id="toc-function-classes" class="nav-link" data-scroll-target="#function-classes">Function classes</a></li>
   <li><a href="#loss" id="toc-loss" class="nav-link" data-scroll-target="#loss">Loss</a></li>
+  <li><a href="#loss-1" id="toc-loss-1" class="nav-link" data-scroll-target="#loss-1">Loss</a></li>
+  <li><a href="#risk" id="toc-risk" class="nav-link" data-scroll-target="#risk">Risk</a></li>
+  <li><a href="#risk-1" id="toc-risk-1" class="nav-link" data-scroll-target="#risk-1">Risk</a></li>
+  <li><a href="#risk-2" id="toc-risk-2" class="nav-link" data-scroll-target="#risk-2">Risk</a></li>
+  <li><a href="#risk-3" id="toc-risk-3" class="nav-link" data-scroll-target="#risk-3">Risk</a></li>
   <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">Bibliography</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="key_concepts.pdf"><i class="bi bi-file-pdf"></i>Beamer</a></li></ul></div></nav>
@@ -532,13 +537,131 @@ Instructor notes:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="key_concepts_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>We want to choose <span class="math inline">\(\hat{f}\in \mathcal{F}\)</span> that is a “good approximation,” so we have to say what “good” means.</p>
-<p>Suppose we have some <span class="math inline">\(x_\mathrm{new}\)</span> (maybe in the dataset, maybe not). Define the loss <span class="math inline">\(\mathscr{L}(\hat{f}(x_\mathrm{new}), y_\mathrm{new})\)</span>.</p>
+<p>Suppose we have some <span class="math inline">\(x\)</span> with associated <span class="math inline">\(y\)</span>. Let the “loss function” <span class="math inline">\(\mathscr{L}(f(x), y)\)</span> measure how “bad it is” to predict <span class="math inline">\(f(x)\)</span> when the truth was <span class="math inline">\(y\)</span>.</p>
+</section>
+<section id="loss-1" class="level1">
+<h1>Loss</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Common examples:</p>
+<ul>
+<li><span class="math inline">\(\mathscr{L}(f(x), y) = (f(x) - y)^2\)</span></li>
+<li><span class="math inline">\(\mathscr{L}(f(x), y) = \left|f(x) - y\right|\)</span></li>
+<li><span class="math inline">\(\mathscr{L}(f(x), y) = \mathrm{I}\left(f(x) \ne y\right)\)</span> (Here, <span class="math inline">\(\mathrm{I}\left(\cdot\right)\)</span> is the “indicator function.” It evaluates to <span class="math inline">\(1\)</span> if its argument is true, and <span class="math inline">\(0\)</span> otherwise.)</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>What are some properties any loss function should satisfy?</p>
+</div>
+</div>
+</section>
+<section id="risk" class="level1">
+<h1>Risk</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The loss is defined at a single datapoint. It makes sense to <em>average</em> the loss over multiple datapoints:</p>
+<p><span class="math display">\[
+\frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n)
+\]</span></p>
+<p>Note that, for a given <span class="math inline">\(f\)</span>, the average loss will be different depending where the points are! <strong>Where should you evaluate your loss?</strong></p>
+</section>
+<section id="risk-1" class="level1">
+<h1>Risk</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If we believe that future <span class="math inline">\(x\)</span> will be drawn randomly, independently, and identically distributed (IID) from a future distribution <span class="math inline">\(p(x)\)</span>, then it makes sense to measure the <em>average</em> loss.</p>
+<p>This average loss is called “risk”. <span class="math display">\[
+\begin{aligned}
+\mathscr{R}(f) :={}&amp; \mathbb{E}_{p(x, y)}\left[\mathscr{L}(f(x), y)\right]
+  &amp; \textrm{"Risk"}\\
+\end{aligned}
+\]</span> Note that risk depends only on the function — the distribution or data is considered fixed.</p>
+</section>
+<section id="risk-2" class="level1">
+<h1>Risk</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If we want to learn a function that makes <span class="math inline">\(\mathscr{R}(f)\)</span> small, we should draw training data <span class="math inline">\(x_n \overset{\mathrm{IID}}{\sim}p(x)\)</span> and form the “empirical risk:” <span class="math display">\[
+\begin{aligned}
+\mathscr{R}(f) :={}&amp; \mathbb{E}_{p(x, y)}\left[\mathscr{L}(f(x), y)\right]
+  &amp; \textrm{"Risk"}\\
+\hat{\mathscr{R}}(f) :={}&amp; \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n)
+  &amp; \textrm{"Empirical risk"}.
+\end{aligned}
+\]</span></p>
+<p>Trying to make <span class="math inline">\(\mathscr{R}(f)\)</span> small by minimizing <span class="math inline">\(\hat{\mathscr{R}}(f)\)</span> is called <strong>empirical risk minimization</strong> (ERM). ERM is the main idea in this course.</p>
+</section>
+<section id="risk-3" class="level1">
+<h1>Risk</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Recall our QSAR application.</p>
+<ul>
+<li>Describe a use case where the IID assumption might be reasonable</li>
+<li>Describe a use case where the IID assumption might not be reasonable</li>
+<li>Does minimizing <span class="math inline">\(\mathscr{R}(f)\)</span> guarantee an accurate prediction on any particular <span class="math inline">\(x\)</span>?</li>
+</ul>
+</div>
+</div>
 </section>
 <section id="bibliography" class="level1">
 <h1>Bibliography</h1>
