@@ -8,7 +8,7 @@
 
 <meta name="author" content="Lucas Schwengber">
 
-<title>Lab 1 Discussion - Coding for ML Basics</title>
+<title>Lab 0 Discussion - Coding for ML Basics</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -222,7 +222,10 @@ window.Quarto = {
   <li><a href="#popularity" id="toc-popularity" class="nav-link" data-scroll-target="#popularity"><span class="header-section-number">3.3</span> Popularity</a></li>
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion"><span class="header-section-number">3.4</span> Conclusion</a></li>
   </ul></li>
-  <li><a href="#coding-environments" id="toc-coding-environments" class="nav-link" data-scroll-target="#coding-environments"><span class="header-section-number">4</span> Coding environments</a></li>
+  <li><a href="#coding-environments" id="toc-coding-environments" class="nav-link" data-scroll-target="#coding-environments"><span class="header-section-number">4</span> Coding environments</a>
+  <ul class="collapse">
+  <li><a href="#setup-editor-and-packages" id="toc-setup-editor-and-packages" class="nav-link" data-scroll-target="#setup-editor-and-packages">Setup: editor and packages</a></li>
+  </ul></li>
   <li><a href="#notebooks-vs.-scripts" id="toc-notebooks-vs.-scripts" class="nav-link" data-scroll-target="#notebooks-vs.-scripts"><span class="header-section-number">5</span> Notebooks vs.&nbsp;Scripts</a>
   <ul class="collapse">
   <li><a href="#notebooks" id="toc-notebooks" class="nav-link" data-scroll-target="#notebooks"><span class="header-section-number">5.0.1</span> Notebooks</a></li>
@@ -248,7 +251,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Lab 1 Discussion - Coding for ML Basics</h1>
+<h1 class="title">Lab 0 Discussion - Coding for ML Basics</h1>
 </div>
 
 
@@ -324,7 +327,23 @@ window.Quarto = {
 <h1 data-number="4"><span class="header-section-number">4</span> Coding environments</h1>
 <p>We highly recommend using coding IDEs for machine learning such as <a href="https://code.visualstudio.com/"><code>vscode</code></a> and its forks. The reason being that machine learning usually requires working with both python scripts and jupyter notebooks. A coding IDE provides an easy to access platform where you can juggle between these two.</p>
 <p>But other environments are also possible, as long as this last point is addressed.</p>
-<p>We <em>highly recommend</em> creating a directory for the course with a dedicated python <a href="https://docs.python.org/3/library/venv.html">virtual environment</a> and version control with <a href="https://www.w3schools.com/git/git_intro.asp?remote=github">git</a>.</p>
+<section id="setup-editor-and-packages" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="setup-editor-and-packages">Setup: editor and packages</h2>
+<p>If you are new to Python, do this once before starting.</p>
+<p><strong>Editor.</strong> We recommend <a href="https://code.visualstudio.com/">VS Code</a> (free, works the same on macOS and Windows). After installing it, open the Extensions sidebar and install the <strong>Python</strong> and <strong>Jupyter</strong> extensions. Then open the folder where you’ll keep your lab work with <em>File → Open Folder</em>.</p>
+<p><strong>Packages.</strong> A <em>virtual environment</em> is an isolated folder of packages for this course, so nothing you install here can conflict with other projects on your computer. Open a terminal inside VS Code (<em>Terminal → New Terminal</em>) and run the three lines for your system:</p>
+<p>macOS / Linux:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> venv stat154-env</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> stat154-env/bin/activate</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">pip</span> install numpy scikit-learn jupyter</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Windows (PowerShell):</p>
+<pre><code>python -m venv stat154-env
+stat154-env\Scripts\activate
+pip install numpy scikit-learn jupyter</code></pre>
+<p>The first line creates the environment (one time only), the second activates it (do this in every new terminal), and the third installs the packages we need. To check that everything works, run <code>python -c "import numpy, sklearn"</code> — if it prints nothing, you’re all set.</p>
+<p><strong>Notebook.</strong> Create your notebook with <em>File → New File → Jupyter Notebook</em> and save it as e.g.&nbsp;<code>lab1.ipynb</code> — make sure the filename ends in <code>.ipynb</code>, not <code>.py</code>. Click <strong>Select Kernel</strong> in the top-right of the notebook and choose the <code>stat154-env</code> environment you created above, so the notebook can see the installed packages.</p>
+<p>If you already use conda, another environment manager, or another editor (e.g.&nbsp;Jupyter in the browser), feel free to stick with your setup — you just need <code>numpy</code>, <code>scikit-learn</code>, and Jupyter available, and to submit a rendered <code>.ipynb</code> file.</p>
+</section>
 </section>
 <section id="notebooks-vs.-scripts" class="level1" data-number="5">
 <h1 data-number="5"><span class="header-section-number">5</span> Notebooks vs.&nbsp;Scripts</h1>
@@ -383,31 +402,31 @@ window.Quarto = {
 <section id="commenting-your-code" class="level1" data-number="9">
 <h1 data-number="9"><span class="header-section-number">9</span> Commenting your code</h1>
 <p>Readability is one of python’s strenghts. But it is only a strength if used correctly. Python as a language is structured in such a way that your syntax should encode what your code does as directly as possible so as to require less comments. For example, instead of writing a code snippet like:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">## set up constant pi</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.pi</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">## compute integer part of pi</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.floor(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>one should prefer:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> np.pi</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>floor_pi <span class="op">=</span> np.floor(pi)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Try to use comments to provide high-level summaries of what large chunks of code do, how they relate with other things, and to clarify/note some subtle details that are harder to infer from just reading the explicit python syntax. An important example of this is documenting functions:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> product(a:<span class="bu">float</span>,b:<span class="bu">float</span>) <span class="op">-&gt;</span> c:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the product of two real numbers a and b.</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">## set up constant pi</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> np.pi</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">    a: float corresponding to first term of product.</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">    b: float corresponding to second term of product.</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">    ------</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co">    c: float corresponding to product of a and b</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">## compute integer part of pi</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> np.floor(x)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>one should prefer:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pi <span class="op">=</span> np.pi</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>floor_pi <span class="op">=</span> np.floor(pi)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Try to use comments to provide high-level summaries of what large chunks of code do, how they relate with other things, and to clarify/note some subtle details that are harder to infer from just reading the explicit python syntax. An important example of this is documenting functions:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> product(a:<span class="bu">float</span>,b:<span class="bu">float</span>) <span class="op">-&gt;</span> c:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Compute the product of two real numbers a and b.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Parameters</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">    ----------</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co">    a: float corresponding to first term of product.</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co">    b: float corresponding to second term of product.</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    Returns</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">    ------</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">    c: float corresponding to product of a and b</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">*</span>b</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>On this regard LLMs are your allies. They are usually very good at writing these kinds of documentations. We highly, however, creating or importing a <a href="https://anthropic.skilljar.com/introduction-to-agent-skills">skill</a> specific for docstring writing. This will make the coding style more consistent across LLM calls.</p>
 <section id="a-concrete-example" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="a-concrete-example"><span class="header-section-number">9.1</span> A concrete example</h2>
