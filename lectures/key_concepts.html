@@ -8,7 +8,7 @@
 
 <meta name="author" content="Ryan Giordano">
 
-<title>Class introduction</title>
+<title>Key concepts for STAT 154 / 254</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -179,8 +179,6 @@ window.Quarto = {
    
   <ul>
   <li><a href="#key-concepts" id="toc-key-concepts" class="nav-link active" data-scroll-target="#key-concepts">Key concepts</a></li>
-  <li><a href="#day-one-walkthrough" id="toc-day-one-walkthrough" class="nav-link" data-scroll-target="#day-one-walkthrough">Day one walkthrough</a></li>
-  <li><a href="#day-two-walkthrough" id="toc-day-two-walkthrough" class="nav-link" data-scroll-target="#day-two-walkthrough">Day two walkthrough</a></li>
   <li><a href="#qsar-fish-toxicity-dataset" id="toc-qsar-fish-toxicity-dataset" class="nav-link" data-scroll-target="#qsar-fish-toxicity-dataset">QSAR Fish Toxicity Dataset</a></li>
   <li><a href="#fitting-a-function" id="toc-fitting-a-function" class="nav-link" data-scroll-target="#fitting-a-function">Fitting a function</a></li>
   <li><a href="#fitting-a-function-1" id="toc-fitting-a-function-1" class="nav-link" data-scroll-target="#fitting-a-function-1">Fitting a function</a></li>
@@ -194,7 +192,13 @@ window.Quarto = {
   <li><a href="#risk-1" id="toc-risk-1" class="nav-link" data-scroll-target="#risk-1">Risk</a></li>
   <li><a href="#risk-2" id="toc-risk-2" class="nav-link" data-scroll-target="#risk-2">Risk</a></li>
   <li><a href="#risk-3" id="toc-risk-3" class="nav-link" data-scroll-target="#risk-3">Risk</a></li>
-  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography">Bibliography</a></li>
+  <li><a href="#risk-4" id="toc-risk-4" class="nav-link" data-scroll-target="#risk-4">Risk</a></li>
+  <li><a href="#response-noise" id="toc-response-noise" class="nav-link" data-scroll-target="#response-noise">Response noise</a></li>
+  <li><a href="#response-noise-1" id="toc-response-noise-1" class="nav-link" data-scroll-target="#response-noise-1">Response noise</a></li>
+  <li><a href="#response-noise-2" id="toc-response-noise-2" class="nav-link" data-scroll-target="#response-noise-2">Response noise</a></li>
+  <li><a href="#response-noise-3" id="toc-response-noise-3" class="nav-link" data-scroll-target="#response-noise-3">Response noise</a></li>
+  <li><a href="#a-fundamental-tradeoff" id="toc-a-fundamental-tradeoff" class="nav-link" data-scroll-target="#a-fundamental-tradeoff">A fundamental tradeoff</a></li>
+  <li><a href="#stat-154-254-in-a-nutshell" id="toc-stat-154-254-in-a-nutshell" class="nav-link" data-scroll-target="#stat-154-254-in-a-nutshell">STAT 154 / 254 in a nutshell</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="key_concepts.pdf"><i class="bi bi-file-pdf"></i>Beamer</a></li></ul></div></nav>
     </div>
@@ -203,7 +207,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Class introduction</h1>
+<h1 class="title">Key concepts for STAT 154 / 254</h1>
 </div>
 
 
@@ -276,69 +280,43 @@ The following object is masked from 'package:dplyr':
 <li>Practice: <strong>out-of-sample error</strong></li>
 </ul></li>
 </ul>
-</section>
-<section id="day-one-walkthrough" class="level1">
-<h1>Day one walkthrough</h1>
-<ul>
-<li>Fitting a given function if all you can do is query it
-<ul>
-<li>Function classes
-<ul>
-<li>What if you need to make a prediction at a point you’ve never seen before?</li>
-<li>An approximation scheme comes with a class of functions that it can represent.</li>
-</ul></li>
-<li>Loss
-<ul>
-<li>You’ve chosen some approximation. How well does it do?</li>
-<li>When you observe the function exactly, is there any reason not to choose an arbitrarily expressive function class?</li>
-<li>Plot best function in class versus truth as function class increases</li>
-</ul></li>
-<li>Randomly chosen query locations
-<ul>
-<li>Where should you query?</li>
-<li>You need to know that future queries will need to look like the present queries somehow</li>
-</ul></li>
-<li>Risk (versus pointwise loss)
-<ul>
-<li>Can you guaranteed low loss on a point you’ve never seen before? (Spiky functions)</li>
-<li>Assumptions about confounders</li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-<section id="day-two-walkthrough" class="level1">
-<h1>Day two walkthrough</h1>
-<ul>
-<li>Random responses
-<ul>
-<li>Conditional distributions of responses
-<ul>
-<li>What happens if you query the same point twice and get different answers? Conditional distribution</li>
-</ul></li>
-<li>Irreducible loss
-<ul>
-<li>What’s the best you can do if there’s noise in the response?</li>
-<li>Optimal prediction function, and gap with function class</li>
-</ul></li>
-<li>Overfitting
-<ul>
-<li>Suppose you have chosen a nice, expressive class, but have random y.</li>
-<li>Can you tell whether you’ve overfit just by looking at the data? (No)</li>
-<li>Plot best function in class versus truth vs data</li>
-</ul></li>
-<li>Checking for overfitting for a single x
-<ul>
-<li>For a given point, ideally check the same point multiple times</li>
-<li>For a given point, check nearby points and assume smoothness</li>
-</ul></li>
-<li>Checking for overfitting when risk is the goal
-<ul>
-<li>If all we want is risk, get a new point to check.</li>
-<li>And if your data is IID and you can’t get a new point, just leave a point out</li>
-<li>If the function class is smooth, and you can “borrow” from neighbors, you might hope that the estimate goes to the best function in the class</li>
-</ul></li>
-</ul></li>
-</ul>
+<!-- # Day one walkthrough
+
+- Fitting a given function if all you can do is query it
+  - Function classes
+    - What if you need to make a prediction at a point you've never seen before?
+    - An approximation scheme comes with a class of functions that it can represent.
+  - Loss
+    - You've chosen some approximation.  How well does it do?
+    - When you observe the function exactly, is there any reason not to choose an arbitrarily     expressive function class?
+    - Plot best function in class versus truth as function class increases
+  - Randomly chosen query locations
+    - Where should you query?
+    - You need to know that future queries will need to look like the present queries somehow
+  - Risk (versus pointwise loss)
+    - Can you guaranteed low loss on a point you've never seen before?  (Spiky functions)
+    - Assumptions about confounders
+
+
+# Day two walkthrough
+
+- Random responses
+  - Conditional distributions of responses
+    - What happens if you query the same point twice and get different answers?  Conditional distribution
+  - Irreducible loss
+    - What's the best you can do if there's noise in the response?
+    - Optimal prediction function, and gap with function class
+  - Overfitting
+    - Suppose you have chosen a nice, expressive class, but have random y.
+    - Can you tell whether you've overfit just by looking at the data?  (No)
+    - Plot best function in class versus truth vs data
+  - Checking for overfitting for a single x
+    - For a given point, ideally check the same point multiple times
+    - For a given point, check nearby points and assume smoothness
+  - Checking for overfitting when risk is the goal
+    - If all we want is risk, get a new point to check.
+    - And if your data is IID and you can't get a new point, just leave a point out
+    - If the function class is smooth, and you can "borrow" from neighbors, you might hope that the estimate goes to the best function in the class -->
 </section>
 <section id="qsar-fish-toxicity-dataset" class="level1">
 <h1>QSAR Fish Toxicity Dataset</h1>
@@ -401,7 +379,7 @@ Instructor notes:
 </div>
 </div>
 <p>Let’s imagine that <span class="math inline">\(y\)</span> (fish toxicity) is determined exactly by <span class="math inline">\(x\)</span> (2D autocorrelations).</p>
-<p>That means <span class="math inline">\(y = f^{\star}(x)\)</span> for some <span class="math inline">\(f^{\star}\)</span>.</p>
+<p>That means <span class="math inline">\(y = f^{\star}(x)\)</span> for some <span class="math inline">\(f^{\star}\)</span>. (<strong>I will drop this assumption later in the lecture.</strong>)</p>
 <p>We don’t know <span class="math inline">\(f^{\star}\)</span>, but we can <em>query</em> it by selecting <span class="math inline">\(x\)</span> (a molecule) and measuring <span class="math inline">\(y\)</span> (seeing what concentration kills minnows)</p>
 </section>
 <section id="fitting-a-function-1" class="level1">
@@ -480,10 +458,8 @@ Instructor notes:
 <p>Using a constant function selects <span class="math inline">\(\hat{f}\)</span> from the <em>function class</em>: <span class="math display">\[
 \mathcal{F}_{constant} := \{ f: f(x) = c \textrm{ for some real-valued }c\}
 \]</span></p>
-<p>The function class is the set of <em>all functions that you could represent</em> with your procedure.</p>
-<p>An “estimation procedure” takes in data <span class="math inline">\(\mathcal{D}= \{ (x_1, y_1), \dots, (x_N, y_N)\}\)</span> and returns a function <span class="math inline">\(\hat{f}\in \mathcal{F}_{constant}\)</span>.</p>
-<p>This is equivalent to choosing a <span class="math inline">\(\hat{c}\)</span> and taking <span class="math inline">\(\hat{f}(x) = \hat{c}\)</span>.</p>
-<p>This class is about designing and studying estimation procedures.</p>
+<p>Our “estimation procedure” takes in data <span class="math inline">\(\mathcal{D}= \{ (x_1, y_1), \dots, (x_N, y_N)\}\)</span> and returns a function <span class="math inline">\(\hat{f}\in \mathcal{F}_{constant}\)</span>. This is equivalent to choosing a <span class="math inline">\(\hat{c}\)</span> and taking <span class="math inline">\(\hat{f}(x) = \hat{c}\)</span>.</p>
+<p>For a procedure in general, <span class="math inline">\(\mathcal{F}\)</span> is the set of <em>all functions that it could represent</em>.</p>
 </section>
 <section id="linear-functions" class="level1">
 <h1>Linear functions</h1>
@@ -530,6 +506,15 @@ Instructor notes:
 <p>Identify the function classes for some of the examples given earlier. Which are more expressive? Which are the least expressive?</p>
 </div>
 </div>
+<!--
+----------------------------
+Define some quantities to be reused below
+----------------------------
+ -->
+<!--
+----------------------------
+----------------------------
+ -->
 </section>
 <section id="loss" class="level1">
 <h1>Loss</h1>
@@ -542,7 +527,7 @@ Instructor notes:
 </div>
 </div>
 </div>
-<p>We want to choose <span class="math inline">\(\hat{f}\in \mathcal{F}\)</span> that is a “good approximation,” so we have to say what “good” means.</p>
+<p>We want to choose <span class="math inline">\(\hat{f}\in \mathcal{F}\)</span> that is a “good approximation.”</p>
 <p>Suppose we have some <span class="math inline">\(x\)</span> with associated <span class="math inline">\(y\)</span>. Let the “loss function” <span class="math inline">\(\mathscr{L}(f(x), y)\)</span> measure how “bad it is” to predict <span class="math inline">\(f(x)\)</span> when the truth was <span class="math inline">\(y\)</span>.</p>
 </section>
 <section id="loss-1" class="level1">
@@ -582,16 +567,16 @@ Instructor notes:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="key_concepts_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
 </div>
-<p>The loss is defined at a single datapoint. It makes sense to <em>average</em> the loss over multiple datapoints:</p>
+<p>The loss is defined at a single datapoint. Unless we really care about only one prediction, it makes sense to <em>average</em> the loss over multiple datapoints:</p>
 <p><span class="math display">\[
 \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n)
 \]</span></p>
-<p>Note that, for a given <span class="math inline">\(f\)</span>, the average loss will be different depending where the points are! <strong>Where should you evaluate your loss?</strong></p>
+<p>Note that, for a given <span class="math inline">\(f\)</span>, the average loss will be different depending where the points are!</p>
 </section>
 <section id="risk-1" class="level1">
 <h1>Risk</h1>
@@ -599,7 +584,7 @@ Instructor notes:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="key_concepts_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -610,7 +595,7 @@ Instructor notes:
 \mathscr{R}(f) :={}&amp; \mathbb{E}_{p(x, y)}\left[\mathscr{L}(f(x), y)\right]
   &amp; \textrm{"Risk"}\\
 \end{aligned}
-\]</span> Note that risk depends only on the function — the distribution or data is considered fixed.</p>
+\]</span> Note that risk depends only on the function <span class="math inline">\(f\)</span> — the distribution or data is considered fixed. <strong>Different distributions give different risks.</strong></p>
 </section>
 <section id="risk-2" class="level1">
 <h1>Risk</h1>
@@ -618,28 +603,7 @@ Instructor notes:
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="key_concepts_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>If we want to learn a function that makes <span class="math inline">\(\mathscr{R}(f)\)</span> small, we should draw training data <span class="math inline">\(x_n \overset{\mathrm{IID}}{\sim}p(x)\)</span> and form the “empirical risk:” <span class="math display">\[
-\begin{aligned}
-\mathscr{R}(f) :={}&amp; \mathbb{E}_{p(x, y)}\left[\mathscr{L}(f(x), y)\right]
-  &amp; \textrm{"Risk"}\\
-\hat{\mathscr{R}}(f) :={}&amp; \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n)
-  &amp; \textrm{"Empirical risk"}.
-\end{aligned}
-\]</span></p>
-<p>Trying to make <span class="math inline">\(\mathscr{R}(f)\)</span> small by minimizing <span class="math inline">\(\hat{\mathscr{R}}(f)\)</span> is called <strong>empirical risk minimization</strong> (ERM). ERM is the main idea in this course.</p>
-</section>
-<section id="risk-3" class="level1">
-<h1>Risk</h1>
-<div class="cell">
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="key_concepts_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -658,13 +622,186 @@ Instructor notes:
 <ul>
 <li>Describe a use case where the IID assumption might be reasonable</li>
 <li>Describe a use case where the IID assumption might not be reasonable</li>
+<li>What does the IID assumption imply about the relationship between the other chemical variables?</li>
 <li>Does minimizing <span class="math inline">\(\mathscr{R}(f)\)</span> guarantee an accurate prediction on any particular <span class="math inline">\(x\)</span>?</li>
 </ul>
 </div>
 </div>
 </section>
-<section id="bibliography" class="level1">
-<h1>Bibliography</h1>
+<section id="risk-3" class="level1">
+<h1>Risk</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>There’s usually a gap between the best function <span class="math inline">\(f^{\star}\)</span> and the best function in our class: <span class="math display">\[
+\begin{aligned}
+\overline{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \mathscr{R}(f)
+&amp;&amp;
+f^{\star}:= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f)
+&amp;&amp;
+\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star}) \ge 0
+\end{aligned}
+\]</span> This gap is typically <em>lower</em> for <em>more expressive function classes</em>.</p>
+<p>Why not just make our function classes as expressive as possible?</p>
+</section>
+<section id="risk-4" class="level1">
+<h1>Risk</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If we want to learn a function that makes <span class="math inline">\(\mathscr{R}(f)\)</span> small, we should draw training data <span class="math inline">\(x_n \overset{\mathrm{IID}}{\sim}p(x)\)</span> and form the “empirical risk:” <span class="math display">\[
+\begin{aligned}
+\mathscr{R}(f) :={}&amp; \mathbb{E}_{p(x, y)}\left[\mathscr{L}(f(x), y)\right]
+  &amp; \textrm{"Risk"}\\
+\hat{\mathscr{R}}(f) :={}&amp; \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n)
+  &amp; \textrm{"Empirical risk"}.
+\end{aligned}
+\]</span></p>
+<p>Trying to make <span class="math inline">\(\mathscr{R}(f)\)</span> small by minimizing <span class="math inline">\(\hat{\mathscr{R}}(f)\)</span> is called <strong>empirical risk minimization</strong> (ERM). ERM is the main idea in this course.</p>
+</section>
+<section id="response-noise" class="level1">
+<h1>Response noise</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Up to now, we’ve been imagining that <span class="math inline">\(y= f^{\star}(x)\)</span>. But usually our data looks like this.</p>
+</section>
+<section id="response-noise-1" class="level1">
+<h1>Response noise</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If you query the same <span class="math inline">\(x\)</span> and get different values, you know that there is <em>randomness in <span class="math inline">\(y\)</span></em>. Even if you don’t observe repeats, if “nearby” <span class="math inline">\(x\)</span> give very different <span class="math inline">\(y\)</span>, you might think of <span class="math inline">\(y\)</span> as random.</p>
+<p>If <span class="math inline">\(y\)</span> is random, then at each <span class="math inline">\(x\)</span> there is a conditional distribution, <span class="math inline">\(p(y\vert x)\)</span>, which is different for each <span class="math inline">\(x\)</span>.</p>
+<p>Note that risk is the expectation over both <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>: <span class="math inline">\(\mathscr{R}(f) :={} \mathbb{E}_{p(x, y)}\left[\mathscr{L}(f(x), y)\right]\)</span>.</p>
+</section>
+<section id="response-noise-2" class="level1">
+<h1>Response noise</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>ERM finds the best function in our function class to the <em>actual data</em>: <span class="math display">\[
+\hat{f}:= \underset{f\in \mathcal{F}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(f)
+\]</span> The orange line is your <span class="math inline">\(\hat{f}\)</span> if <span class="math inline">\(\mathcal{F}\)</span> is <em>very expressive</em>!</p>
+<p>If all you see is the data points, how can you tell which is the better prediction function?</p>
+</section>
+<section id="response-noise-3" class="level1">
+<h1>Response noise</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>If the function class <span class="math inline">\(\mathcal{F}\)</span> is too expressive, we may fit the noise, not the risk. <span class="math display">\[
+\begin{aligned}
+\hat{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(f)
+&amp;&amp;
+\overline{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \mathscr{R}(f)
+&amp;&amp;
+\Rightarrow\quad
+\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f}) \ge 0
+\end{aligned}
+\]</span> This gap tends to be <em>higher</em> for <em>more expressive function classes</em>.</p>
+</section>
+<section id="a-fundamental-tradeoff" class="level1">
+<h1>A fundamental tradeoff</h1>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="key_concepts_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(f)
+&amp;&amp;
+\overline{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \mathscr{R}(f)
+&amp;&amp;
+f^{\star}:= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f)
+\end{aligned}
+\]</span></p>
+<p>“Regret” is the gap between what we learn and what we might have learned. Its two constituent terms go in opposite directions with the expressivity of the function class:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\textrm{Regret} :=
+\mathscr{R}(\hat{f}) - \mathscr{R}(f^{\star}) ={}&amp;
+\underbrace{
+\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})
+}_{\textrm{Expressivity }\uparrow} +
+\underbrace{
+\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star})
+}_{\textrm{Expressivity }\downarrow}
+\end{aligned}
+\]</span></p>
+</section>
+<section id="stat-154-254-in-a-nutshell" class="level1">
+<h1>STAT 154 / 254 in a nutshell</h1>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(f)
+&amp;&amp;
+\overline{f}:= \underset{f\in  \mathcal{F}}{\mathrm{argmin}}\, \mathscr{R}(f)
+&amp;&amp;
+f^{\star}:= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f)
+\end{aligned}
+\]</span></p>
+<p><span class="math display">\[
+\begin{aligned}
+\textrm{Regret} :=
+\mathscr{R}(\hat{f}) - \mathscr{R}(f^{\star}) ={}&amp;
+\underbrace{
+\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})
+}_{\textrm{Expressivity }\uparrow} +
+\underbrace{
+\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star})
+}_{\textrm{Expressivity }\downarrow}
+\end{aligned}
+\]</span></p>
+<p>In this class we will,</p>
+<ul>
+<li>Learn to make and fit expressive <span class="math inline">\(\mathcal{F}\)</span> so that <span class="math inline">\(\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star})\)</span> is small,</li>
+<li>Learn how to make an <span class="math inline">\(\mathcal{F}\)</span> less expressive so that <span class="math inline">\(\mathscr{R}(\hat{f}) - \mathscr{R}(f^{\star})\)</span> is small,</li>
+<li>… in theory and in practice.</li>
+</ul>
+<p>Together with a critical understanding of the IID assumption, the whole class can be understood in these terms.</p>
+<!-- # Bibliography -->
 
 
 </section>
