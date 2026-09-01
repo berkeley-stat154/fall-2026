@@ -256,30 +256,33 @@ The following object is masked from 'package:dplyr':
 </div>
 <section id="key-concepts" class="level1">
 <h1>Key concepts</h1>
-<p>This class will focus almost entirely on <em>supervised learning</em>.</p>
-<p>Here are the key concepts:</p>
+<p>In this lecture, I’ll introduce and motivate some of the key concepts for supervised learning:</p>
 <ul>
-<li>What does it mean to do well on a supervised learning problem?
-<ul>
-<li>Random data, loss, and risk</li>
-<li><strong>Empirical risk minimization</strong>, <strong>generalization</strong></li>
-</ul></li>
-<li>What would we do if we had an infinite amount of data?
-<ul>
-<li>Generating computational tools to fit arbitrary functions</li>
-<li><strong>Expressive function classes</strong></li>
-</ul></li>
-<li>What goes wrong when we have only a limited amount of data?
-<ul>
-<li>Avoid overfitting by limiting the expressivity of function classes</li>
-<li><strong>Regularization</strong></li>
-</ul></li>
-<li>How do we find a sweet spot between expressiveness and overfitting?
-<ul>
-<li>Theory: <strong>generalization bounds</strong></li>
-<li>Practice: <strong>out-of-sample error</strong></li>
-</ul></li>
+<li>Estimation procedures: using data to make predictions</li>
+<li>Function classes and their expressivity</li>
+<li>Loss, risk, and randomness</li>
 </ul>
+<p>By the end of the class, you should be able to:</p>
+<ul>
+<li>Recognize a prediction problem and name a few estimation procedures</li>
+<li>Identify a procedure’s function class and reason about its expressiveness</li>
+<li>Express the prediction problem in terms of loss, risk, and randomness — and criticise this expression</li>
+</ul>
+<!--
+Here are the key concepts:
+
+- What does it mean to do well on a supervised learning problem?
+  - Random data, loss, and risk
+  - **Empirical risk minimization**, **generalization**
+- What would we do if we had an infinite amount of data?
+  - Generating computational tools to fit arbitrary functions
+  - **Expressive function classes**
+- What goes wrong when we have only a limited amount of data?
+  - Avoid overfitting by limiting the expressivity of function classes
+  - **Regularization**
+- How do we find a sweet spot between expressiveness and overfitting?
+  - Theory: **generalization bounds**
+  - Practice: **out-of-sample error** -->
 <!-- # Day one walkthrough
 
 - Fitting a given function if all you can do is query it
