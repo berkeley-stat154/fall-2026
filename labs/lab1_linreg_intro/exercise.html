@@ -282,7 +282,7 @@ window.Quarto = {
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>np.save(<span class="st">"pred_</span><span class="sc">{codename}</span><span class="st">.npy"</span>, pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The name of the file should be <code>"pred_{codename}.npy"</code> where <code>{codename}</code> is a secret codename of your group’s choosing, that you will be able to use later to identify your submission in the leaderboard. The file, alongside your code, should be submitted to GradeScope.</p>
+<p>The name of the file should be <code>"pred_{codename}.npy"</code> where <code>{codename}</code> is a secret codename of your group’s choosing, that you will be able to use later to identify your submission in the leaderboard. The prediction file, <strong>alongside your code (jupyter notebook or/and script)</strong>, should be submitted to GradeScope.</p>
 </section>
 <section id="how-your-predictions-will-be-scored" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> How your predictions will be scored</h1>
@@ -308,7 +308,7 @@ window.Quarto = {
 <p>The grading will be based on completing. We expect at least the following to have been completed across both sessions:</p>
 <p>1 - Data loading, evaluation pipeline implemented, raw features fit and evaluation, raw feature diagnostic plots<br>
 2 - Non-linear individual features visualized and tested, pairwise interactions visualized and tested.</p>
-<p>Your combined submissions must have all of these, and you should make progress on each lab. But when the specific steps are accomplished is up to you. Once they are completed you must devote the time to improve your model performance. It is theoretically possible to achieve 0 error on this problem: there is a deterministic ground-truth function, it is a linear combination of non-linear functions of individual features and at most pairwise interactions (possibly involving non-linearities).</p>
+<p>Your combined submissions must have all of these, and you should make progress on each lab. But when the specific steps are accomplished is up to you. Once they are completed you must devote the time to improve your model performance. It is theoretically possible to achieve zero error on this problem: there is a deterministic ground-truth function, it is a linear combination of non-linear functions of individual features and at most pairwise interactions (possibly involving non-linearities).</p>
 <p>Your rank on the leaderboard will not factor into your grade in any way.</p>
 </section>
 <section id="llm-usage-policy" class="level1" data-number="6">
