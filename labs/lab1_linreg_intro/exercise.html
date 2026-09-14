@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Erez Buchweitz/Lucas Schwengber/Josh Davis">
 
-<title>Labs</title>
+<title>Lab 1 Exercise - Linear Regression Challenge</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,26 +24,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5fda74d29374d7750437fa03278ffaae.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-3151e32f04b0ee0bfb1ca202c1e01cd7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -111,7 +147,7 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed quarto-light">
@@ -121,11 +157,11 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
-    <img src="../assets/stat_bear.png" alt="" class="navbar-logo light-content">
-    <img src="../assets/stat_bear.png" alt="" class="navbar-logo dark-content">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo light-content">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo dark-content">
     </a>
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Fall 2026 STAT151A</span>
     </a>
   </div>
@@ -136,29 +172,29 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../lectures/lectures.html"> 
+    <a class="nav-link" href="../../lectures/lectures.html"> 
 <span class="menu-text">Lectures</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="../labs/labs.html" aria-current="page"> 
+    <a class="nav-link" href="../../labs/labs.html"> 
 <span class="menu-text">Labs</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../assignments/assignments.html"> 
+    <a class="nav-link" href="../../assignments/assignments.html"> 
 <span class="menu-text">Assignments</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../course_policies.html"> 
+    <a class="nav-link" href="../../course_policies.html"> 
 <span class="menu-text">Course Policies</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../schedule.html"> 
+    <a class="nav-link" href="../../schedule.html"> 
 <span class="menu-text">Course Schedule</span></a>
   </li>  
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="../index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
 </ul>
@@ -177,24 +213,34 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#lab-0-08312026" id="toc-lab-0-08312026" class="nav-link active" data-scroll-target="#lab-0-08312026">Lab 0 (08/31/2026)</a></li>
-  <li><a href="#lab-1-09142026" id="toc-lab-1-09142026" class="nav-link" data-scroll-target="#lab-1-09142026">Lab 1 (09/14/2026)</a></li>
+  <li><a href="#how-to-submit-predictions" id="toc-how-to-submit-predictions" class="nav-link active" data-scroll-target="#how-to-submit-predictions"><span class="header-section-number">1</span> How to submit predictions</a></li>
+  <li><a href="#how-your-predictions-will-be-scored" id="toc-how-your-predictions-will-be-scored" class="nav-link" data-scroll-target="#how-your-predictions-will-be-scored"><span class="header-section-number">2</span> How your predictions will be scored</a></li>
+  <li><a href="#allowed-methods-to-use" id="toc-allowed-methods-to-use" class="nav-link" data-scroll-target="#allowed-methods-to-use"><span class="header-section-number">3</span> Allowed methods to use</a></li>
+  <li><a href="#timeline" id="toc-timeline" class="nav-link" data-scroll-target="#timeline"><span class="header-section-number">4</span> Timeline</a></li>
+  <li><a href="#how-you-will-be-graded" id="toc-how-you-will-be-graded" class="nav-link" data-scroll-target="#how-you-will-be-graded"><span class="header-section-number">5</span> How you will be graded</a></li>
+  <li><a href="#llm-usage-policy" id="toc-llm-usage-policy" class="nav-link" data-scroll-target="#llm-usage-policy"><span class="header-section-number">6</span> LLM usage policy</a></li>
+  <li><a href="#good-luck-and-have-fun" id="toc-good-luck-and-have-fun" class="nav-link" data-scroll-target="#good-luck-and-have-fun"><span class="header-section-number">7</span> GOOD LUCK AND HAVE FUN!</a></li>
   </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="labs.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Labs</h1>
-<p class="subtitle lead">Stat 154/254: Statistical Machine Learning</p>
+<h1 class="title">Lab 1 Exercise - Linear Regression Challenge</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Erez Buchweitz/Lucas Schwengber/Josh Davis </p>
+          </div>
+  </div>
     
   
     
@@ -205,16 +251,74 @@ window.Quarto = {
 </header>
 
 
-<p>We will post labs here as we go.</p>
-<section id="lab-0-08312026" class="level2">
-<h2 class="anchored" data-anchor-id="lab-0-08312026">Lab 0 (08/31/2026)</h2>
-<p><a href="../labs/lab0_coding_warmup/coding_for_ml_intro.html">Lab 0 Intro - Logistics + Coding for ML</a></p>
-<p><a href="../labs/lab0_coding_warmup/coding_for_ml_exercise.html">Lab 0 Exercise - Coding for ML + Linear Regression Basics</a></p>
+<!--
+    beamer:
+        fig-width: 6
+        fig-height: 4
+        echo: false
+        include_before_header: ../../macros.tex
+-->
+<p>You are given three files:</p>
+<ul>
+<li><a href="../../datasets/linreg/X_train.npy">X_train.npy</a></li>
+<li><a href="../../datasets/linreg/y_train.npy">y_train.npy</a></li>
+<li><a href="../../datasets/linreg/X_test.npy">X_test.npy</a></li>
+</ul>
+<p>You may download and read them like this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> urllib.request</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>urllib.request.urlretrieve(<span class="st">'https://stat154.berkeley.edu/spring-2026/datasets/linreg/X_train.npy'</span>, <span class="st">'</span><span class="sc">{path}</span><span class="st">/X_train.npy'</span>)    </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>urllib.request.urlretrieve(<span class="st">'https://stat154.berkeley.edu/spring-2026/datasets/linreg/X_test.npy'</span>, <span class="st">'</span><span class="sc">{path}</span><span class="st">/X_test.npy'</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>urllib.request.urlretrieve(<span class="st">'https://stat154.berkeley.edu/spring-2026/datasets/linreg/y_train.npy'</span>, <span class="st">'</span><span class="sc">{path}</span><span class="st">/y_train.npy'</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>X_train <span class="op">=</span> np.load(<span class="st">"</span><span class="sc">{path}</span><span class="st">/X_train.npy"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>X_test <span class="op">=</span> np.load(<span class="st">"</span><span class="sc">{path}</span><span class="st">/X_test.npy"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>y_train <span class="op">=</span> np.load(<span class="st">"</span><span class="sc">{path}</span><span class="st">/y_train.npy"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>There are two data sets, <code>(X_train, y_train)</code> and <code>(X_test, y_test)</code>, which are independent and identically distributed. However, I have hidden <code>y_test</code> from you. Your task is to make the best predictions of <code>y_test</code> possible based on the training data and on <code>X_test</code>.</p>
+<section id="how-to-submit-predictions" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> How to submit predictions</h1>
+<p>You will submit a binary <code>.npy</code> file containing a <code>numpy</code> array (one-dimensional), whose length is the same as the number of rows in <code>X_test</code>, that will comprise the predictions of <code>y_test</code>. You can save an array to file like this:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>np.save(<span class="st">"pred_</span><span class="sc">{codename}</span><span class="st">.npy"</span>, pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The name of the file should be <code>"pred_{codename}.npy"</code> where <code>{codename}</code> is a secret codename of your group’s choosing, that you will be able to use later to identify your submission in the leaderboard. The file, alongside your code, should be submitted to GradeScope.</p>
 </section>
-<section id="lab-1-09142026" class="level2">
-<h2 class="anchored" data-anchor-id="lab-1-09142026">Lab 1 (09/14/2026)</h2>
-<p><a href="../labs/lab1_linreg_intro/presentation.html">Lab 1 Intro - Data Visualization for Linear Modeling</a></p>
-<p><a href="../labs/lab1_linreg_intro/exercise.html">Lab 1 Exercise - Linear Regression Challenge</a></p>
+<section id="how-your-predictions-will-be-scored" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> How your predictions will be scored</h1>
+<p>Your predictions will be compared against the real <code>y_test</code> using average squared error:</p>
+<p><span class="math display">\[
+\text{your loss} = \frac{1}{N}\sum_{n=1}^N (y_n - \text{pred}_n)^2.
+\]</span></p>
+<p>A leaderboard will be published with every group’s codename alongside its loss on the test set, ranked from low to high. No other identifying information will be shared, so no other student will be able know your rank on the leaderboard. The leaderboard is for your own benefit! The group with the lowest test loss is the winner.</p>
+</section>
+<section id="allowed-methods-to-use" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Allowed methods to use</h1>
+<p>You are permitted to use only methods which you have learned in the lectures or labs, or that are adjacent to them. This includes, for example, ordinary least squares and feature engineering. Any use of significantly more advanced learning algorithms might result in disqualification and zero grade.</p>
+</section>
+<section id="timeline" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Timeline</h1>
+<p>The challenge will last two consecutive lab sessions, starting from the lab session on Sep 14th and ending at the end of the lab session on Sep 21st. You will submit predictions at two times:</p>
+<p>1 - Until 9 PM on Sep 14th. 2 - Until 9 PM Sep 21st.</p>
+<p>A leaderboard will be after each submission deadline.</p>
+<p>You are not required to work on the challenge outside lab sessions, however it is encouraged. This is for your benefit! The more time you spend working with data you will find you get more out of this course.</p>
+</section>
+<section id="how-you-will-be-graded" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> How you will be graded</h1>
+<p>The grading will be based on completing. We expect at least the following to have been completed across both sessions:</p>
+<p>1 - Data loading, evaluation pipeline implemented, raw features fit and evaluation, raw feature diagnostic plots<br>
+2 - Non-linear individual features visualized and tested, pairwise interactions visualized and tested.</p>
+<p>Your combined submissions must have all of these, and you should make progress on each lab. But when the specific steps are accomplished is up to you. Once they are completed you must devote the time to improve your model performance. It is theoretically possible to achieve 0 error on this problem: there is a deterministic ground-truth function, it is a linear combination of non-linear functions of individual features and at most pairwise interactions (possibly involving non-linearities).</p>
+<p>Your rank on the leaderboard will not factor into your grade in any way.</p>
+</section>
+<section id="llm-usage-policy" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> LLM usage policy</h1>
+<p>You may use auto-completion for filling out small code snippets (affect around 2-3 lines of code) and documenting your code. Small code snippets are things like “add a label for the axis of the plot”, “change the color of the points”, “add an argument for the number of interactions in the fit”. These are small code operations which do not involve significant planning nor automated changes to the logic of the code without your supervision. All edits must be verified and accepted manually, and you should make sure you know what the code is doing.</p>
+<p>Things that are explicitly not allowed are major edits to the code (affect &gt; 10 lines) and ones which involve automating huge parts of the development of the logic structure of your analysis. For example, “write a function to extract features from the data”, or “run a test set validation loop and report the best model”.</p>
+<p>Delegate to language models only things which you know exactly how you would have done it yourself or would be comfortable googling/asking for help from someone who already took the course/knows how to code, but who cannot do the learning for you.</p>
+</section>
+<section id="good-luck-and-have-fun" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> GOOD LUCK AND HAVE FUN!</h1>
 
 
 </section>
