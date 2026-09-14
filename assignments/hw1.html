@@ -468,6 +468,19 @@ r_{k}(x) :={}&amp; \mathrm{I}\left(\zeta_{k - 1} &lt; x\le \zeta_{k}  \right)
 </section>
 <section id="incorrectly-specified-linear-regression" class="level1" data-number="7">
 <h1 data-number="7"><span class="header-section-number">7</span> Incorrectly specified linear regression</h1>
+<div class="callout callout-style-default callout-warning callout-titled" title="Note">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This problem will be challenging unless we cover the optimal regression function in class. If we don’t get to it the week of 9/15 and 9/17, I’ll take this problem off this homework and put it on a future homework instead.</p>
+</div>
+</div>
 <p>Assume that <span class="math inline">\(y_n = \boldsymbol{x}_n^\intercal\boldsymbol{\alpha}^{*}+ \boldsymbol{z}_n^\intercal\boldsymbol{\gamma}^{*}+ \varepsilon_n\)</span>, for some <span class="math inline">\(\boldsymbol{\alpha}^{*}\)</span> and <span class="math inline">\(\boldsymbol{\gamma}^{*}\)</span>, where <span class="math inline">\(\varepsilon_n\)</span> is mean zero, has finite variance <span class="math inline">\(\sigma^2\)</span>, and is independent of <span class="math inline">\(\boldsymbol{x}_n\)</span> and <span class="math inline">\(\boldsymbol{z}_n\)</span>. It follows that the optimal regression function is</p>
 <p><span class="math display">\[
 f^{\star}(\boldsymbol{x}, \boldsymbol{z}) = \mathbb{E}_{\vphantom{}}\left[y\vert \boldsymbol{x}, \boldsymbol{z}\right] =
@@ -560,8 +573,8 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 <p>Consider special case of linear regression loss for <span class="math inline">\(\boldsymbol{\beta}\in \mathbb{R}^{P}\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\mathscr{L}(\boldsymbol{\beta}) :={}&amp; \mathbb{E}_{\vphantom{}}\left[(y_\mathrm{new}- \boldsymbol{\beta}^\intercal\boldsymbol{x}_\mathrm{new})^2\right] \\
-\hat{\mathscr{L}}(\boldsymbol{\beta}) :={}&amp; \frac{1}{N} \sum_{n=1}^N(y_n - \boldsymbol{\beta}^\intercal\boldsymbol{x}_n)^2 \\
+\mathscr{R}(\boldsymbol{\beta}) :={}&amp; \mathbb{E}_{\vphantom{}}\left[(y_\mathrm{new}- \boldsymbol{\beta}^\intercal\boldsymbol{x}_\mathrm{new})^2\right] \\
+\hat{\mathscr{R}}(\boldsymbol{\beta}) :={}&amp; \frac{1}{N} \sum_{n=1}^N(y_n - \boldsymbol{\beta}^\intercal\boldsymbol{x}_n)^2 \\
 \end{aligned}
 \]</span></p>
 <p>and let <span class="math inline">\(K\)</span> be a bounded subset of <span class="math inline">\(\mathbb{R}^{P}\)</span>. Show directly that regression loss obeys a uniform law of large numbers, in the sense that</p>
