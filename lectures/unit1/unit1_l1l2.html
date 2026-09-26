@@ -62,7 +62,7 @@ div.csl-indent {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-3151e32f04b0ee0bfb1ca202c1e01cd7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-759232fa0b86b84cb2931155628a3b47.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -338,18 +338,21 @@ x'_n := \frac{x_n - \bar{x}_n}{\sqrt{\frac{1}{N} \sum_{n=1}^N(x_n - \bar{x})^2}}
 </section>
 <section id="a-complexity-penalty" class="level2">
 <h2 class="anchored" data-anchor-id="a-complexity-penalty">A complexity penalty</h2>
-<p>Suppose that <span class="math inline">\(y_n = \boldsymbol{\beta}^\intercal\boldsymbol{x}_n + \varepsilon_n\)</span> for some <span class="math inline">\(\boldsymbol{\beta}\)</span>. Note that, for a fixed <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span>, <span class="math inline">\(y_\mathrm{new}\)</span>, and fixed <span class="math inline">\(\boldsymbol{X}\)</span>,</p>
+<p>Suppose that <span class="math inline">\(y_n = \boldsymbol{\beta}^\intercal\boldsymbol{x}_n + \varepsilon_n\)</span> for some <span class="math inline">\(\boldsymbol{\beta}\)</span>, with <span class="math inline">\(\varepsilon_n\)</span> IID mean zero and independent of <span class="math inline">\(\boldsymbol{x}_n\)</span>. Note that, for a fixed <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span> and fixed <span class="math inline">\(\boldsymbol{X}\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}- \boldsymbol{x}_\mathrm{new}^\intercal\hat{\boldsymbol{\beta}}(\lambda)\right]  ={}&amp;
-\boldsymbol{x}_\mathrm{new}^\intercal\left(\boldsymbol{\beta}- \mathbb{E}_{\vphantom{}}\left[\hat{\boldsymbol{\beta}}(\lambda)\right]\right)
+\mathbb{E}_{p(\varepsilon_\mathrm{new}\vert \boldsymbol{x}_\mathrm{new})}\left[
+  \mathbb{E}_{p(\boldsymbol{\varepsilon}\vert \boldsymbol{X})}\left[
+    y_\mathrm{new}- \boldsymbol{x}_\mathrm{new}^\intercal\hat{\boldsymbol{\beta}}(\lambda)
+    \right]\right]  ={}&amp;
+\boldsymbol{x}_\mathrm{new}^\intercal\left(\boldsymbol{\beta}- \mathbb{E}_{p(\boldsymbol{\varepsilon}\vert \boldsymbol{X})}\left[\hat{\boldsymbol{\beta}}(\lambda)\right]\right)
 \\={}&amp;
 \boldsymbol{x}_\mathrm{new}^\intercal\left({\boldsymbol{I}_{\,}}- \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1} (\boldsymbol{X}^\intercal\boldsymbol{X})\right) \boldsymbol{\beta}
 \end{aligned}
 \]</span></p>
 <p>That is, as <span class="math inline">\(\lambda\)</span> grows, <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda)\)</span> becomes biased. However, by the same reasoning as in the standard case, under homoskedasticity,</p>
 <p><span class="math display">\[
-\mathrm{Cov}_{\,}\left(\hat{\boldsymbol{\beta}}(\lambda)\right)  = \sigma^2
+\mathrm{Cov}_{p(\boldsymbol{\varepsilon}\vert \boldsymbol{X})}\left(\hat{\boldsymbol{\beta}}(\lambda)\right)  = \sigma^2
 \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1}
   (\boldsymbol{X}^\intercal\boldsymbol{X})
 \left(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)^{-1} ,

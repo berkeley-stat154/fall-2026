@@ -62,7 +62,7 @@ div.csl-indent {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-3151e32f04b0ee0bfb1ca202c1e01cd7.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-759232fa0b86b84cb2931155628a3b47.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -280,7 +280,8 @@ As before, we wish to use <span class="math inline">\(\boldsymbol{x}\)</span> to
 </section>
 <section id="first-version-the-ml-procedure-returns-a-category" class="level2">
 <h2 class="anchored" data-anchor-id="first-version-the-ml-procedure-returns-a-category">First version: the ML procedure returns a category</h2>
-<p>Ultimately, we need a mapping <span class="math inline">\(\boldsymbol{x}\mapsto \mathcal{Y}\)</span>, so we might take <span class="math inline">\(\hat{y}(\boldsymbol{x}) \in \mathcal{Y}\)</span>. Necessarily, the loss function must take in two values in <span class="math inline">\(\mathcal{Y}\)</span> — the guess and the truth — and return a real number. Formally, <span class="math inline">\(\mathscr{L}: \mathcal{Y}\times\mathcal{Y}\mapsto \mathbb{R}^{}\)</span>, which can be fully represented as a <span class="math inline">\(|\mathcal{Y}|\times |\mathcal{Y}|\)</span> matrix.</p>
+<p>Ultimately, we need a mapping <span class="math inline">\(\boldsymbol{x}\mapsto \mathcal{Y}\)</span>, so we have to take our prediction function to be a mapping from the domain of <span class="math inline">\(\boldsymbol{x}\)</span> to the set of possible <span class="math inline">\(y\)</span> values: <span class="math inline">\(f(\boldsymbol{x}) \in \mathcal{Y}\)</span>. Below, I’ll sometimes write the prediction as <span class="math inline">\(\hat{y}:= f(\boldsymbol{x})\)</span>, with the understanding that <span class="math inline">\(\hat{y}\)</span> will in general depend on <span class="math inline">\(\boldsymbol{x}\)</span>.</p>
+<p>Necessarily, the loss function must take in two values in <span class="math inline">\(\mathcal{Y}\)</span> — the guess and the truth — and return a real number. Formally, <span class="math inline">\(\mathscr{L}: \mathcal{Y}\times\mathcal{Y}\mapsto \mathbb{R}^{}\)</span>, which can be fully represented as a <span class="math inline">\(|\mathcal{Y}|\times |\mathcal{Y}|\)</span> matrix.</p>
 <p>The simplest case of this is called “zero–one” loss:</p>
 <p><span class="math display">\[
 \losszo(\hat{y}, y) = \mathrm{I}\left(\hat{y}\ne y\right) = \sum_{c \in \mathcal{Y}} \mathrm{I}\left(\hat{y}= c\right) \mathrm{I}\left(y\ne c\right).
@@ -294,15 +295,28 @@ As before, we wish to use <span class="math inline">\(\boldsymbol{x}\)</span> to
 <p>Note that the maximizer of the zero–one loss has a closed form:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}, y\right)}\left[\losszo(\hat{y}, y)\right] ={}&amp;
-\sum_{c \in \mathcal{Y}} \mathrm{I}\left(\hat{y}= c\right) \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}, y\right)}\left[\mathrm{I}\left(y\ne c\right)\right] \\={}&amp;
-\sum_{c \in \mathcal{Y}} \mathrm{I}\left(\hat{y}= c\right) ( 1 - \mathbb{P}_{\,}\left(y= c, \boldsymbol{x}\right)) \\={}&amp;
-1 - \sum_{c \in \mathcal{Y}} \mathrm{I}\left(\hat{y}= c\right) \mathbb{P}_{\,}\left(y= c | \boldsymbol{x}\right) \mathbb{P}_{\,}\left(\boldsymbol{x}\right).
+\mathscr{R}(f) ={}&amp;
+\mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}, y\right)}\left[\losszo(f(\boldsymbol{x}), y)\right] \\={}&amp;
+\sum_{c \in \mathcal{Y}}
+  \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}, y\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathrm{I}\left(y= c\right)\right] \\={}&amp;
+\sum_{c \in \mathcal{Y}}
+  \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathbb{E}_{\mathbb{P}_{\,}\left(y\vert \boldsymbol{x}\right)}\left[\mathrm{I}\left(y= c\right)\right]\right] \\={}&amp;
+\mathbb{E}_{\sum_{c \in \mathcal{Y}} \mathbb{P}_{\,}\left(\boldsymbol{x}\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathbb{P}_{\,}\left(y= c \vert \boldsymbol{x}\right)\right].
 \end{aligned}
-\]</span></p>
-<p>Sice <span class="math inline">\(\mathbb{P}_{\,}\left(\boldsymbol{x}\right)\)</span> does not depend on <span class="math inline">\(c\)</span>, the best choice for <span class="math inline">\(\hat{y}\)</span> is</p>
+\]</span> At any particular <span class="math inline">\(\boldsymbol{x}\)</span>, we want to make this expression as small as possible. For a given <span class="math inline">\(\boldsymbol{x}\)</span>, let’s identify which <span class="math inline">\(c\)</span> we should predict. If we do predict <span class="math inline">\(c\)</span>, then we incure error</p>
 <p><span class="math display">\[
-\hat{y}^*(\boldsymbol{x}) = \underset{c \in \mathcal{Y}}{\mathrm{argmax}}\, \mathbb{P}_{\,}\left(y= c | \boldsymbol{x}\right).
+\textrm{Predict c } \rightarrow
+\textrm{ incur error }\sum_{c' \ne c} \mathbb{P}_{\,}\left(y= c' \vert \boldsymbol{x}\right).
+\]</span> Note that <span class="math display">\[
+\begin{aligned}
+\sum_{c' \ne c} \mathbb{P}_{\,}\left(y= c' \vert \boldsymbol{x}\right) ={}&amp;
+  \sum_{c' \ne c} \mathbb{P}_{\,}\left(y= c' \vert \boldsymbol{x}\right) - 1 + 1 \\={}&amp;
+  \sum_{c' \ne c} \mathbb{P}_{\,}\left(y= c' \vert \boldsymbol{x}\right) - \sum_{c \in \mathcal{Y}} \mathbb{P}_{\,}\left(y= c' \vert \boldsymbol{x}\right) + 1 \\={}&amp;
+  1-\mathbb{P}_{\,}\left(y= c \vert \boldsymbol{x}\right).
+\end{aligned}
+\]</span> The loss is smallest when <span class="math inline">\(\mathbb{P}_{\,}\left(y= c \vert \boldsymbol{x}\right)\)</span> is largest, so the optimal predictor for <span class="math inline">\(\hat{y}\)</span> is</p>
+<p><span class="math display">\[
+f^{\star}(\boldsymbol{x}) = \underset{c \in \mathcal{Y}}{\mathrm{argmax}}\, \mathbb{P}_{\,}\left(y= c | \boldsymbol{x}\right).
 \]</span></p>
 <p>This makes perfect sense — if we could compute <span class="math inline">\(\mathbb{P}_{\,}\left(y= c | \boldsymbol{x}\right)\)</span> for each category, we would choose the category with the highest probability. The problem is that we don’t know <span class="math inline">\(\mathbb{P}_{\,}\left(y= c | \boldsymbol{x}\right)\)</span>. How can we model it?</p>
 </section>
