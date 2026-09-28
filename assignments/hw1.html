@@ -329,12 +329,12 @@ f(\boldsymbol{x}; \boldsymbol{\beta}) = \sum_{i=1}^K \sum_{j=1}^K \beta_{ij} \ph
 <p>To make this picture, you will need to put <span class="math inline">\(x_1\)</span> on the x-axis, <span class="math inline">\(x_2\)</span> on the y-axis, and indicate the height of the function with shading or coloring. To get full credit on the homework you only need to sketch it. There’s no need to do a high quality graphic, this is only to prompt you to think about what the function looks like.</p>
 <p>Describe in ordinary language what kinds of functions you can fit with <span class="math inline">\(f(\boldsymbol{x}; \boldsymbol{\beta})\)</span>. Suppose a point <span class="math inline">\(\boldsymbol{x}\)</span> lands in the <span class="math inline">\(i\)</span>–th partition in its first coordinate and the <span class="math inline">\(j\)</span>–th partition in its second coordinate. What will the fit <span class="math inline">\(f(\boldsymbol{x}_n; \hat{\boldsymbol{\beta}})\)</span> be in terms of the observed response, <span class="math inline">\(y_n\)</span>?</p>
 <p><strong>(d)</strong> In the setting of (c), contrast <span class="math inline">\(f(\boldsymbol{x}_n; \hat{\boldsymbol{\beta}})\)</span> with the regression function <span class="math display">\[
-g(\boldsymbol{x}; \boldsymbol{\gamma}) = \sum_{i=1}^K \sum_{p=1}^2 \gamma_{ip} \phi_i(x_{p}).
+g(\boldsymbol{x}; \boldsymbol{\gamma}) = \sum_{i=1}^K \sum_{p=1}^P \gamma_{ip} \phi_i(x_{p}).
 \]</span> Are there any functions you can estimate with <span class="math inline">\(f\)</span> but not with <span class="math inline">\(g\)</span>? Support your argument with a proof or a counter example.</p>
 <p><strong>(e)</strong> Let’s generalize the previous results for arbitrary dimension <span class="math inline">\(P\)</span> and partition size <span class="math inline">\(K\)</span>. Let <span class="math inline">\(I_{k_1 k_2 \ldots k_P}\)</span> denote the “cell” in <span class="math inline">\(\mathbb{R}^{P}\)</span> where <span class="math inline">\(x_{1}\)</span> is in the <span class="math inline">\(k_1\)</span>–th interval, <span class="math inline">\(x_{2}\)</span> is in the <span class="math inline">\(k_2\)</span>–th interval, and so on. Write a regression function that can take on a different value for every cell <span class="math inline">\(I_{k_1 k_2 \ldots k_P}\)</span>. How many coefficients do you have to estimate to fit this regression function? Express your answer as a function of <span class="math inline">\(P\)</span> and <span class="math inline">\(K\)</span>.</p>
-<p><strong>(f)</strong> Suppose that each component of <span class="math inline">\(\boldsymbol{x}\)</span> is drawn independently and uniformly in <span class="math inline">\([0,1]\)</span>. In the setting of (e), for a given cell <span class="math inline">\(I_{k_1 k_2 \ldots k_P}\)</span>, what is <span class="math inline">\(p(\boldsymbol{x}\in I_{k_1 k_2 \ldots k_P})\)</span>? In a sample of size <span class="math inline">\(N\)</span>, what is the probability that every cell will have at least one datapoint?</p>
+<p><strong>(f)</strong> Suppose that each component of <span class="math inline">\(\boldsymbol{x}\)</span> is drawn independently and uniformly in <span class="math inline">\([0,1]\)</span>. In the setting of (e), for a given cell <span class="math inline">\(I_{k_1 k_2 \ldots k_P}\)</span>, what is <span class="math inline">\(p(\boldsymbol{x}\in I_{k_1 k_2 \ldots k_P})\)</span>? In a sample of size <span class="math inline">\(N\)</span>, use the union bound to upper bound the probability that each cell has a datapoint.</p>
 <p>Express your answers in terms of <span class="math inline">\(N\)</span>, <span class="math inline">\(P\)</span>, and <span class="math inline">\(K\)</span>, and then plug in a few typical values. You should find that you are very unlikely to have an observation in every cell, or in any particular cell, even in moderate dimensions.</p>
-<p><strong>(g)</strong> Given (e) and (f), it is common practice to only include interactions up to a certain order. That is, for some <span class="math inline">\(R \le K\)</span>, one might regress on the “first order” terms <span class="math inline">\(\phi_k(x_{p})\)</span>, the “second order” terms <span class="math inline">\(\phi_{k_1}(x_{p_1})\phi_{k_2}(x_{p_2})\)</span>, the “third order” terms <span class="math inline">\(\phi_{k_1}(x_{p_1})\phi_{k_2}(x_{p_2})\phi_{k_3}(x_{p_3})\)</span>, and so on, up to the <span class="math inline">\(R\)</span>–th order terms that are a product of <span class="math inline">\(R\)</span> indicators. Let <span class="math inline">\(\mathcal{F}_R\)</span> denote functions that include interactions only up to order <span class="math inline">\(R\)</span>. Which is more expressive, <span class="math inline">\(\mathcal{F}_R\)</span> or your class of regression functions from (e)?</p>
+<p><strong>(g)</strong> Given (e) and (f), it is common practice to only include interactions up to a certain order. That is, for some <span class="math inline">\(R \le P\)</span>, one might regress on the “first order” terms <span class="math inline">\(\phi_k(x_{p})\)</span>, the “second order” terms <span class="math inline">\(\phi_{k_1}(x_{p_1})\phi_{k_2}(x_{p_2})\)</span>, the “third order” terms <span class="math inline">\(\phi_{k_1}(x_{p_1})\phi_{k_2}(x_{p_2})\phi_{k_3}(x_{p_3})\)</span>, and so on, up to the <span class="math inline">\(R\)</span>–th order terms that are a product of <span class="math inline">\(R\)</span> indicators. Let <span class="math inline">\(\mathcal{F}_R\)</span> denote functions that include interactions only up to order <span class="math inline">\(R\)</span>. Which is more expressive, <span class="math inline">\(\mathcal{F}_R\)</span> or your class of regression functions from (e)?</p>
 <!-- ------------------------------------------------- -->
 <!-- ------------------------------------------------- -->
 <!-- ------------------------------------------------- -->
@@ -348,20 +348,20 @@ g(\boldsymbol{x}; \boldsymbol{\gamma}) = \sum_{i=1}^K \sum_{p=1}^2 \gamma_{ip} \
 \]</span></p>
 <p>for <span class="math inline">\(\lambda &gt; 0\)</span>. We will not assume that <span class="math inline">\(\boldsymbol{X}\)</span> is full–column rank. By writing this expression, we are implicitly assuming that <span class="math inline">\(\left( \boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\right)\)</span> is invertible. In this problem, we will show that it is always invertible, and so <span class="math inline">\(\hat{\boldsymbol{\beta}}_{ridge}\)</span> always exists, even if <span class="math inline">\(\boldsymbol{X}\)</span> is not full–column rank.</p>
 <p>For each problem, carefully justify your answer.</p>
-<section id="a-2" class="level4">
-<h4 class="anchored" data-anchor-id="a-2">(a)</h4>
+<section id="a-3" class="level4">
+<h4 class="anchored" data-anchor-id="a-3">(a)</h4>
 <p>What is the smallest possible eigenvalue for <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}\)</span>?</p>
 </section>
-<section id="b-2" class="level4">
-<h4 class="anchored" data-anchor-id="b-2">(b)</h4>
+<section id="b-3" class="level4">
+<h4 class="anchored" data-anchor-id="b-3">(b)</h4>
 <p>What is the smallest possible eigenvalue for <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\)</span>?</p>
 </section>
-<section id="c-2" class="level4">
-<h4 class="anchored" data-anchor-id="c-2">(c)</h4>
+<section id="c-3" class="level4">
+<h4 class="anchored" data-anchor-id="c-3">(c)</h4>
 <p>Using (b), conclude that <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{X}+ \lambda {\boldsymbol{I}_{\,}}\)</span> is always invertible.</p>
 </section>
-<section id="d-2" class="level4">
-<h4 class="anchored" data-anchor-id="d-2">(d)</h4>
+<section id="d-3" class="level4">
+<h4 class="anchored" data-anchor-id="d-3">(d)</h4>
 <p>For any given <span class="math inline">\(\boldsymbol{X}\)</span> and <span class="math inline">\(\boldsymbol{Y}\)</span>, can you find a <span class="math inline">\(\lambda_0 &gt; 0\)</span> such that <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda_0) = \boldsymbol{0}\)</span>?</p>
 <!-- ------------------------------------------------- -->
 <!-- ------------------------------------------------- -->
@@ -380,23 +380,23 @@ g(\boldsymbol{x}; \boldsymbol{\gamma}) = \sum_{i=1}^K \sum_{p=1}^2 \gamma_{ip} \
     \sum_{n=1}^N(y_n - \boldsymbol{x}_n^\intercal\boldsymbol{\beta})^2 + \lambda \sum_{k=1}^K \left|\beta_k\right|.
 \end{aligned}
 \]</span></p>
-<section id="a-4" class="level4">
-<h4 class="anchored" data-anchor-id="a-4">(a)</h4>
+<section id="a-5" class="level4">
+<h4 class="anchored" data-anchor-id="a-5">(a)</h4>
 <p>Where is <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta}; \lambda)\)</span> differentiable as a function of <span class="math inline">\(\boldsymbol{\beta}\)</span>? At the points of differentiability, evaluate <span class="math inline">\(\partial \hat{\mathscr{R}}(\boldsymbol{\beta}; \lambda) / \partial \boldsymbol{\beta}\)</span>.</p>
 </section>
-<section id="b-4" class="level4">
-<h4 class="anchored" data-anchor-id="b-4">(b)</h4>
+<section id="b-5" class="level4">
+<h4 class="anchored" data-anchor-id="b-5">(b)</h4>
 <p>For any given <span class="math inline">\(\boldsymbol{X}\)</span> and <span class="math inline">\(\boldsymbol{Y}\)</span>, show that there is <span class="math inline">\(\lambda_0 \geq 0\)</span> such that for all <span class="math inline">\(\lambda{\geq}\lambda_0\)</span>, it holds that <span class="math inline">\(\hat{\boldsymbol{\beta}}(\lambda) = \boldsymbol{0}\)</span>.</p>
 </section>
-<section id="c-4" class="level4">
-<h4 class="anchored" data-anchor-id="c-4">(c)</h4>
+<section id="c-5" class="level4">
+<h4 class="anchored" data-anchor-id="c-5">(c)</h4>
 <p>Show that, as <span class="math inline">\(\lambda\)</span> decreases from the <span class="math inline">\(\lambda_0\)</span> defined in (b), eventually a regressor will have a nonzero coefficient when <span class="math inline">\(\lambda\)</span> crosses some threshold, <span class="math inline">\(\lambda_1\)</span>.</p>
 </section>
-<section id="d-4" class="level4">
-<h4 class="anchored" data-anchor-id="d-4">(d)</h4>
-<p>For simplicity, assume that the entries of <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{Y}\)</span> are all distinct, so there are no “ties” in the sample second moment between the regressors and the responses.</p>
+<section id="d-5" class="level4">
+<h4 class="anchored" data-anchor-id="d-5">(d)</h4>
+<p>For simplicity, assume that the entries of <span class="math inline">\(\boldsymbol{X}^\intercal\boldsymbol{Y}\)</span> are all distinct, so there are no “ties” in the sample absolute value of the second moment between the regressors and the responses.</p>
 <p>Let <span class="math display">\[
-k^* = \underset{k}{\mathrm{argmax}}\, \left|\boldsymbol{X}^T_{\cdot k} \boldsymbol{Y}\right| = \underset{k}{\mathrm{argmax}}\, \left|\sum_{n=1}^Nx_{nk} y_n\right|
+k^* = \underset{k}{\mathrm{argmax}}\, \left|\boldsymbol{X}^\intercal_{\cdot k} \boldsymbol{Y}\right| = \underset{k}{\mathrm{argmax}}\, \left|\sum_{n=1}^Nx_{nk} y_n\right|
 \]</span> denote the index of the regressor with the largest sample second moment with <span class="math inline">\(\boldsymbol{Y}\)</span>.</p>
 <p>Show that:</p>
 <ul>
@@ -404,17 +404,17 @@ k^* = \underset{k}{\mathrm{argmax}}\, \left|\boldsymbol{X}^T_{\cdot k} \boldsymb
 <li>The <span class="math inline">\(\lambda_1\)</span> given in (c) is <span class="math inline">\(\lambda_1 = 2 \left|\sum_{n=1}^Nx_{nk^*} y_n\right|\)</span>.</li>
 </ul>
 </section>
-<section id="e-2" class="level4">
-<h4 class="anchored" data-anchor-id="e-2">(e)</h4>
+<section id="e-3" class="level4">
+<h4 class="anchored" data-anchor-id="e-3">(e)</h4>
 <p>Suppose you define an linear transformation of regressor <span class="math inline">\(k\)</span>:</p>
 <p><span class="math display">\[
 z_{nk} := a x_{nk},
 \]</span></p>
 <p>and then perform Lasso using <span class="math inline">\(z_{nk}\)</span> in place of <span class="math inline">\(x_{nk}\)</span>. Recall that the unregularized linear regression predictions are invariant to linear transformations of this sort.</p>
-<p>Assume that <span class="math inline">\(x_{nk} y_n \ne 0\)</span> for at least one <span class="math inline">\(n\)</span>. Using (d), show that you can always choose <span class="math inline">\(a\)</span> large enough that the regressor <span class="math inline">\(z_{nk}\)</span> is selected as the first non–zero coefficient.</p>
+<p>Assume that <span class="math inline">\(\sum_{n=1}^Nx_{nk} y_n \ne 0\)</span>. Using (d), show that you can always choose <span class="math inline">\(a\)</span> large enough that the regressor <span class="math inline">\(z_{nk}\)</span> is selected as the first non–zero coefficient.</p>
 </section>
-<section id="f" class="level4">
-<h4 class="anchored" data-anchor-id="f">(f)</h4>
+<section id="f-1" class="level4">
+<h4 class="anchored" data-anchor-id="f-1">(f)</h4>
 <p>Now suppose that <span class="math inline">\(\frac{1}{N} \sum_{n=1}^Ny_n \ne 0\)</span>, and define a re–centering transformation of regressor <span class="math inline">\(k\)</span>:</p>
 <p><span class="math display">\[
 z_{nk} := x_{nk} + b,
@@ -422,8 +422,8 @@ z_{nk} := x_{nk} + b,
 <p>and then perform Lasso using <span class="math inline">\(z_{nk}\)</span> in place of <span class="math inline">\(x_{nk}\)</span>. Recall that the unregularized linear regression predictions are invariant to linear transformations of this sort if a constant is included in the regression.</p>
 <p>Assume that <span class="math inline">\(y_n \ne 0\)</span> for at least one <span class="math inline">\(n\)</span>. Show that you can always choose <span class="math inline">\(b\)</span> so that <span class="math inline">\(z_{nk}\)</span> is selected as the first non–zero coefficient.</p>
 </section>
-<section id="g" class="level4">
-<h4 class="anchored" data-anchor-id="g">(g)</h4>
+<section id="g-1" class="level4">
+<h4 class="anchored" data-anchor-id="g-1">(g)</h4>
 <p>Using (e) and (f), argue why it is standard practice to center and standardize regressors so that <span class="math inline">\(\frac{1}{N} \sum_{n=1}^Nx_{nk}^2 = 1\)</span> and <span class="math inline">\(\frac{1}{N} \sum_{n=1}^Nx_{nk} = 0\)</span> when using the lasso.</p>
 <!-- ------------------------------------------------- -->
 <!-- ------------------------------------------------- -->
@@ -442,24 +442,24 @@ r_{k}(x) :={}&amp; \mathrm{I}\left(\zeta_{k - 1} &lt; x\le \zeta_{k}  \right)
 \end{aligned}
 \]</span></p>
 <p>Let <span class="math inline">\(\boldsymbol{s}_n = (s_{1}(x_n), \ldots, s_{K}(x_n))^\intercal\)</span>, and <span class="math inline">\(\boldsymbol{r}_n = (r_{1}(x_n), \ldots, r_{K}(x_n))^\intercal\)</span>. (You might say “s” is for “step” and “r” is for “region.”)</p>
-<section id="a-6" class="level4">
-<h4 class="anchored" data-anchor-id="a-6">(a)</h4>
+<section id="a-7" class="level4">
+<h4 class="anchored" data-anchor-id="a-7">(a)</h4>
 <p>Show that <span class="math inline">\(\boldsymbol{s}_n\)</span> is an invertible linear transformation of <span class="math inline">\(\boldsymbol{r}_n\)</span>. As a consequence, OLS predictions using <span class="math inline">\(\boldsymbol{s}_n\)</span> and <span class="math inline">\(\boldsymbol{r}_n\)</span> are equivalent if there is no regularization.</p>
 </section>
-<section id="b-6" class="level4">
-<h4 class="anchored" data-anchor-id="b-6">(b)</h4>
+<section id="b-7" class="level4">
+<h4 class="anchored" data-anchor-id="b-7">(b)</h4>
 <p>Consider running Lasso regression with <span class="math inline">\(\boldsymbol{s}_n\)</span>. Sketch an example of what the approximating function <span class="math inline">\(\sum_{k=1}^K \beta_k s_{k}(x)\)</span> would look like if <span class="math inline">\(\boldsymbol{\beta}\)</span> is sparse.</p>
 </section>
-<section id="c-6" class="level4">
-<h4 class="anchored" data-anchor-id="c-6">(c)</h4>
+<section id="c-7" class="level4">
+<h4 class="anchored" data-anchor-id="c-7">(c)</h4>
 <p>Consider running Lasso regression with <span class="math inline">\(\boldsymbol{r}_n\)</span>. Sketch an example of what the approximating function <span class="math inline">\(\sum_{k=1}^K \beta_k r_{k}(x)\)</span> would look like if <span class="math inline">\(\boldsymbol{\beta}\)</span> is sparse.</p>
 </section>
-<section id="d-6" class="level4">
-<h4 class="anchored" data-anchor-id="d-6">(d)</h4>
+<section id="d-7" class="level4">
+<h4 class="anchored" data-anchor-id="d-7">(d)</h4>
 <p>Between (b) and (c), which would you expect to be more useful in a typical regression situation?</p>
 </section>
-<section id="e-4" class="level4">
-<h4 class="anchored" data-anchor-id="e-4">(e)</h4>
+<section id="e-5" class="level4">
+<h4 class="anchored" data-anchor-id="e-5">(e)</h4>
 <p>Is regularized regression invariant under invertible linear transformations of the regressors?</p>
 <!-- ------------------------------------------------- -->
 <!-- ------------------------------------------------- -->
@@ -468,19 +468,6 @@ r_{k}(x) :={}&amp; \mathrm{I}\left(\zeta_{k - 1} &lt; x\le \zeta_{k}  \right)
 </section>
 <section id="incorrectly-specified-linear-regression" class="level1" data-number="7">
 <h1 data-number="7"><span class="header-section-number">7</span> Incorrectly specified linear regression</h1>
-<div class="callout callout-style-default callout-warning callout-titled" title="Note">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Warning</span>Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This problem will be challenging unless we cover the optimal regression function in class. If we don’t get to it the week of 9/15 and 9/17, I’ll take this problem off this homework and put it on a future homework instead.</p>
-</div>
-</div>
 <p>Assume that <span class="math inline">\(y_n = \boldsymbol{x}_n^\intercal\boldsymbol{\alpha}^{*}+ \boldsymbol{z}_n^\intercal\boldsymbol{\gamma}^{*}+ \varepsilon_n\)</span>, for some <span class="math inline">\(\boldsymbol{\alpha}^{*}\)</span> and <span class="math inline">\(\boldsymbol{\gamma}^{*}\)</span>, where <span class="math inline">\(\varepsilon_n\)</span> is mean zero, has finite variance <span class="math inline">\(\sigma^2\)</span>, and is independent of <span class="math inline">\(\boldsymbol{x}_n\)</span> and <span class="math inline">\(\boldsymbol{z}_n\)</span>. It follows that the optimal regression function is</p>
 <p><span class="math display">\[
 f^{\star}(\boldsymbol{x}, \boldsymbol{z}) = \mathbb{E}_{\vphantom{}}\left[y\vert \boldsymbol{x}, \boldsymbol{z}\right] =
@@ -497,17 +484,17 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 \]</span></p>
 <p>and assume that <span class="math inline">\(M_{xx}\)</span> and <span class="math inline">\(M_{zz}\)</span> are invertible. Note that, since <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n\right] = \boldsymbol{0}\)</span> and <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\boldsymbol{z}_n\right] = \boldsymbol{0}\)</span>, that the matrices <span class="math inline">\(M\)</span> are covariances.</p>
 <p>We will consider the misspecified regression <span class="math inline">\(y_n \sim \boldsymbol{x}_n^\intercal\boldsymbol{\beta}\)</span>, letting <span class="math inline">\(\boldsymbol{\beta}^{*}:= \lim_{N \rightarrow \infty} \hat{\boldsymbol{\beta}}\)</span> (in the sense that <span class="math inline">\(\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}\)</span> in probability).</p>
-<section id="a-8" class="level4">
-<h4 class="anchored" data-anchor-id="a-8">(a)</h4>
+<section id="a-9" class="level4">
+<h4 class="anchored" data-anchor-id="a-9">(a)</h4>
 <p>Write an expression for <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> in terms of the quantities defined above.</p>
 </section>
-<section id="b-8" class="level4">
-<h4 class="anchored" data-anchor-id="b-8">(b)</h4>
+<section id="b-9" class="level4">
+<h4 class="anchored" data-anchor-id="b-9">(b)</h4>
 <p>Suppose we are using our linear regression for causal inference, and want to know <span class="math inline">\(\boldsymbol{\alpha}^{*}\)</span>, which we take as the causal effect of <span class="math inline">\(\boldsymbol{x}\)</span> on <span class="math inline">\(y\)</span>.</p>
 <p>Suppose <span class="math inline">\(M_{xz} \ne \boldsymbol{0}\)</span>. Does <span class="math inline">\(\boldsymbol{\beta}^{*}= \boldsymbol{\alpha}^{*}\)</span>? Interpret this result in terms of unobserved confounders.</p>
 </section>
-<section id="c-8" class="level4">
-<h4 class="anchored" data-anchor-id="c-8">(c)</h4>
+<section id="c-9" class="level4">
+<h4 class="anchored" data-anchor-id="c-9">(c)</h4>
 <p>Suppose we are using linear regression for prediction, so we do not care about estimating <span class="math inline">\(\boldsymbol{\alpha}^{*}\)</span>, but rather care about the asymptotic quality of our estimates <span class="math inline">\(\hat{y}^*_\mathrm{new}= {\boldsymbol{\beta}^{*}}^\intercal\boldsymbol{x}_\mathrm{new}\)</span>. Write an expression for the expected squared limiting bias,</p>
 <p><span class="math display">\[
 \mathbb{E}_{\vphantom{}}\left[
@@ -515,8 +502,8 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 \right].
 \]</span></p>
 </section>
-<section id="d-8" class="level4">
-<h4 class="anchored" data-anchor-id="d-8">(d)</h4>
+<section id="d-9" class="level4">
+<h4 class="anchored" data-anchor-id="d-9">(d)</h4>
 <p>Compare (c) with the bias of the “correct” prediction based on <span class="math inline">\(\boldsymbol{x}\)</span> alone: <span class="math display">\[
 \mathbb{E}_{\vphantom{}}\left[
     \left(f^{\star}(\boldsymbol{x}_\mathrm{new}, \boldsymbol{z}_\mathrm{new}) - {\boldsymbol{\alpha}^{*}}^\intercal\boldsymbol{x}_\mathrm{new}\right)^2
@@ -524,8 +511,8 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 \]</span></p>
 <p>In particular, show that the expected squared limiting bias of the “incorrect” regression is possibly smaller, and never larger, than the expected squared bias of the prediction <span class="math inline">\({\boldsymbol{\alpha}^{*}}^\intercal\boldsymbol{x}\)</span>.</p>
 </section>
-<section id="e-6" class="level4">
-<h4 class="anchored" data-anchor-id="e-6">(e)</h4>
+<section id="e-7" class="level4">
+<h4 class="anchored" data-anchor-id="e-7">(e)</h4>
 <p>Unobserved confounders are severely problematic for causal inference. Is the same true for prediction problems? Justify your answer in terms of the results from this question.</p>
 <!-- ------------------------------------------------- -->
 <!-- ------------------------------------------------- -->
@@ -534,8 +521,8 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 </section>
 <section id="maximum-likelihood-estimator-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="8">
 <h1 data-number="8"><span class="header-section-number">8</span> Maximum likelihood estimator (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
-<section id="a-10" class="level4">
-<h4 class="anchored" data-anchor-id="a-10">(a)</h4>
+<section id="a-11" class="level4">
+<h4 class="anchored" data-anchor-id="a-11">(a)</h4>
 <p>Show that the OLS estimator is the maximum likelihood estimator (MLE) of the model</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -545,8 +532,8 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 \end{aligned}
 \]</span></p>
 </section>
-<section id="b-10" class="level4">
-<h4 class="anchored" data-anchor-id="b-10">(b)</h4>
+<section id="b-11" class="level4">
+<h4 class="anchored" data-anchor-id="b-11">(b)</h4>
 <p>For two different densities, <span class="math inline">\(p(\boldsymbol{x}, y)\)</span> and <span class="math inline">\(q(\boldsymbol{x}, y)\)</span>, defined with respect to the same dominating measure, the KL divergence is defined as</p>
 <p><span class="math display">\[
 \mathrm{KL}(p(\boldsymbol{x}, y) || q(\boldsymbol{x}, y)) :=
@@ -579,7 +566,7 @@ M_{xz} :={}&amp; \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}_n \boldsymbol{z}_n
 \]</span></p>
 <p>and let <span class="math inline">\(K\)</span> be a bounded subset of <span class="math inline">\(\mathbb{R}^{P}\)</span>. Show directly that regression loss obeys a uniform law of large numbers, in the sense that</p>
 <p><span class="math display">\[
-\sup_{\boldsymbol{\beta}\in K} \left|\hat{\mathscr{L}}(\boldsymbol{\beta}) - \mathscr{L}(\boldsymbol{\beta})\right| \rightarrow 0,
+\sup_{\boldsymbol{\beta}\in K} \left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow 0,
 \]</span></p>
 <p>where the limit is in probability. You may assume that <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]\)</span> and <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y^2\right]\)</span> are finite and the observations are IID.</p>
 <!-- -------------------------------------------------------- -->

@@ -271,7 +271,7 @@ window.Quarto = {
 </section>
 <section id="loss-functions" class="level1">
 <h1>Loss functions</h1>
-<p>Let us now turn to classification problems. Like regression, we assume we get IID observations <span class="math inline">\(z_n = (\boldsymbol{x}_n, y_n)\)</span>, but now with the difference that <span class="math inline">\(y\)</span> takes one of a set of unordered distinct values, which I will call <span class="math inline">\(\mathcal{Y}\)</span>. The simplest case is where <span class="math inline">\(y\)</span> takes one of two values, which I will sometimes call “binary classification”.<br>
+<p>Let us now turn to classification problems. Like regression, we assume we get IID observations <span class="math inline">\((\boldsymbol{x}_n, y_n)\)</span>, but now with the difference that <span class="math inline">\(y\)</span> takes one of a set of unordered distinct values, which I will call <span class="math inline">\(\mathcal{Y}\)</span>. The simplest case is where <span class="math inline">\(y\)</span> takes one of two values, which I will sometimes call “binary classification”.<br>
 As before, we wish to use <span class="math inline">\(\boldsymbol{x}\)</span> to guess what <span class="math inline">\(y\)</span> is. As we will see shortly, there are more choices to what <span class="math inline">\(f\)</span> should even be for classification than there are for regression.</p>
 <section id="encoding-y" class="level2">
 <h2 class="anchored" data-anchor-id="encoding-y">Encoding <span class="math inline">\(y\)</span></h2>
@@ -340,8 +340,7 @@ f^{\star}(\boldsymbol{x}) = \underset{c \in \mathcal{Y}}{\mathrm{argmax}}\, \mat
 \end{aligned}
 \]</span></p>
 <p>This is also known as the “cross–entropy loss,” since the maximum likelihood estimator is also the minimizer of the Kullback–Liebler divergence. (See the 254 homework problem for unit 2.)</p>
-<p>One can show that</p>
-<p><span class="math display">\[
+<p>One can show directly that <span class="math display">\[
 \pi^* = \underset{\pi}{\mathrm{argmax}}\, \mathbb{E}_{\mathbb{P}_{\,}\left(y\right)}\left[\lossce(\pi, y)\right] = \mathbb{P}_{\,}\left(y= 1\right).
 \]</span></p>
 <p>If we allow <span class="math inline">\(\pi(\boldsymbol{x})\)</span> to depend on <span class="math inline">\(\boldsymbol{x}\)</span> so that we are optimizing over functions rather than a scalars, the loss is</p>
