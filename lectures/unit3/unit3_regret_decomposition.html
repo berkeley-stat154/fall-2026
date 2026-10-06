@@ -179,6 +179,12 @@ window.Quarto = {
    
   <ul>
   <li><a href="#regret-decomposition" id="toc-regret-decomposition" class="nav-link active" data-scroll-target="#regret-decomposition">Regret decomposition</a></li>
+  <li><a href="#regret-decomposition-for-linear-regression-and-least-squares-loss" id="toc-regret-decomposition-for-linear-regression-and-least-squares-loss" class="nav-link" data-scroll-target="#regret-decomposition-for-linear-regression-and-least-squares-loss">Regret decomposition for linear regression and least squares loss</a>
+  <ul class="collapse">
+  <li><a href="#approximating-the-conditional-expectation" id="toc-approximating-the-conditional-expectation" class="nav-link" data-scroll-target="#approximating-the-conditional-expectation">Approximating the conditional expectation</a></li>
+  <li><a href="#the-plug-in-estimator-and-empirical-risk" id="toc-the-plug-in-estimator-and-empirical-risk" class="nav-link" data-scroll-target="#the-plug-in-estimator-and-empirical-risk">The plug-in estimator and empirical risk</a></li>
+  <li><a href="#basis-expansions-and-regularization" id="toc-basis-expansions-and-regularization" class="nav-link" data-scroll-target="#basis-expansions-and-regularization">Basis expansions and regularization</a></li>
+  </ul></li>
   <li><a href="#estimation-error-decomposition" id="toc-estimation-error-decomposition" class="nav-link" data-scroll-target="#estimation-error-decomposition">Estimation error decomposition</a></li>
   </ul>
 </nav>
@@ -213,18 +219,7 @@ window.Quarto = {
 
 <section id="regret-decomposition" class="level1">
 <h1>Regret decomposition</h1>
-<p>Suppose we have a function class <span class="math inline">\(\mathcal{F}\)</span>, which is a strict subset of all possible functions, and a risk function <span class="math inline">\(\mathscr{R}(\cdot)\)</span> defined on functions. For example, we have considered the special case</p>
-<p><span class="math display">\[
-\mathcal{F}_{lin} = \{ f: f(\boldsymbol{x}) = \boldsymbol{x}^\intercal\boldsymbol{\beta}\textrm{ for some }\boldsymbol{\beta}\in \mathbb{R}^{P} \}
-\quad\textrm{and}\quad
-\mathscr{R}(\cdot) = \mathbb{E}_{\boldsymbol{x}, y}\left[(y- f(\boldsymbol{x}))^2\right],
-\]</span></p>
-<p>Note that L1 and L2 regression could equivalently be written as <span class="math display">\[
-\mathcal{F}_{L1} = \{ f: f\in \mathcal{F}_{lin} \textrm{ with }\left\Vert\boldsymbol{\beta}\right\Vert_1 \le C \textrm{ for some }C &gt; 0 \}
-\quad\quad
-\mathcal{F}_{L2} = \{ f: f\in \mathcal{F}_{lin} \textrm{ with }\left\Vert\boldsymbol{\beta}\right\Vert_2 \le C \textrm{ for some }C &gt; 0 \}.
-\]</span> It is good to keep these examples in mind, but now we will keep our notation more general.</p>
-<p>Suppose we define <span class="math display">\[
+<p>Suppose we have a function class <span class="math inline">\(\mathcal{F}\)</span>, which is a strict subset of all possible functions, and a risk function <span class="math inline">\(\mathscr{R}(\cdot)\)</span> defined on functions. Suppose we define <span class="math display">\[
 \hat{f}:= \underset{f\in \mathcal{F}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(f)
 \quad\quad
 \overline{f}:= \underset{f\in \mathcal{F}}{\mathrm{argmin}}\, \mathscr{R}(f)
@@ -233,6 +228,7 @@ f^{\star}:= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f).
 \]</span> The analogies for linear regression would be <span class="math inline">\(\hat{f}(\boldsymbol{x}) = \hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}\)</span>, <span class="math inline">\(\overline{f}(\boldsymbol{x}) = {\boldsymbol{\beta}^{*}}^\intercal\boldsymbol{x}\)</span>, and <span class="math inline">\(f^{\star}(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y\vert \boldsymbol{x}\right]\)</span>.</p>
 <p>We are interested in the regret, <span class="math inline">\(\mathscr{R}(\hat{f}) - \mathscr{R}(f^{\star})\)</span>. Recall that we can decompose the regret into two terms:</p>
 <p><span class="math display">\[
+\textrm{Regret}(\hat{f}) =
 \mathscr{R}(\hat{f}) - \mathscr{R}(f^{\star}) =
 \underbrace{\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})}_{\textrm{Estimation error}} +
 \underbrace{\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star})}_{\textrm{Representation error}}.
@@ -241,10 +237,171 @@ f^{\star}:= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f).
 <p>In an oversimplification, estimation error loosely corresponds to “variance” and representation error to “bias” in correctly specified linear regeression, though this analogy is misleading, since estimation error can be cause both by statistical bias and variance.</p>
 <p>However, it is clear that, if there is a cost to expressive <span class="math inline">\(\mathcal{F}\)</span>, it <strong>must</strong> come from estimation error, and if it were not necessary to fit <span class="math inline">\(f\)</span> from the data, we would simply make <span class="math inline">\(\mathcal{F}\)</span> as expressive as possible. Therefore, for this unit, we will focus on understanding the relationship between <span class="math inline">\(\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})\)</span> and complexity of <span class="math inline">\(\mathcal{F}\)</span>.</p>
 </section>
+<section id="regret-decomposition-for-linear-regression-and-least-squares-loss" class="level1">
+<h1>Regret decomposition for linear regression and least squares loss</h1>
+<p>Let us now consider the special case of linear models and squared loss. Take <span class="math inline">\(\mathscr{L}(f(\boldsymbol{x}), y) = (f(\boldsymbol{x}) - y)^2\)</span> and so <span class="math inline">\(\mathscr{R}(\cdot) = \mathbb{E}_{\boldsymbol{x}, y}\left[(y- f(\boldsymbol{x}))^2\right]\)</span>. Given some <span class="math inline">\(\boldsymbol{x}_\mathrm{new}\)</span>, we want to find a best guess <span class="math inline">\(f(\boldsymbol{x}_\mathrm{new})\)</span> for the value of <span class="math inline">\(y_\mathrm{new}\)</span>: specifically, we want to find a function that minimizes the risk</p>
+<p><span class="math display">\[
+f^{\star}(\cdot) :=
+\underset{f}{\mathrm{argmin}}\, \mathscr{R}(f) =
+\underset{f}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\mathscr{L}(f(\boldsymbol{x}_\mathrm{new}), y_\mathrm{new})\right] =
+\underset{f}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f(\boldsymbol{x}_\mathrm{new}) \right)^2\right].
+\]</span></p>
+<p>This is a functional optimization problem over an infinite dimensional space! You can solve this using some fancy math, but you can also prove directly that the best choice is</p>
+<p><span class="math display">\[
+f^{\star}(\boldsymbol{x}_\mathrm{new})  = \mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}| \boldsymbol{x}_\mathrm{new}\right].
+\]</span></p>
+<p>Suppose we consider any other function <span class="math inline">\(f(\cdot)\)</span>. The risk is larger, since</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f(\boldsymbol{x}_\mathrm{new}) \right)^2\right]
+={}&amp;
+\mathbb{E}_{\vphantom{}}\left[
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f(\boldsymbol{x}_\mathrm{new}) \right)^2 | \boldsymbol{x}_\mathrm{new}\right]
+\right]
+&amp;\textrm{(Tower property)}
+\\={}&amp;
+\mathbb{E}_{\vphantom{}}\left[
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) + f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)^2 |
+    \boldsymbol{x}_\mathrm{new}\right]
+\right]
+&amp;\textrm{(add and subtract)}
+\\={}&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) \right)^2\right] +
+\\&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)^2\right] +
+\\&amp;
+2 \mathbb{E}_{\vphantom{}}\left[
+  \mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) | \boldsymbol{x}_\mathrm{new}\right]
+          \left( f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)
+\right]
+&amp;\textrm{(expand the quadratic, use conditioning)}
+\\={}&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) \right)^2\right] +
+\\&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( f^{\star}(\boldsymbol{x}_\mathrm{new}) - f(\boldsymbol{x}_\mathrm{new}) \right)^2\right]
+&amp;
+\textrm{($\mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) | \boldsymbol{x}_\mathrm{new}\right]=0$ by definition)}
+\\\ge&amp;
+  \mathbb{E}_{\vphantom{}}\left[\left( y_\mathrm{new}- f^{\star}(\boldsymbol{x}_\mathrm{new}) \right)^2\right].
+&amp;
+\textrm{(anything squared is greater than $0$)}
+\end{aligned}
+\]</span></p>
+<section id="approximating-the-conditional-expectation" class="level2">
+<h2 class="anchored" data-anchor-id="approximating-the-conditional-expectation">Approximating the conditional expectation</h2>
+<p>We now know that the optimal regression function is given by <span class="math inline">\(f^{\star}(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]\)</span>. The problem is how to estimate it. Typically, we don’t know the functional form of <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]\)</span>, because we don’t know the joint distribution of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y\)</span>. But suppose we approximate it with a linear function of the form <span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]
+\approx
+f(\boldsymbol{x}; \boldsymbol{\beta}) := \approx \boldsymbol{\beta}^\intercal\boldsymbol{x}.
+\]</span> This amounts to using the approximating function class <span class="math display">\[
+\mathcal{F}_{lin} = \{ f: f(\boldsymbol{x}) = \boldsymbol{x}^\intercal\boldsymbol{\beta}\textrm{ for some }\boldsymbol{\beta}\in \mathbb{R}^{P} \}.
+\]</span></p>
+<p>Note that we are not assuming this is true — we do not expect that <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y| \boldsymbol{x}\right]\)</span> is a linear function of <span class="math inline">\(\boldsymbol{x}\)</span>. Rather, we are finding the best approximation to the unknown <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y_\mathrm{new}| \boldsymbol{x}_\mathrm{new}\right]\)</span> amongst the class of functions of the form <span class="math inline">\(\boldsymbol{\beta}^\intercal\boldsymbol{x}_\mathrm{new}\)</span>.</p>
+<p>The linear assumption gives us a finite–dimensional class of candidate functions, which gives us a tractable optimization problem. Under this approximation, the problem becomes <span class="math display">\[
+\begin{aligned}
+\beta^{*}:={}&amp; \underset{\beta}{\mathrm{argmin}}\, \mathbb{E}_{\vphantom{}}\left[\left( y- \boldsymbol{\beta}^\intercal\boldsymbol{x}\right)^2\right] \\
+={}&amp; \underset{\beta}{\mathrm{argmin}}\, \left(\mathbb{E}_{\vphantom{}}\left[y^2\right] - 2 \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[y\boldsymbol{x}\right] +
+  \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right] \boldsymbol{\beta}\right).
+\end{aligned}
+\]</span></p>
+<p>Differentiating with respect to <span class="math inline">\(\boldsymbol{\beta}\)</span> and solving gives</p>
+<p><span class="math display">\[
+\boldsymbol{\beta}^{*}= \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right] ^{-1} \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}y\right].
+\]</span></p>
+</section>
+<section id="the-plug-in-estimator-and-empirical-risk" class="level2">
+<h2 class="anchored" data-anchor-id="the-plug-in-estimator-and-empirical-risk">The plug-in estimator and empirical risk</h2>
+<p>Of course, we cannot compute <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> any more than we can compute <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y\vert \boldsymbol{x}\right]\)</span>, since we don’t know <span class="math inline">\(p(\boldsymbol{x}, y)\)</span>. Recall that our <em>computable</em> estimate was</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}:= \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\boldsymbol{\beta}) =
+\underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\left(y_n  - \boldsymbol{\beta}^\intercal\boldsymbol{x}_n \right)^2 =
+\left(\frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{X}\right)^{-1} \frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{Y}.
+\]</span></p>
+<p>By the LLN, as <span class="math inline">\(N \rightarrow \infty\)</span>, <span class="math display">\[
+\frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{X}\rightarrow \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]
+\quad\textrm{and}
+\frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{Y}\rightarrow \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}y\right].
+\]</span> Furthermore, in an advanced probability class, you can show that, if <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]\)</span> is invertible, then by the <em>continuous mapping theorem</em> (CMT) <span class="math display">\[
+\left(\frac{1}{N} \boldsymbol{X}^\intercal\boldsymbol{X}\right)^{-1} \rightarrow \mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right]^{-1}.
+\]</span> Another application of the CMT then gives that <span class="math display">\[
+\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}.
+\]</span> We have shown that, as <span class="math inline">\(N \rightarrow \infty\)</span>, the OLS estimator converges to the <em>best linear estimator</em> of the risk function! That is, in fact, the best quantity you could hope for it to converge to.</p>
+<p>This is not a coincidence, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is minimizing an objective function that is closely related to <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span>. Note that we cannot actually compute <span class="math inline">\(\beta^{*}\)</span> directly, since we still don’t know the joint distribution of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y\)</span>, and so cannot compute the preceding expectations. However, if we have a training set, we can <em>approximate</em> the expected loss:</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(\boldsymbol{\beta}) :=
+% \meann \loss(\betav^\trans\xv_n, \y_n) =
+\frac{1}{N} \sum_{n=1}^N\left( y_n - \boldsymbol{\beta}^\intercal\boldsymbol{x}_n \right)^2.
+\]</span></p>
+<p>For any particular <span class="math inline">\(\boldsymbol{\beta}\)</span>, <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta}) \rightarrow \mathscr{R}(\boldsymbol{\beta})\)</span> by the LLN, so it might (tentatively) make sense to use <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> as a proxy for <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span>. And of course, <span class="math inline">\(\hat{\boldsymbol{\beta}}:= \underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span>, and since we have shown manually that <span class="math inline">\(\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}\)</span>, we see that <span class="math inline">\(\hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> <em>is</em> a good proxy for <span class="math inline">\(\mathscr{R}(\boldsymbol{\beta})\)</span> in this particular case, in the sense that we learn a function, <span class="math inline">\(\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}\)</span>, that converges, as <span class="math inline">\(N \rightarrow \infty\)</span>, to the best possible function in our function class: <span class="math inline">\(\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}\rightarrow {\boldsymbol{\beta}^{*}}^\intercal\boldsymbol{x}\)</span>.</p>
+</section>
+<section id="basis-expansions-and-regularization" class="level2">
+<h2 class="anchored" data-anchor-id="basis-expansions-and-regularization">Basis expansions and regularization</h2>
+<p>Of course, we would like to estimate <span class="math inline">\(f^{\star}(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y\vert \boldsymbol{x}\right]\)</span>, not the best linear estimator. However, as we discussed in the regression unit, we can form new regression estimators out of old ones by regressing on non–linear transformations of <span class="math inline">\(\boldsymbol{x}\)</span>. For example, when <span class="math inline">\(x\)</span> is a scalar, we could consider the following hierarchy of linear regressions:</p>
+<p><span class="math display">\[
+\begin{aligned}
+f_0(x; \beta) ={}&amp; \beta_0 \\
+f_1(x; \boldsymbol{\beta}) ={}&amp; \beta_0 + \beta_1 x\\
+f_2(x; \boldsymbol{\beta}) ={}&amp; \beta_0 + \beta_1 x+ \frac{1}{2} \beta_2 x^2\\
+\vdots{}&amp;\\
+f_K(x; \boldsymbol{\beta}) ={}&amp; \sum_{k=1}^K \frac{1}{k!} \beta_k x^k.
+\end{aligned}
+\]</span></p>
+<p>As <span class="math inline">\(K\)</span> increases, <span class="math inline">\(f\)</span> becomes arbitrarily expressive — in fact, it can express any piecewise continuous function on a compact domain! However, the corresponding <span class="math inline">\(\boldsymbol{\beta}\)</span> become harder and harder to estimate. In fact, as long as <span class="math inline">\(x\)</span> takes on <span class="math inline">\(N\)</span> distinct values, when <span class="math inline">\(K &gt; N\)</span> the matrix <span class="math inline">\(\boldsymbol{X}\)</span> is not full-rank, and <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is not uniquely defined.</p>
+<p>Conversely, if we have a function class that is too expressive, recall that we can restric the expressiveness by “regularization,” or restricting the norm of the coefficients Specifically, recall that L1 and L2 regression could equivalently be written as <span class="math display">\[
+\begin{aligned}
+\mathcal{F}_{L1} ={}&amp; \{ f: f\in \mathcal{F}_{lin} \textrm{ with }\left\Vert\boldsymbol{\beta}\right\Vert_1 \le C \textrm{ for some }C &gt; 0 \} \\
+\mathcal{F}_{L2} ={}&amp; \{ f: f\in \mathcal{F}_{lin} \textrm{ with }\left\Vert\boldsymbol{\beta}\right\Vert_2 \le C \textrm{ for some }C &gt; 0 \}.
+\end{aligned}
+\]</span> By forming flexible basis expansions, then regularizing, we can trade off complexity of our function class.</p>
+<!--
+
+For a given $K$ and basis expansion, we can then define
+$$
+\betavhat_K := \argmin{\betav} \riskhat(\betav)
+\quad\textrm{and}\quad
+\betavstar_K := \argmin{\betav} \risk(\betav)
+$$
+
+
+This observation motivates a key (potential) tradeoff between
+model expressivness and estimability. Like many things in
+machine learning, the tradeoff can be seen by adding and
+subtracting things to the risk.  First, note that we only care
+about $\betav$ (or, in general, a function $\f$) through the risk.
+
+
+  In particular,
+we want to minimize the "regret," or the difference from the
+optimal prediction function:
+
+$$
+\textrm{Regret}(\f) :=
+\risk(\f) - \risk(\fstar) \ge 0.
+$$
+
+In particular, suppose we fix a particular $K$ and use the regression
+estimate $\fhat_K(\xv) = \sum_{k=1}^K \frac{1}{k!} \betahat_k \x^k$.
+Letting $\f^*_K$ denote the minimizer of $\risk(\cdot)$ among functions
+of the form $\f_K(\cdot)$, the risk decomposes as
+
+$$
+\risk(\fhat_K) - \risk(\fstar) =
+\undernote{\risk(\fhat_K) - \risk(\fstar_K)}{Estimation error $\ge 0$} +
+\undernote{\risk(\fstar_K) - \risk(\fstar)}{Model bias $\ge 0$}.
+$$
+
+Each term is positive because (a) we cannot find the optimal $\fstar_K$
+and (b) the optimal $\fstar_K$ is not, in general, equal to the true $\fstar$.
+
+This decomposition is useful because you might expect $K$ to act in opposite
+directions in these two terms --- large $K$ makes the first harder, since
+you have more to estimate, but large $K$ makes the second easier, since
+you are more likely to be able to express something close to the optimal $\fstar$. -->
+</section>
+</section>
 <section id="estimation-error-decomposition" class="level1">
 <h1>Estimation error decomposition</h1>
-<p>Let <span class="math inline">\(\hat{\mathscr{R}}(f)\)</span> denote the empirical risk evaluated at <span class="math inline">\(f\)</span>. Note that this empirical risk may in practice include a regularization term in order to enforce membership in <span class="math inline">\(\mathcal{F}\)</span>, but we will ignore this in the notation — we will treat <span class="math inline">\(\hat{\mathscr{R}}(\cdot)\)</span> as something that you (a) minimize to find <span class="math inline">\(\hat{f}\)</span> and (b) which obeys the LLN for any particular <span class="math inline">\(f\)</span> in the sense that <span class="math inline">\(\hat{\mathscr{R}}(f) \rightarrow \mathscr{R}(f)\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>.</p>
-<p>We can further decompose the estimation error:</p>
+<p>If there is to be any penalty for having an expressive <span class="math inline">\(\mathcal{F}\)</span>, it must come from the estimation error term <span class="math inline">\(\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})\)</span>. To understand how estimation and complexity interact, we can further decompose the estimation error:</p>
 <p><span class="math display">\[
 \begin{aligned}
 \underbrace{\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})}_{\textrm{Estimation error}} ={}&amp;

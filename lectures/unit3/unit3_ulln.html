@@ -199,6 +199,10 @@ window.Quarto = {
   <ul>
   <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
   <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
+  <li><a href="#a-generic-complexity-cost" id="toc-a-generic-complexity-cost" class="nav-link" data-scroll-target="#a-generic-complexity-cost">A generic complexity cost</a>
+  <ul class="collapse">
+  <li><a href="#example-uniform-laws-of-large-numbers-for-ols" id="toc-example-uniform-laws-of-large-numbers-for-ols" class="nav-link" data-scroll-target="#example-uniform-laws-of-large-numbers-for-ols">Example: uniform laws of large numbers for OLS</a></li>
+  </ul></li>
   <li><a href="#uniform-laws-of-large-numbers-for-smooth-function-classes" id="toc-uniform-laws-of-large-numbers-for-smooth-function-classes" class="nav-link" data-scroll-target="#uniform-laws-of-large-numbers-for-smooth-function-classes">Uniform laws of large numbers for smooth function classes</a>
   <ul class="collapse">
   <li><a href="#a-finite-set-of-functions" id="toc-a-finite-set-of-functions" class="nav-link" data-scroll-target="#a-finite-set-of-functions">A finite set of functions</a></li>
@@ -206,7 +210,7 @@ window.Quarto = {
   <li><a href="#using-the-tiling-to-produce-a-ulln" id="toc-using-the-tiling-to-produce-a-ulln" class="nav-link" data-scroll-target="#using-the-tiling-to-produce-a-ulln">Using the tiling to produce a ULLN</a></li>
   <li><a href="#general-covering-arguments" id="toc-general-covering-arguments" class="nav-link" data-scroll-target="#general-covering-arguments">General covering arguments</a></li>
   <li><a href="#proving-the-integrable-lipschitz-condition" id="toc-proving-the-integrable-lipschitz-condition" class="nav-link" data-scroll-target="#proving-the-integrable-lipschitz-condition">Proving the Integrable Lipschitz condition</a></li>
-  <li><a href="#ols-loss-example" id="toc-ols-loss-example" class="nav-link" data-scroll-target="#ols-loss-example">OLS loss example</a></li>
+  <li><a href="#revisiting-the-ols-example-using-the-integrable-lipschitz-condition" id="toc-revisiting-the-ols-example-using-the-integrable-lipschitz-condition" class="nav-link" data-scroll-target="#revisiting-the-ols-example-using-the-integrable-lipschitz-condition">Revisiting the OLS example using the integrable Lipschitz condition</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -246,6 +250,9 @@ window.Quarto = {
 <section id="goals" class="level1">
 <h1>Goals</h1>
 <ul>
+<li>Introduce generalization error, a complexity cost for generic loss functions</li>
+<li>Express complexity as the expressiveness of a function class</li>
+<li>Present uniform bounds as one (conservative) way to control complexity cost</li>
 <li>Prove a ULLN for sufficiently smooth parametric function classes</li>
 <li>Introduce a covering argument to do so</li>
 </ul>
@@ -253,6 +260,133 @@ window.Quarto = {
 <section id="reading" class="level1">
 <h1>Reading</h1>
 <p>This is a simplified exposition of <span class="citation" data-cites="van:2000:asymptotic">Van der Vaart (<a href="#ref-van:2000:asymptotic" role="doc-biblioref">2000</a>)</span> Example 19.7. One can find a different perspective on the same class of problems in <span class="citation" data-cites="keener:2010:theoretical">Keener (<a href="#ref-keener:2010:theoretical" role="doc-biblioref">2010</a>)</span> Chapter 9. A more advanced approach that is finite-sample but limited to bounded functions can be found in <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> Chapter 4.</p>
+</section>
+<section id="a-generic-complexity-cost" class="level1">
+<h1>A generic complexity cost</h1>
+<p>Recall our decomposition of estimation error, <span class="math display">\[
+\begin{aligned}
+\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f}) ={}&amp;
+\underbrace{\mathscr{R}(\hat{f}) - \hat{\mathscr{R}}(\hat{f})}_{\textrm{Generalization error}} +
+\underbrace{\hat{\mathscr{R}}(\hat{f}) - \hat{\mathscr{R}}(\overline{f})}_{\le 0} +
+\underbrace{\hat{\mathscr{R}}(\overline{f}) - \mathscr{R}(\overline{f})}_{\rightarrow 0 \textrm{ by the LLN}}
+\ge 0.
+\end{aligned}
+\]</span></p>
+<p>The reason the final term goes to zero by a LLN is that <span class="math inline">\(\overline{f}\)</span> is fixed, and does not depend on the data. In contrast, we <em>choose</em> <span class="math inline">\(\hat{f}\)</span> to minimize <span class="math inline">\(\hat{\mathscr{R}}(\cdot)\)</span>, and so might expect that <span class="math inline">\(\hat{\mathscr{R}}(\hat{f})\)</span> is an unduly optimistic estimate of our true risk — namely that <span class="math inline">\(\hat{\mathscr{R}}(\hat{f}) \le \mathscr{R}(\hat{f})\)</span>. The difference <span class="math inline">\(\mathscr{R}(\hat{f}) - \hat{\mathscr{R}}(\hat{f})\)</span> is sometimes called the “generalization error,” because it refers to the fact that the risk on your observed data may not “generalize” to future, unseen data. The above decomposition shows that a complexity cost must, asymptotically, come from generliazation error.</p>
+<p>As with the bias–variance tradeoff, we argued that complexity may — but does not necessarily — increase variance. However, we argued that, if the variance is controlled (e.g.&nbsp;by not having too many parameters), then the risk was also controlled. Similarly, we will now focus on situations when we can <em>control</em> the generalization error, while acknowledging that this control may be too strict, and that complex functions may generalize while failing these controls.</p>
+<p>Specifically, the generalization error is small if</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left|\mathscr{R}(\hat{f}) - \hat{\mathscr{R}}(\hat{f})\right| =
+\left|
+  \frac{1}{N} \sum_{n=1}^N\mathscr{R}(\hat{f}(x_n), y_n) - \mathbb{E}_{new}\left[\mathscr{R}(\hat{f}(x_\mathrm{new}), y_\mathrm{new})\right]
+\right|
+\rightarrow 0
+\quad\textrm{(we want this)}\quad
+\end{aligned}
+\]</span></p>
+<p>The problem is that <span class="math inline">\(\hat{f}\)</span> depends on the data in a perhaps very complicated way, and so the observations <span class="math inline">\(\mathscr{L}(\hat{f}(x_n), y_n)\)</span> are not independent — they are all dependent on one another through the dependence of <span class="math inline">\(\hat{f}\)</span> on all the data. There are roughly two routes to controlling this dependence, and they correspond roughtly to the three ways of controlling generalization error in machine learning:</p>
+<ul>
+<li>By showing that the procedure that generated <span class="math inline">\(\hat{f}\)</span> cannot depend too strongly on the data, or</li>
+<li>By showing that the loss function cannot depend too much on what <span class="math inline">\(\hat{f}\)</span> is.</li>
+</ul>
+<p>The former requires articulating something about how we get <span class="math inline">\(\hat{f}\)</span>, and so typically requires saying something about a particular algorithm in a particular context. The latter is more general, but may be more loose and so too conservative. We will now consider the latter, and try to give some examples of the former later in the course when discussing particular algorithms, like the perceptron algorithm and stochastic gradient descent.</p>
+<p>Specifically, we will show the stronger statement that</p>
+<p><span class="math display">\[
+\begin{aligned}
+\left|\hat{\mathscr{R}}(\hat{f}) - \mathscr{R}(\hat{f})\right| \le{}&amp;
+\sup_{f\in \mathcal{F}} \left|\hat{\mathscr{R}}(f) - \mathscr{R}(f)\right|
+\\={}&amp;
+\sup_{f\in \mathcal{F}}
+\left|
+  \frac{1}{N} \sum_{n=1}^N\mathscr{L}(f(x_n), y_n) - \mathbb{E}_{new}\left[\mathscr{L}(f(x_\mathrm{new}), y_\mathrm{new})\right]
+\right|.
+\quad\textrm{(a "uniform" law of large numbers)}\quad
+\end{aligned}
+\]</span></p>
+<p>Note that this is an asymptotic statement, where the function class <span class="math inline">\(\mathcal{F}\)</span> is fixed as <span class="math inline">\(N \rightarrow \infty\)</span>. Most modern ML actually focuses on finite–sample results that look something like</p>
+<p><span class="math display">\[
+\mathbb{P}_{\,}\left(\sup_{f\in \mathcal{F}} \left|\hat{\mathscr{R}}(f) - \mathscr{R}(f)\right| \ge \varepsilon\right) \le C(N, \mathcal{F}, \varepsilon),
+\]</span></p>
+<p>for some explicit function <span class="math inline">\(C(\cdot)\)</span>. Typically one would hope that, all else fixed, <span class="math inline">\(C \rightarrow 0\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>. Furthermore, one usually has <span class="math inline">\(C \rightarrow 1\)</span> as <span class="math inline">\(\varepsilon \rightarrow 0\)</span>, so you cannot control arbitrarily small changes for any finite <span class="math inline">\(N\)</span>, and the dependence on <span class="math inline">\(\mathcal{F}\)</span> is somewhat explicit, so you can imagine changing the complexity of your function class as the dataset grows. These results are more realistic but a little more complicated, and so beyond the scope of a course like this.</p>
+<p>Howver, in at least some cases, the asymptotic results are simpler to understand, and rely on a similar style of argument to the finite–sample results. So the asymptotic results can give some intuition for the more sophisticated results that you might encounter in ML research or in further study.</p>
+<section id="example-uniform-laws-of-large-numbers-for-ols" class="level2">
+<h2 class="anchored" data-anchor-id="example-uniform-laws-of-large-numbers-for-ols">Example: uniform laws of large numbers for OLS</h2>
+<p>Note that the above proof of the consistency of <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> used an explicit formula for <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span>. In this class, we will often discuss estimators for whom no explicit formula exists because we will find them via black–box optimization procedures. How can we reason in such cases?</p>
+<p>Recall that we argued, for a particular <span class="math inline">\(f\)</span>, that a LLN should give</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(f) \rightarrow \mathscr{R}(f).
+\]</span></p>
+<p>For the OLS case, this expression is the same as</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\mathscr{R}}(\boldsymbol{\beta}) ={}&amp;
+  \frac{1}{N} \sum_{n=1}^N(\boldsymbol{x}_n^\intercal\boldsymbol{\beta}- y_n)^2
+\\={}&amp;
+  \frac{1}{N} \sum_{n=1}^N\boldsymbol{\beta}^\intercal\boldsymbol{x}_n \boldsymbol{x}_n^\intercal\boldsymbol{\beta}-
+  2\frac{1}{N} \sum_{n=1}^N\boldsymbol{\beta}^\intercal\boldsymbol{x}_n y_n + \frac{1}{N} \sum_{n=1}^Ny_n^2
+\\={}&amp;
+  \boldsymbol{\beta}^\intercal\left(\frac{1}{N} \sum_{n=1}^N\boldsymbol{x}_n \boldsymbol{x}_n^\intercal\right) \boldsymbol{\beta}-
+  2 \boldsymbol{\beta}^\intercal\left(\frac{1}{N} \sum_{n=1}^N\boldsymbol{x}_n y_n \right) + \frac{1}{N} \sum_{n=1}^Ny_n^2
+\\\rightarrow{}&amp;
+  \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[\boldsymbol{x}\boldsymbol{x}^\intercal\right] \boldsymbol{\beta}-
+  2 \boldsymbol{\beta}^\intercal\mathbb{E}_{\vphantom{}}\left[ \boldsymbol{x}y\right] + \mathbb{E}_{\vphantom{}}\left[y_n^2\right]
+\\={}&amp;
+\mathbb{E}_{\vphantom{}}\left[(\boldsymbol{x}^\intercal\boldsymbol{\beta}- y)^2 \right]
+\\={}&amp;
+\mathscr{R}(\boldsymbol{\beta}).
+\end{aligned}
+\]</span></p>
+<p>Unfortunately, this does not translate directly into <span class="math inline">\(\hat{\boldsymbol{\beta}}\rightarrow \boldsymbol{\beta}^{*}\)</span>, since the preceding limit holds only for a <em>fixed</em> <span class="math inline">\(\boldsymbol{\beta}\)</span>. Different <span class="math inline">\(\boldsymbol{\beta}\)</span> will lead to convergence at different rates, so in theory it may be the case that <span class="math inline">\(\underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> does not converge to <span class="math inline">\(\underset{\boldsymbol{\beta}}{\mathrm{argmin}}\, \mathscr{R}(\boldsymbol{\beta})\)</span>.</p>
+<div class="callout callout-style-default callout-warning callout-titled" title="Exercise">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the special case of linear regression, show explicitly that <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) \rightarrow \mathscr{R}(\boldsymbol{\beta}^{*})\)</span>. What special structure of the problem permits this result so easily?</p>
+</div>
+</div>
+<p>A useful decomposition is as follows:</p>
+<p><span class="math display">\[
+\begin{aligned}
+0 \le \mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) ={}&amp;
+\mathscr{R}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}})  &amp; \textrm{Difficult term!}\\
+&amp; + \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\boldsymbol{\beta}^{*}) &amp; \textrm{Negative term} \\
+&amp; + \hat{\mathscr{R}}(\boldsymbol{\beta}^{*}) - \mathscr{R}(\boldsymbol{\beta}^{*}) &amp; \textrm{LLN term}
+\end{aligned}
+\]</span></p>
+<p>We wish to bound the preceding equation by a quantity that goes to zero; if we do, then <span class="math inline">\(\mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) \rightarrow 0\)</span>.</p>
+<p>The second term is negative, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> minimizes <span class="math inline">\(\hat{\mathscr{R}}\)</span>, and so <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) \le \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> for any <span class="math inline">\(\boldsymbol{\beta}\)</span>, and for <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> in particular. So it is bounded above by zero, and we don’t need to consider it any further.</p>
+<p>The third term goes to zero by the LLN, since <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> is fixed.</p>
+<p>However, the first “difficult” term does not necessarily go to zero by the LLN, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is random and correlated with <span class="math inline">\(\hat{\mathscr{R}}\)</span>. Specifically, in</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) = \frac{1}{N} \sum_{n=1}^N(y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}})^2,
+\]</span></p>
+<p>the entries <span class="math inline">\((y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}})^2\)</span> are <em>not IID</em>, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> depends on all the entries.</p>
+<p>One standard way of dealing with terms of the form <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\hat{\boldsymbol{\beta}})\)</span> is <strong>uniform laws of large numbers</strong> or ULLNs. For some compact set <span class="math inline">\(K\)</span>, a ULLN for this setting would state that a LLN holds uniformly over <span class="math inline">\(K\)</span>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\textrm{For a fixed }\boldsymbol{\beta}\textrm{, }
+\left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow {}&amp; 0 &amp; \textrm{(LLN)} \\
+\sup_{\beta \in K} \left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow {}&amp; 0 &amp; \textrm{(ULLN)}.
+\end{aligned}
+\]</span></p>
+<p>If a ULLN holds, and we believe that <span class="math inline">\(\hat{\boldsymbol{\beta}}\in K\)</span>, then</p>
+<p><span class="math display">\[
+\left|\mathscr{R}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}})\right|
+\le \sup_{\boldsymbol{\beta}\in K} \left|\mathscr{R}(\boldsymbol{\beta}) - \hat{\mathscr{R}}(\boldsymbol{\beta})\right|  \rightarrow 0,
+\]</span></p>
+<p>and so</p>
+<p><span class="math display">\[
+\mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) \rightarrow 0.
+\]</span></p>
+<p>It turns out that it is easy to state condtiions under which a ULLN holds for linear regression. In general, we get a ULLN by limiting the complexity of our function class, as we will see later in the class.</p>
+</section>
 </section>
 <section id="uniform-laws-of-large-numbers-for-smooth-function-classes" class="level1">
 <h1>Uniform laws of large numbers for smooth function classes</h1>
@@ -430,8 +564,8 @@ M(z) \left\Vert\theta' - \theta\right\Vert_2. &amp; \textrm{(by assumption)}
 \]</span></p>
 <p>Often it’s easier to show that the norm of the partial derivative is bounded by a function of <span class="math inline">\(z\)</span> (that is, of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>) with finite expectation than to prove the stronger IL condition.</p>
 </section>
-<section id="ols-loss-example" class="level2">
-<h2 class="anchored" data-anchor-id="ols-loss-example">OLS loss example</h2>
+<section id="revisiting-the-ols-example-using-the-integrable-lipschitz-condition" class="level2">
+<h2 class="anchored" data-anchor-id="revisiting-the-ols-example-using-the-integrable-lipschitz-condition">Revisiting the OLS example using the integrable Lipschitz condition</h2>
 <p>For example, taking squared loss and linear regression, we get</p>
 <p><span class="math display">\[
 g(z, \theta) = \mathscr{L}(f(\boldsymbol{x}), y) = (\boldsymbol{x}^\intercal\theta - y)^2 = y^2 - 2 y\boldsymbol{x}^\intercal\theta + \mathrm{trace}\left(\boldsymbol{x}\boldsymbol{x}^\intercal\theta \theta^\intercal\right).

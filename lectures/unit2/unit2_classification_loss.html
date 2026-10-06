@@ -301,7 +301,7 @@ As before, we wish to use <span class="math inline">\(\boldsymbol{x}\)</span> to
   \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}, y\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathrm{I}\left(y= c\right)\right] \\={}&amp;
 \sum_{c \in \mathcal{Y}}
   \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathbb{E}_{\mathbb{P}_{\,}\left(y\vert \boldsymbol{x}\right)}\left[\mathrm{I}\left(y= c\right)\right]\right] \\={}&amp;
-\mathbb{E}_{\sum_{c \in \mathcal{Y}} \mathbb{P}_{\,}\left(\boldsymbol{x}\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathbb{P}_{\,}\left(y= c \vert \boldsymbol{x}\right)\right].
+\sum_{c \in \mathcal{Y}} \mathbb{E}_{\mathbb{P}_{\,}\left(\boldsymbol{x}\right)}\left[\mathrm{I}\left(f(\boldsymbol{x}) \ne c\right) \mathbb{P}_{\,}\left(y= c \vert \boldsymbol{x}\right)\right].
 \end{aligned}
 \]</span> At any particular <span class="math inline">\(\boldsymbol{x}\)</span>, we want to make this expression as small as possible. For a given <span class="math inline">\(\boldsymbol{x}\)</span>, let’s identify which <span class="math inline">\(c\)</span> we should predict. If we do predict <span class="math inline">\(c\)</span>, then we incure error</p>
 <p><span class="math display">\[
