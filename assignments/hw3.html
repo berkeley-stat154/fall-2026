@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Homework 3</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-51f30fe8956ade8502a7d5a041e278e2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/stat_bear.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/stat_bear.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Fall 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../schedule.html"> 
+<span class="menu-text">Course Schedule</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#infinitely-fine-step-function-ulln-fail" id="toc-infinitely-fine-step-function-ulln-fail" class="nav-link active" data-scroll-target="#infinitely-fine-step-function-ulln-fail"><span class="header-section-number">1</span> Infinitely fine step function ULLN fail</a></li>
+  <li><a href="#low-estimation-error-with-poor-generalization-error" id="toc-low-estimation-error-with-poor-generalization-error" class="nav-link" data-scroll-target="#low-estimation-error-with-poor-generalization-error"><span class="header-section-number">2</span> Low estimation error with poor generalization error</a></li>
+  <li><a href="#leaveoneout-with-an-estimator-that-depends-strongly-on-n" id="toc-leaveoneout-with-an-estimator-that-depends-strongly-on-n" class="nav-link" data-scroll-target="#leaveoneout-with-an-estimator-that-depends-strongly-on-n"><span class="header-section-number">3</span> Leave–one–out with an estimator that depends strongly on N</a></li>
+  <li><a href="#leaveoneout-cv-for-linear-regression" id="toc-leaveoneout-cv-for-linear-regression" class="nav-link" data-scroll-target="#leaveoneout-cv-for-linear-regression"><span class="header-section-number">4</span> Leave–one–out CV for linear regression</a></li>
+  <li><a href="#vc-dimension-of-linear-classifiers" id="toc-vc-dimension-of-linear-classifiers" class="nav-link" data-scroll-target="#vc-dimension-of-linear-classifiers"><span class="header-section-number">5</span> VC dimension of linear classifiers</a></li>
+  <li><a href="#vc-dimension-of-zeroone-loss" id="toc-vc-dimension-of-zeroone-loss" class="nav-link" data-scroll-target="#vc-dimension-of-zeroone-loss"><span class="header-section-number">6</span> VC dimension of zero–one loss</a></li>
+  <li><a href="#use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">7</span> Use the ULLN to prove logistic regression consistency (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
+  <li><a href="#an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">8</span> An Information Criterion partial derivation (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">9</span> Bibliography</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Homework 3</h1>
+<p class="subtitle lead">Stat 154/254: Statistical Machine Learning</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="infinitely-fine-step-function-ulln-fail" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Infinitely fine step function ULLN fail</h1>
+<p>In this homework problem, we carefully work through an example of poor generalization in a specific problem.</p>
+<p>Let <span class="math inline">\(x_n \overset{\mathrm{IID}}{\sim}\textrm{Unif}(0,1)\)</span>, <span class="math inline">\(y\overset{\mathrm{IID}}{\sim}\mathcal{N}\left(0,1\right)\)</span> independently of <span class="math inline">\(x\)</span>, and <span class="math inline">\((x_n, y_n)\)</span> be IID draws from a joint distribution. For each <span class="math inline">\(K\)</span>, define the step functions</p>
+<p><span class="math display">\[
+z_{jK} = \mathrm{I}\left((j - 1)/K \le x\le j/K\right)
+\quad\textrm{for}\quad j=1,\ldots,K.
+\]</span></p>
+<p>Define the function class</p>
+<p><span class="math display">\[
+\mathcal{F}= \left\{ f(x; \boldsymbol{\beta}) = \sum_{K=1}^\infty \sum_{j=1}^K \beta_{jK} z_{jK}(x)
+\textrm{ for some set of }\beta_{jK} \right\}.
+\]</span></p>
+<p>Note that the vector <span class="math inline">\(\boldsymbol{\beta}\)</span> may be infinitely long. Finally, define</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(f) := \frac{1}{N} \sum_{n=1}^N(f(x_n) - y_n)^2
+\quad\textrm{and}\quad
+\mathscr{R}(f) = \mathbb{E}_{\vphantom{}}\left[(f(x) - y)^2\right]
+\]</span></p>
+<section id="a" class="level4">
+<h4 class="anchored" data-anchor-id="a">(a)</h4>
+<p>Show that <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[z_{jK}\right] = \mathbb{E}_{\vphantom{}}\left[z_{jK}^2\right] = 1/K\)</span> and so</p>
+<p><span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[f(x; \boldsymbol{\beta})\right] =  \sum_{K=1}^\infty \frac{1}{K} \sum_{j=1}^K  \beta_{jK}.
+\]</span></p>
+</section>
+<section id="b" class="level4">
+<h4 class="anchored" data-anchor-id="b">(b)</h4>
+<p>Define <span class="math inline">\(\mathcal{F}_K := \left\{ f(x; \boldsymbol{\gamma}) = \sum_{j=1}^K \gamma_{j} z_{jK}(x) \textrm{ for some set of }\gamma_{j} \right\}\)</span>. Show that <span class="math inline">\(\mathcal{F}_K \subset \mathcal{F}\)</span>.</p>
+</section>
+<section id="c" class="level4">
+<h4 class="anchored" data-anchor-id="c">(c)</h4>
+<p>With probability one, all <span class="math inline">\(x_n\)</span> are distinct in any dataset of size <span class="math inline">\(N\)</span>. Show that you can take <span class="math inline">\(K\)</span> large enough that there exists <span class="math inline">\(f\in \mathcal{F}_K\)</span> such that</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{\mathscr{R}}(\hat{\boldsymbol{\gamma}}) ={}&amp; \frac{1}{N} \sum_{n=1}^N(f(x_n, \hat{\boldsymbol{\gamma}}) - y_n)^2 ={} 0,
+\end{aligned}
+\]</span></p>
+<p>where <span class="math inline">\(\hat{\boldsymbol{\gamma}}\)</span> is the OLS estimator of <span class="math inline">\(\boldsymbol{\gamma}\)</span>.</p>
+</section>
+<section id="d" class="level4">
+<h4 class="anchored" data-anchor-id="d">(d)</h4>
+<p>Show that <span class="math inline">\(\mathscr{R}(f) \ge 1\)</span> for any <span class="math inline">\(f\)</span>.</p>
+</section>
+<section id="e" class="level4">
+<h4 class="anchored" data-anchor-id="e">(e)</h4>
+<p>Combine the above results to show that <span class="math inline">\(\mathcal{F}\)</span> does not satisfy a ULLN in the sense that</p>
+<p><span class="math display">\[
+\sup_{f\in \mathcal{F}} \left|\hat{\mathscr{R}}(f) - \mathscr{R}(f)\right| \ge 1.
+\]</span></p>
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+</section>
+</section>
+<section id="low-estimation-error-with-poor-generalization-error" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Low estimation error with poor generalization error</h1>
+<p>In this problem, we emphasize how low generalization error is sufficient but not necessary for low estimation error.</p>
+<p>Recall our decomposition of estimation error,</p>
+<p><span class="math display">\[
+\underbrace{\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})}_{\textrm{Estimation error}} ={}
+\underbrace{\mathscr{R}(\hat{f}) - \hat{\mathscr{R}}(\hat{f})}_{\textrm{"Generalization error"}} +
+\underbrace{\hat{\mathscr{R}}(\hat{f}) - \hat{\mathscr{R}}(\overline{f})}_{\textrm{$\le 0$}} +
+\underbrace{\hat{\mathscr{R}}(\overline{f}) - \mathscr{R}(\overline{f})}_{\textrm{LLN term}}.
+\]</span></p>
+<p>Let us define a strange–looking estimator that has poor generalization error, but still provides low estimation error. For a fixed <span class="math inline">\(\delta &gt; 0\)</span>, define</p>
+<p><span class="math display">\[
+\hat{f}(\boldsymbol{x}; \delta) =
+  \overline{f}(\boldsymbol{x}) + \sum_{n=1}^N\mathrm{I}\left(\left\Vert\boldsymbol{x}- \boldsymbol{x}_n\right\Vert \le \delta\right) (y_n - \overline{f}(\boldsymbol{x})).
+\]</span></p>
+<p>Assume that <span class="math inline">\(\hat{\mathscr{R}}(f) = 0\)</span> if <span class="math inline">\(f(\boldsymbol{x}_n) = y_n\)</span> for every <span class="math inline">\(n\)</span> in the training set. That is, the empirical risk is zero if <span class="math inline">\(f\)</span> is able to interpolate the training data.</p>
+<p>Assume that <span class="math inline">\(\boldsymbol{x}\)</span> has a continuous distribution, so that <span class="math inline">\(p(\left\Vert\boldsymbol{x}- \boldsymbol{x}_0\right\Vert \le C) \rightarrow 0\)</span> as <span class="math inline">\(C \rightarrow 0\)</span> for any <span class="math inline">\(\boldsymbol{x}_0\)</span>.</p>
+<p><strong>(a)</strong> Show that there exists a <span class="math inline">\(\delta &gt; 0\)</span> sufficiently small so that <span class="math inline">\(\hat{\mathscr{R}}(\hat{f}(\cdot; \delta)) = 0\)</span>.</p>
+<p><strong>(b)</strong> Show that <span class="math inline">\(\mathbb{E}_{\boldsymbol{x}}\left[\mathrm{I}\left(\left\Vert\boldsymbol{x}- \boldsymbol{x}_n\right\Vert \le \delta\right)\right] \rightarrow 0\)</span> as <span class="math inline">\(\delta \rightarrow 0\)</span> for every <span class="math inline">\(n\)</span>.</p>
+<p><strong>(c)</strong> Show that <span class="math inline">\(\mathscr{R}(\hat{f}(\boldsymbol{x}; \delta)) \rightarrow \mathscr{R}(\overline{f})\)</span> as <span class="math inline">\(\delta \rightarrow 0\)</span>.</p>
+<p><strong>(d)</strong> As <span class="math inline">\(\delta \rightarrow 0\)</span>, what happens to the generlization error, <span class="math inline">\(\mathscr{R}(\hat{f}) - \hat{\mathscr{R}}(\hat{f})\)</span>?</p>
+<p><strong>(e)</strong> As <span class="math inline">\(\delta \rightarrow 0\)</span>, what happens to the “negative term,” <span class="math inline">\(\hat{\mathscr{R}}(\hat{f}) - \hat{\mathscr{R}}(\overline{f})\)</span>?</p>
+<p><strong>(f)</strong> As <span class="math inline">\(\delta \rightarrow 0\)</span>, what happens to the estimation error, <span class="math inline">\(\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})\)</span>?</p>
+<p><strong>(g)</strong> Describe in your own words how it is that <span class="math inline">\(\hat{f}(\cdot; \delta)\)</span> fails to have low generalization error, and yet has low estimation error.</p>
+<p><strong>(h)</strong> Describe a sense in which <span class="math inline">\(\hat{f}(\cdot; \delta)\)</span> “overfits” the training data for small <span class="math inline">\(\delta\)</span>, and a sense in which it does not.</p>
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+</section>
+<section id="leaveoneout-with-an-estimator-that-depends-strongly-on-n" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Leave–one–out with an estimator that depends strongly on N</h1>
+<p>This example is designed to strengthen the intuition about why leave–K–out estimators are biased.</p>
+<p>Consider <span class="math inline">\(y_n \overset{\mathrm{IID}}{\sim}\mathcal{N}\left(5, 1\right)\)</span> and squared loss: <span class="math inline">\(\mathscr{L}(\hat{y}, y) = (\hat{y}- y)^2\)</span>, and <span class="math inline">\(\mathscr{R}(f) = \mathbb{E}_{\vphantom{}}\left[(f- y)^2\right]\)</span>. We will have no regressors, so our estimating functions are just constants.</p>
+<p>We will take <span class="math inline">\(N = 100\)</span> for this problem, and let <span class="math inline">\(\boldsymbol{Y}_{-n}\)</span> denote the leave–one–out vector, <span class="math inline">\(\boldsymbol{Y}_{-n} = (y_1, \ldots, y_{n-1}, y_{n+1}, \ldots, y_N)\)</span>.</p>
+<p>An estimation procedure <span class="math inline">\(F\)</span> takes in a dataset <span class="math inline">\(\boldsymbol{Y}= (y_1, \ldots, y_N)\)</span> and returns a constant estimate <span class="math inline">\(\hat{y}= F(\boldsymbol{Y}) \in \mathbb{R}^{}\)</span>. For this, we consider the (silly) estimator</p>
+<p><span class="math display">\[
+\hat{y}= F(\boldsymbol{Y}) =
+\begin{cases}
+5 &amp; \textrm{if the length of }\boldsymbol{Y}\ge 100 \\
+0 &amp; \textrm{if the length of }\boldsymbol{Y}&lt; 100.
+\end{cases}
+\]</span></p>
+<section id="a-2" class="level4">
+<h4 class="anchored" data-anchor-id="a-2">(a)</h4>
+<p>What is the optimal estimate, <span class="math inline">\(f^{\star}= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f)\)</span>?</p>
+</section>
+<section id="b-2" class="level4">
+<h4 class="anchored" data-anchor-id="b-2">(b)</h4>
+<p>What is <span class="math inline">\(\mathscr{R}(F(\boldsymbol{Y}))\)</span>? What is <span class="math inline">\(\mathscr{R}(F(\boldsymbol{Y}_{-n}))\)</span>?</p>
+</section>
+<section id="c-2" class="level4">
+<h4 class="anchored" data-anchor-id="c-2">(c)</h4>
+<p>Recall the leave–one–out cross–validation (CV) estimator</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}_{CV}(\boldsymbol{Y}) := \frac{1}{N} \sum_{n=1}^N\mathscr{R}(F(\boldsymbol{Y}_{-n}, y_n)).
+\]</span></p>
+<p>What is <span class="math inline">\(\mathbb{E}_{\boldsymbol{Y}}\left[\hat{\mathscr{R}}_{CV}(\boldsymbol{Y})\right]\)</span>? Is the leave–one–out CV estimator an unbiased estimate of <span class="math inline">\(\mathscr{R}(F(\boldsymbol{Y}))\)</span>?</p>
+</section>
+<section id="d-2" class="level4">
+<h4 class="anchored" data-anchor-id="d-2">(d)</h4>
+<p>Connect this toy example with the intuition that leave–<span class="math inline">\(K\)</span>–out CV tends to be more biased for larger <span class="math inline">\(K\)</span>.</p>
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+</section>
+</section>
+<section id="leaveoneout-cv-for-linear-regression" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Leave–one–out CV for linear regression</h1>
+<p>This homework problem derives a closed-form expression for the effect of leave–one–out CV for linear regression.</p>
+<p>We will use the following result, known as the Woodbury formula (but also many other names, including the Sherman-Morrison-Woodbury formula). Let <span class="math inline">\(A\)</span> denote an invertible matrix, and <span class="math inline">\(\boldsymbol{u}\)</span> and <span class="math inline">\(\boldsymbol{v}\)</span> vectors the same length as <span class="math inline">\(A\)</span>. Then</p>
+<p><span class="math display">\[
+(A + \boldsymbol{u}\boldsymbol{v}^\intercal)^{-1} ={}
+A^{-1} - \frac{A^{-1} \boldsymbol{u}\boldsymbol{v}^\intercal A^{-1}}{1 + \boldsymbol{v}^\intercal A^{-1} \boldsymbol{u}}.
+\]</span></p>
+<p>We will also use the definition of a “leverage score” from lecture <span class="math inline">\(h_n := \boldsymbol{x}_n^\intercal(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{x}_n\)</span>. Note that <span class="math inline">\(h_n = (\boldsymbol{X}(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{X}^\intercal)_{nn}\)</span> is the <span class="math inline">\(n\)</span>–th diagonal entry of the projection matrix <span class="math inline">\(\underset{\boldsymbol{X}}{\boldsymbol{P}}\)</span>.</p>
+<p>Let <span class="math inline">\(\hat{\boldsymbol{\beta}}_{-n}\)</span> denote the estimate of <span class="math inline">\(\hat{\beta}\)</span> with the datapoint <span class="math inline">\(n\)</span> left out. Similarly, let <span class="math inline">\(\boldsymbol{X}_{-n}\)</span> denote the <span class="math inline">\(\boldsymbol{X}\)</span> matrix with row <span class="math inline">\(n\)</span> left out, and <span class="math inline">\(\boldsymbol{Y}_{-n}\)</span> denote the <span class="math inline">\(\boldsymbol{Y}\)</span> matrix with row <span class="math inline">\(n\)</span> left out.</p>
+<section id="a-4" class="level4">
+<h4 class="anchored" data-anchor-id="a-4">(a)</h4>
+<p>Prove that</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}_{-n} = (\boldsymbol{X}_{-n}^\intercal\boldsymbol{X}_{-n})^{-1} \boldsymbol{X}_{-n}^\intercal\boldsymbol{Y}_{-n}
+= (\boldsymbol{X}^\intercal\boldsymbol{X}- \boldsymbol{x}_n \boldsymbol{x}_n^\intercal)^{-1} (\boldsymbol{X}^\intercal\boldsymbol{Y}- \boldsymbol{x}_n y_n)
+\]</span></p>
+</section>
+<section id="b-4" class="level4">
+<h4 class="anchored" data-anchor-id="b-4">(b)</h4>
+<p>Using the Woodbury formula, derive the following expression: <span class="math display">\[
+(\boldsymbol{X}^\intercal\boldsymbol{X}- \boldsymbol{x}_n \boldsymbol{x}_n^\intercal)^{-1} =
+(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} + \frac{(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{x}_n \boldsymbol{x}_n^\intercal(\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} }{1 - h_n}
+\]</span></p>
+</section>
+<section id="c-4" class="level4">
+<h4 class="anchored" data-anchor-id="c-4">(c)</h4>
+<p>Combine (a) and (b) to derive the following explicit expression for <span class="math inline">\(\hat{\boldsymbol{\beta}}_{-n}\)</span>:</p>
+<p><span class="math display">\[
+\hat{\boldsymbol{\beta}}_{-n} = \hat{\boldsymbol{\beta}}- (\boldsymbol{X}^\intercal\boldsymbol{X})^{-1} \boldsymbol{x}_n \frac{1}{1 - h_n} \hat{\varepsilon}_n.
+\]</span></p>
+</section>
+<section id="d-4" class="level4">
+<h4 class="anchored" data-anchor-id="d-4">(d)</h4>
+<p>Using (c), derive the following explicit expression the leave-one-out error on the <span class="math inline">\(n\)</span>–th observation:</p>
+<p><span class="math display">\[
+y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}}_{-n} = \frac{\hat{\varepsilon}_n}{1 - h_n}.
+\]</span></p>
+</section>
+<section id="e-2" class="level4">
+<h4 class="anchored" data-anchor-id="e-2">(e)</h4>
+<p>Using (d), prove that the leave–one–out CV estimator of <span class="math inline">\(\mathscr{R}(\hat{\boldsymbol{\beta}})\)</span> is given by</p>
+<p><span class="math display">\[
+\frac{1}{N} \sum_{n=1}^N(y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}}_{-n})^2 = \frac{1}{N} \sum_{n=1}^N\frac{\hat{\varepsilon}_n^2}{(1 - h_n)^2},
+\]</span></p>
+<p>where <span class="math inline">\(\hat{\varepsilon}_n = y_n - \hat{y}_n\)</span> is the residual from the full regression without leaving any data out. Using this formula, leave–one–out CV can be computed using only the original regression and <span class="math inline">\((\boldsymbol{X}^\intercal\boldsymbol{X})^{-1}\)</span> rather than doing <span class="math inline">\(N\)</span> separate matrix inversions.</p>
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+</section>
+</section>
+<section id="vc-dimension-of-linear-classifiers" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> VC dimension of linear classifiers</h1>
+<p>Consider the class of <span class="math inline">\(P\)</span>–dimensional linear binary classifiers, <span class="math inline">\(\mathcal{F}= \{ \mathrm{I}\left(\boldsymbol{x}^\intercal\boldsymbol{\beta}\ge 0\right) \textrm{ for any }\boldsymbol{\beta}\in \mathbb{R}^{P}\}\)</span>. In this problem, we will show that the VC dimension of <span class="math inline">\(\mathcal{F}\)</span> is <span class="math inline">\(P\)</span>. In doing so we then prove a generalization bound for logistic regression with zero–one loss.</p>
+<p>For <span class="math inline">\(N\)</span> points, let <span class="math inline">\(\boldsymbol{X}\)</span> denote the <span class="math inline">\(N \times P\)</span> matrix with <span class="math inline">\(\boldsymbol{x}_n^\intercal\)</span> in row <span class="math inline">\(n\)</span>. In this problem, the <span class="math inline">\(\boldsymbol{x}_n\)</span> are not given to us — we will be choosing them to find sets that can or cannot be shattered.</p>
+<p>First, we show that we can shatter any set of size <span class="math inline">\(P\)</span> in (a)–(c), showing that the VC dimension is greater than or equal to <span class="math inline">\(P\)</span>. Then, in (d)–(f) we show that we cannot shatter a set of size <span class="math inline">\(P + 1\)</span>, and so the VC dimension is less than or equal to <span class="math inline">\(P+1\)</span>. It follows that the VC dimension is <span class="math inline">\(P\)</span>.</p>
+<p><strong>(a)</strong></p>
+<p>Suppose we are given <span class="math inline">\(N\)</span> points, <span class="math inline">\(\boldsymbol{x}_1, \ldots, \boldsymbol{x}_N\)</span>. For any <span class="math inline">\(y_1, \ldots, y_N\)</span>, define <span class="math inline">\(z_n = 2 y_n - 1\)</span>. Show that <span class="math inline">\(y_n\)</span> is correctly classified if we can find <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> such that <span class="math inline">\(\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}= z_n\)</span>.</p>
+<p><strong>(b)</strong></p>
+<p>When <span class="math inline">\(N=P\)</span>, identify an <span class="math inline">\(\boldsymbol{X}\)</span> so that, for any <span class="math inline">\(\boldsymbol{Z}\in \mathbb{R}^{P}\)</span>, you can find a <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> such that <span class="math inline">\(\boldsymbol{X}\hat{\boldsymbol{\beta}}= \boldsymbol{Z}\)</span>. <strong>Hint:</strong> There are actually an infinite number of <span class="math inline">\(\boldsymbol{X}\)</span> that will work, but also some that won’t.</p>
+<p><strong>(c)</strong></p>
+<p>Use (a) and the <span class="math inline">\(\boldsymbol{X}\)</span> you identified in (b) to conclude that there exists a set of size <span class="math inline">\(P\)</span> points, <span class="math inline">\(\boldsymbol{x}_1, \ldots, \boldsymbol{x}_P\)</span>, that you can shatter with classifiers in <span class="math inline">\(\mathcal{F}\)</span>.</p>
+<p><strong>(d)</strong></p>
+<p>Now, suppose that <span class="math inline">\(N = P + 1\)</span>, and you are given <span class="math inline">\(N\)</span> points <span class="math inline">\(\boldsymbol{x}_1, \ldots, \boldsymbol{x}_N\)</span>. Let the rank of <span class="math inline">\(\boldsymbol{X}\)</span> be <span class="math inline">\(Q\)</span>, and note that <span class="math inline">\(Q \le P\)</span>. Assume without loss of generality that the first <span class="math inline">\(Q\)</span> rows of <span class="math inline">\(\boldsymbol{X}\)</span> are linearly independent (if they’re not, just re-order the rows of <span class="math inline">\(\boldsymbol{X}\)</span>). Show that you can find <span class="math inline">\(\boldsymbol{\gamma}\)</span> such that <span class="math inline">\(\boldsymbol{x}_{Q+1} = \sum_{n=1}^Q \gamma_n \boldsymbol{x}_{n}\)</span>. That is, show that the <span class="math inline">\(Q + 1\)</span>–th row is a linear combination of the first <span class="math inline">\(Q\)</span> rows.</p>
+<p><strong>(e)</strong></p>
+<p>Continuing (d), suppose we set <span class="math inline">\(y_n = \mathrm{I}\left(\gamma_n &gt; 0\right)\)</span> for <span class="math inline">\(n=1,\ldots,Q\)</span>, and suppose that <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> correctly classifies these first <span class="math inline">\(Q\)</span> points. Using (d), show that <span class="math inline">\(\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}_{Q+1} \ge 0\)</span>.</p>
+<p><strong>(f)</strong></p>
+<p>Using (e), define a set of <span class="math inline">\(P+1\)</span> points that cannot be shattered.</p>
+<p><strong>(g)</strong></p>
+<p>Putting your results together, what is the VC dimension of <span class="math inline">\(\mathcal{F}\)</span>?</p>
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+<section id="vc-dimension-of-zeroone-loss" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> VC dimension of zero–one loss</h1>
+<p>Suppose we have a function class <span class="math inline">\(\mathcal{F}\)</span> of classifiers that has VC dimension <span class="math inline">\(P &lt; \infty\)</span>. In this problem, we extend the ULLN results from class to zero–one loss. Let <span class="math inline">\(\hat{f}\in \mathcal{F}\)</span> be a classifier estimated from the observed data, <span class="math inline">\((\boldsymbol{x}_1, y_1), \ldots, (\boldsymbol{x}_N, y_N)\)</span>.</p>
+<p><strong>(a)</strong></p>
+<p>Given that the VC dimension is finite, what can you conclude about <span class="math inline">\(\left|\frac{1}{N} \sum_{n=1}^N\hat{f}(\boldsymbol{x}_n) - \mathbb{E}_{\vphantom{}}\left[\hat{f}(\boldsymbol{x})\right]\right|\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<p>Explain in intuitive terms what this expression means. (Note that <span class="math inline">\(y_n\)</span> occurs in this expression only through <span class="math inline">\(\hat{f}\)</span>, so this expression is <em>not</em> estimating the classification error.)</p>
+<p><strong>(b)</strong></p>
+<p>Note that <span class="math inline">\(\mathcal{F}\)</span> is a class of functions on <span class="math inline">\(\boldsymbol{x}\)</span>. Define a new function class <span class="math inline">\(\mathcal{F}'\)</span> consisting of functions defined on <span class="math inline">\((\boldsymbol{x}, y)\)</span> as follows:</p>
+<p><span class="math display">\[
+\mathcal{F}' = \{ f'(\boldsymbol{x}, y) = \mathrm{I}\left( f(\boldsymbol{x}) \ne y\right) \textrm{ for } f\in \mathcal{F}\}.
+\]</span></p>
+<p>Show carefully that if <span class="math inline">\(\mathcal{F}\)</span> is able to shatter a set of size <span class="math inline">\(P\)</span> of values <span class="math inline">\(\{ \boldsymbol{x}_1, \ldots, \boldsymbol{x}_P \}\)</span> then <span class="math inline">\(\mathcal{F}'\)</span> is able to shatter a set of size <span class="math inline">\(P\)</span> of values <span class="math inline">\(\{ (\boldsymbol{x}_1, y_1), \ldots, (\boldsymbol{x}_P, y_P) \}\)</span>.</p>
+<p><strong>(c)</strong></p>
+<p>In the setting of (b), show carefully that if <span class="math inline">\(\mathcal{F}'\)</span> is able to shatter a set of size <span class="math inline">\(P\)</span> of values <span class="math inline">\(\{ (\boldsymbol{x}_1, y_1), \ldots, (\boldsymbol{x}_P, y_P) \}\)</span>, then <span class="math inline">\(\mathcal{F}\)</span> is able to shatter a set of size <span class="math inline">\(P\)</span> of values <span class="math inline">\(\{ \boldsymbol{x}_1, \ldots, \boldsymbol{x}_P \}\)</span>.</p>
+<p><strong>(d)</strong></p>
+<p>Using (b) and (c), what can you conclude about the VC dimension of <span class="math inline">\(\mathcal{F}'\)</span>?</p>
+<p><strong>(e)</strong></p>
+<p>What can you conclude about the generalization error of linear classifiers with zero–one loss? Specifically, what happens to <span class="math display">\[
+\sup_{f \in \mathcal{F}}
+  \left|\frac{1}{N} \sum_{n=1}^N\mathrm{I}\left(f(\boldsymbol{x}_n) \ne y_n\right) - \mathbb{P}_{\,}\left(f(\boldsymbol{x}) \ne y\right)\right|
+\]</span></p>
+<p>as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<p><strong>(f)</strong></p>
+<p>Let <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> denote the estimate from logistic regression (which was trained with logistic loss, not the zero–one loss), and consider the binary classifier <span class="math inline">\(f(\boldsymbol{x}; \boldsymbol{\beta}) = \mathrm{I}\left(\boldsymbol{x}^\intercal\boldsymbol{\beta}\ge 0\right)\)</span>. What can you conclude about</p>
+<p><span class="math display">\[
+\left|\frac{1}{N} \sum_{n=1}^N\mathrm{I}\left(f(\boldsymbol{x}; \hat{\boldsymbol{\beta}}) \ne y_n\right) - \mathbb{P}_{\,}\left(f(\boldsymbol{x}; \hat{\boldsymbol{\beta}}) \ne y\right)\right|
+\]</span></p>
+<p>as <span class="math inline">\(N \rightarrow \infty\)</span>?</p>
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+<section id="use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Use the ULLN to prove logistic regression consistency (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
+<p>Consider the logistic regression loss for binary <span class="math inline">\(y\)</span> and bounded regression coefficients:</p>
+<p><span class="math display">\[
+\mathcal{F}:= \{ f(\boldsymbol{x}; \boldsymbol{\beta}) = \exp(\boldsymbol{x}^\intercal\boldsymbol{\beta}) / (1 + \exp(\boldsymbol{x}^\intercal\boldsymbol{\beta}))
+\textrm{ such that }\left\Vert\boldsymbol{\beta}\right\Vert_2^2 \le K\}
+\]</span></p>
+<p><span class="math display">\[
+\mathscr{L}(f(\boldsymbol{x}; \boldsymbol{\beta}), y) :=
+- y\boldsymbol{\beta}^\intercal\boldsymbol{x}+ \log(1 + \exp(\boldsymbol{\beta}^\intercal\boldsymbol{x})).
+\]</span></p>
+<p>Assuming that <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\left\Vert\boldsymbol{x}\right\Vert\right] &lt; \infty\)</span>, show that <span class="math inline">\(\mathcal{F}\)</span> satisfies the integrable Lipchitz condition and so has vanishing generalization error:</p>
+<p><span class="math display">\[
+\sup_{f\in \mathcal{F}} \left|\hat{\mathscr{R}}(f) - \mathscr{R}(f)\right| \rightarrow 0.
+\]</span></p>
+<p><strong>Hint: you can establish that a function is Lipschitz by bounding the derivative.</strong></p>
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+<!-- ------------------------------------------------- -->
+</section>
+<section id="an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> An Information Criterion partial derivation (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
+<p>In this problem, we will informally derive part of the “AIC,” often known as the “Akaike information criterion.” (Though Akaike himself modestly claimed that the acronym was “an information criterion.”) AIC was an early and important attempt at correcting for the fact that empirical risk minimization tends to be optimistic.</p>
+<p>The purpose of this derivation is to make it clear that the AIC depends on assumptions of correct specification that are untenable in machine learning, and so to recommend against its use when cross–validation is possible.</p>
+<p>For this problem, assume that</p>
+<ul>
+<li><span class="math inline">\(z_n \overset{\mathrm{IID}}{\sim}p(z_n \vert \theta_0) \textrm{ for some }\theta_0 \in \mathbb{R}^{P}\)</span></li>
+<li><span class="math inline">\(\mathscr{L}(z_n; \theta) = - \log p(z_n \vert\theta)\)</span></li>
+<li><span class="math inline">\(\hat{\theta}:= \underset{\theta}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\theta)\)</span> exists and <span class="math inline">\(\hat{\theta}\rightarrow \theta_0\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>.</li>
+</ul>
+<p>We will also assume that <span class="math inline">\(\hat{\mathscr{R}}(\theta)\)</span> is three times continuously differentiable and so, for any <span class="math inline">\(\theta\)</span> sufficiently close to <span class="math inline">\(\theta'\)</span>, we can form the second–order Taylor series evaluated at <span class="math inline">\(\theta'\)</span>, cenetered at <span class="math inline">\(\theta\)</span>:</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(\theta') \approx \hat{\mathscr{R}}(\theta) +
+  \nabla_\theta \hat{\mathscr{R}}(\theta)(\theta' - \theta) +
+\frac{1}{2} (\theta' - \theta)^\intercal
+  \nabla^2_{\theta} \hat{\mathscr{R}}(\theta)(\theta' - \theta).
+\]</span></p>
+<p>Here, the <span class="math inline">\(\nabla_\theta\)</span> notation means</p>
+<p><span class="math display">\[
+\begin{aligned}
+\nabla_\theta \hat{\mathscr{R}}(\theta) ={}&amp;
+  \left. \frac{\partial \hat{\mathscr{R}}(\theta)}{\partial \theta} \right|_{\theta=\theta}
+&amp;
+\nabla^2_{\theta} \hat{\mathscr{R}}(\theta) ={}&amp;
+  \left. \frac{\partial^2 \hat{\mathscr{R}}(\theta)}{\partial \theta \partial \theta^\intercal} \right|_{\theta=\theta}.
+\end{aligned}
+\]</span></p>
+<p>We will use <span class="math inline">\(\mathbb{E}_{z}\left[\cdot\right]\)</span> to denote expectation with respect to a new datapoint <span class="math inline">\(z\)</span>, and <span class="math inline">\(\mathbb{E}_{\mathcal{D}}\left[\cdot\right]\)</span> to denote expectation with respect to the data, <span class="math inline">\(z_1,\ldots,z_N\)</span>.</p>
+<section id="a-6" class="level4">
+<h4 class="anchored" data-anchor-id="a-6">(a)</h4>
+<p>Show that <span class="math inline">\(\nabla_\theta \hat{\mathscr{R}}(\hat{\theta}) = \boldsymbol{0}\)</span>, and so</p>
+<p><span class="math display">\[
+\hat{\mathscr{R}}(\theta_0) \approx \hat{\mathscr{R}}(\hat{\theta}) +
+\frac{1}{2} (\theta_0 - \hat{\theta})^\intercal
+  \nabla^2_{\theta} \hat{\mathscr{R}}(\hat{\theta})(\theta_0 - \hat{\theta}),
+\]</span></p>
+<p>which is reasonable because <span class="math inline">\(\theta_0 - \hat{\theta}\)</span> is small as <span class="math inline">\(N\rightarrow \infty\)</span>.</p>
+</section>
+<section id="b-6" class="level4">
+<h4 class="anchored" data-anchor-id="b-6">(b)</h4>
+<p>Show that <span class="math inline">\(\mathbb{E}_{\mathcal{D}}\left[\hat{\mathscr{R}}(\theta_0)\right] = \mathbb{E}_{z}\left[\mathscr{R}(z; \theta_0)\right] = \mathscr{R}(\theta_0)\)</span>.</p>
+</section>
+<section id="c-6" class="level4">
+<h4 class="anchored" data-anchor-id="c-6">(c)</h4>
+<p>Show that, if <span class="math inline">\(\nabla^2_{\theta} \hat{\mathscr{R}}(\hat{\theta}) \approx \nabla^2_{\theta} \mathscr{R}(\theta_0)\)</span>, which is reasonable because <span class="math inline">\(\theta_0 - \hat{\theta}\)</span> is small as <span class="math inline">\(N\rightarrow \infty\)</span>, <span class="math display">\[
+\mathscr{R}(\theta_0) \approx
+  \mathbb{E}_{\vphantom{}}\left[\hat{\mathscr{R}}(\hat{\theta})\right] +
+  \frac{1}{2} \mathrm{trace}\left(
+    \nabla^2_{\theta} \mathscr{R}(\theta_0)
+  \mathbb{E}_{\mathcal{D}}\left[
+    (\theta_0 - \hat{\theta})(\theta_0 - \hat{\theta})^\intercal\right]\right).
+\]</span></p>
+</section>
+<section id="d-6" class="level4">
+<h4 class="anchored" data-anchor-id="d-6">(d)</h4>
+<p>Recall from introductory statistics that, <em>if the model is correctly specified</em>, then</p>
+<p><span class="math display">\[
+\mathbb{E}_{\mathcal{D}}\left[
+    (\theta_0 - \hat{\theta})(\theta_0 - \hat{\theta})^\intercal\right]
+\approx
+\frac{1}{N} \nabla^2_{\theta} \mathscr{R}(\theta_0)^{-1}.
+\]</span></p>
+<p>Using this, conclude that</p>
+<p><span class="math display">\[
+\mathscr{R}(\theta_0) \approx
+  \mathbb{E}_{\vphantom{}}\left[\hat{\mathscr{R}}(\hat{\theta})\right] + \frac{1}{2} \frac{P}{N},
+\]</span></p>
+<p>where <span class="math inline">\(P\)</span> is the dimension of <span class="math inline">\(\theta\)</span>.</p>
+</section>
+<section id="e-4" class="level4">
+<h4 class="anchored" data-anchor-id="e-4">(e)</h4>
+<p>The full AIC uses a similar argument to control the difference <span class="math inline">\(\mathscr{R}(\hat{\theta}) - \mathscr{R}(\theta_0)\)</span>, giving another factor of <span class="math inline">\(P / N\)</span> (again under correct specification), and</p>
+<p><span class="math display">\[
+2 \mathscr{R}(\hat{\theta}) \approx
+  2 \mathbb{E}_{\vphantom{}}\left[\hat{\mathscr{R}}(\hat{\theta})\right] + 2 \frac{P}{N} := AIC.
+\]</span></p>
+<p>Comment on the relative strengths and weakness of cross validation relative to the AIC approximation to estimate <span class="math inline">\(\mathscr{R}(\hat{\theta})\)</span>.</p>
+<!-- ------------------------------------------------- -->
+</section>
+</section>
+<section id="bibliography" class="level1" data-number="9">
+<h1 data-number="9"><span class="header-section-number">9</span> Bibliography</h1>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
