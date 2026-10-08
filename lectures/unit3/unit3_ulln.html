@@ -351,41 +351,6 @@ window.Quarto = {
 <p>In the special case of linear regression, show explicitly that <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) \rightarrow \mathscr{R}(\boldsymbol{\beta}^{*})\)</span>. What special structure of the problem permits this result so easily?</p>
 </div>
 </div>
-<p>A useful decomposition is as follows:</p>
-<p><span class="math display">\[
-\begin{aligned}
-0 \le \mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) ={}&amp;
-\mathscr{R}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}})  &amp; \textrm{Difficult term!}\\
-&amp; + \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\boldsymbol{\beta}^{*}) &amp; \textrm{Negative term} \\
-&amp; + \hat{\mathscr{R}}(\boldsymbol{\beta}^{*}) - \mathscr{R}(\boldsymbol{\beta}^{*}) &amp; \textrm{LLN term}
-\end{aligned}
-\]</span></p>
-<p>We wish to bound the preceding equation by a quantity that goes to zero; if we do, then <span class="math inline">\(\mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) \rightarrow 0\)</span>.</p>
-<p>The second term is negative, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> minimizes <span class="math inline">\(\hat{\mathscr{R}}\)</span>, and so <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) \le \hat{\mathscr{R}}(\boldsymbol{\beta})\)</span> for any <span class="math inline">\(\boldsymbol{\beta}\)</span>, and for <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> in particular. So it is bounded above by zero, and we don’t need to consider it any further.</p>
-<p>The third term goes to zero by the LLN, since <span class="math inline">\(\boldsymbol{\beta}^{*}\)</span> is fixed.</p>
-<p>However, the first “difficult” term does not necessarily go to zero by the LLN, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> is random and correlated with <span class="math inline">\(\hat{\mathscr{R}}\)</span>. Specifically, in</p>
-<p><span class="math display">\[
-\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) = \frac{1}{N} \sum_{n=1}^N(y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}})^2,
-\]</span></p>
-<p>the entries <span class="math inline">\((y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}})^2\)</span> are <em>not IID</em>, since <span class="math inline">\(\hat{\boldsymbol{\beta}}\)</span> depends on all the entries.</p>
-<p>One standard way of dealing with terms of the form <span class="math inline">\(\hat{\mathscr{R}}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\hat{\boldsymbol{\beta}})\)</span> is <strong>uniform laws of large numbers</strong> or ULLNs. For some compact set <span class="math inline">\(K\)</span>, a ULLN for this setting would state that a LLN holds uniformly over <span class="math inline">\(K\)</span>.</p>
-<p><span class="math display">\[
-\begin{aligned}
-\textrm{For a fixed }\boldsymbol{\beta}\textrm{, }
-\left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow {}&amp; 0 &amp; \textrm{(LLN)} \\
-\sup_{\beta \in K} \left|\hat{\mathscr{R}}(\boldsymbol{\beta}) - \mathscr{R}(\boldsymbol{\beta})\right| \rightarrow {}&amp; 0 &amp; \textrm{(ULLN)}.
-\end{aligned}
-\]</span></p>
-<p>If a ULLN holds, and we believe that <span class="math inline">\(\hat{\boldsymbol{\beta}}\in K\)</span>, then</p>
-<p><span class="math display">\[
-\left|\mathscr{R}(\hat{\boldsymbol{\beta}}) - \hat{\mathscr{R}}(\hat{\boldsymbol{\beta}})\right|
-\le \sup_{\boldsymbol{\beta}\in K} \left|\mathscr{R}(\boldsymbol{\beta}) - \hat{\mathscr{R}}(\boldsymbol{\beta})\right|  \rightarrow 0,
-\]</span></p>
-<p>and so</p>
-<p><span class="math display">\[
-\mathscr{R}(\hat{\boldsymbol{\beta}}) - \mathscr{R}(\boldsymbol{\beta}^{*}) \rightarrow 0.
-\]</span></p>
-<p>It turns out that it is easy to state condtiions under which a ULLN holds for linear regression. In general, we get a ULLN by limiting the complexity of our function class, as we will see later in the class.</p>
 </section>
 </section>
 <section id="uniform-laws-of-large-numbers-for-smooth-function-classes" class="level1">
@@ -424,7 +389,7 @@ g(z_n; f) :={}&amp; \mathscr{L}(f(x_n), y_n)\\
 <h2 class="anchored" data-anchor-id="a-finite-set-of-functions">A finite set of functions</h2>
 <p>We first note that the problem is easy if <span class="math inline">\(\mathcal{G}\)</span> is finite, i.e., <span class="math inline">\(\mathcal{G}= \{ g_k \textrm{ for }k=1,\ldots,K &lt; \infty \}\)</span>, where each <span class="math inline">\(g_k\)</span> satisfies <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[|g_k(z)|\right] \infty\)</span>. In that case,</p>
 <p><span class="math display">\[
-\sup_{g\in \mathcal{G}} \err(f,N) = \max_{k=1,\ldots,K} \err(g_k, N).
+\sup_{g\in \mathcal{G}} \err(g,N) = \max_{k=1,\ldots,K} \err(g_k, N).
 \]</span></p>
 <p>Since <span class="math inline">\(\err(g_k, N) \rightarrow 0\)</span> by the ordinary LLN, it follows that <span class="math inline">\(\max_{k=1,\ldots,K} \err(g_k, N) \rightarrow 0\)</span> as well, since <span class="math inline">\(K\)</span> is finite.</p>
 <p>Specifically, <span class="math inline">\(\err(g_k, N) \rightarrow 0\)</span> means that, for any <span class="math inline">\(\varepsilon &gt; 0\)</span> and <span class="math inline">\(\delta &gt; 0\)</span>, there exists an <span class="math inline">\(N_k\)</span> such that</p>
@@ -442,7 +407,7 @@ N &gt; N_k \Rightarrow
 \\\le{}&amp; K \delta.
 \end{aligned}
 \]</span></p>
-<p>Since we can tak <span class="math inline">\(\delta = \delta' / K\)</span> for any <span class="math inline">\(\delta'\)</span>, we have proven that <span class="math inline">\(\sup_{g\in \mathcal{G}} \err(f,N) \rightarrow 0\)</span> in probability.</p>
+<p>Since we can take <span class="math inline">\(\delta = \delta' / K\)</span> for any <span class="math inline">\(\delta'\)</span>, we have proven that <span class="math inline">\(\sup_{g\in \mathcal{G}} \err(f,N) \rightarrow 0\)</span> in probability.</p>
 </section>
 <section id="a-covering" class="level2">
 <h2 class="anchored" data-anchor-id="a-covering">A covering</h2>
