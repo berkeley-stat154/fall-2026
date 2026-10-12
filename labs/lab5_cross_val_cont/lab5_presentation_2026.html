@@ -225,7 +225,6 @@ window.Quarto = {
   </ul></li>
   <li><a href="#takeaway" id="toc-takeaway" class="nav-link" data-scroll-target="#takeaway"><span class="header-section-number">2.2</span> Takeaway</a></li>
   </ul></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">3</span> Summary</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="lab5_presentation_2026.out.ipynb" download="lab5_presentation_2026.out.ipynb"><i class="bi bi-journal-code"></i>Jupyter</a></li></ul></div></nav>
     </div>
@@ -269,21 +268,21 @@ window.Quarto = {
 <h1 data-number="1"><span class="header-section-number">1</span> Estimating the hold-out risk for non i.i.d. data</h1>
 <p>The discussions on last week’s <a href="../../labs/lab4_cross_val/lab4_presentation_2026.html">lab</a> hinged on a key assumption: that both training and test data were i.i.d. drawn from the same population. This assumption often fails in practice. The simplest failure modes are for example for data involving spatial or temporal components, both of which we will visit in today’s lab.</p>
 <p>In a setting like this we imagine we have <span class="math inline">\(\mathcal{T} = (\boldsymbol{X}_T, \boldsymbol{y}_T)\)</span> drawn from a distribution <span class="math inline">\(P\)</span> over training sets, but our model will be deployed and should perform on data <span class="math inline">\((\boldsymbol{x}, y)\)</span> which is either drawn from some distinct distribution <span class="math inline">\(Q\)</span>, and/or for which we cannot assume independence from <span class="math inline">\(\mathcal{T}\)</span>.</p>
-<p>As a simple example (to be worked below) imagine trying to predict eletric energy consumption in different regions of the United States. Suppose we are given as training data from regions R_1,…,R_5, but our model will be deployed to predict consumption on some distinct region R_6. It could be that region R_6 differs from R_1,…,R_5 in ways which strongly violate i.i.d. assumptions. For example, if R_6 consists of only Alaska, whereas R_1,…,R_5 consists of the 5 most populous states, it seems fairly unreasonable to assumption the “identically distribution” assumption makes sense.</p>
+<p>As a simple example (to be worked below) imagine trying to predict eletric energy consumption in different regions of the United States. Suppose we are given as training data from regions <span class="math inline">\(R_1,...,R_5\)</span>, but our model will be deployed to predict consumption on some distinct region <span class="math inline">\(R_6\)</span>. It could be that region <span class="math inline">\(R_6\)</span> differs from <span class="math inline">\(R_1,...,R_5\)</span> in ways which strongly violate i.i.d. assumptions. For example, if <span class="math inline">\(R_6\)</span> consists of only Alaska, whereas <span class="math inline">\(R_1,...,R_5\)</span> consists of the 5 most populous states, it seems fairly unreasonable to assumption the “identically distributed” assumption makes sense.</p>
 <p>In cases like these, doing the standard CV estimation based on uniformly shuffling the data and splitting it into folds may fail to provide accurate out of training performance estimates. The reason for this is that:</p>
 <blockquote class="blockquote">
-<p>the <em>relation between</em> the training and validation distributions within each split, <em>does not</em> faithfully mirror the <em>relation between</em> the full training data and the data the model will deployed on.</p>
+<p>the <strong>relation</strong> between the training and validation distributions within each split, <strong>does not</strong> faithfully mirror the <strong>relation</strong> between the full training data and the data the model will deployed on.</p>
 </blockquote>
 <p>The fix for this is trying to make the split in such a way that this “mirroring” holds as faithfully as possible.</p>
-<p>Another way of thinking about this informally, is that, letting <span class="math inline">\(H\)</span> be data where the model will be deployed, and letting <span class="math inline">\(\mathcal{T}^{(-k)}\)</span> and <span class="math inline">\(\mathcal{T}^{(k)}\)</span> be a K-fold CV split of <span class="math inline">\(\mathcal{T}\)</span>. We want that the information which a model can reasonably extract from <span class="math inline">\(\mathcal{T}\)</span> about <span class="math inline">\(H\)</span> is as close as possible to the one that it can exact from <span class="math inline">\(\mathcal{T}^{(k)}\)</span> about <span class="math inline">\(\mathcal{T}\)</span>. This in particular implies that:</p>
+<p>Another way of thinking about this informally, is that, letting <span class="math inline">\(H\)</span> be data where the model will be deployed, and letting <span class="math inline">\(\mathcal{T}^{(-k)}\)</span> and <span class="math inline">\(\mathcal{T}^{(k)}\)</span> be a K-fold CV split of <span class="math inline">\(\mathcal{T}\)</span>. We want that the information which a model can reasonably extract from <span class="math inline">\(\mathcal{T}\)</span> about <span class="math inline">\(H\)</span> is as close as possible to the one that it can exact from <span class="math inline">\(\mathcal{T}^{(k)}\)</span> about <span class="math inline">\(\mathcal{T}^{(-k)}\)</span>. This in particular implies that:</p>
 <p><span class="math display">\[
-\E_{(x,y) \sim H}[L(\hat{f}(x),y)|\mathcal{T}] \approx \E_{(x,y) \sim \mathcal{T}^{(k)}}[L(\hat{f}(x),y)|\mathcal{T}^{(-k)}],
+\mathbb{E}_{(x,y) \sim H}[L(\hat{f}_{\mathcal{T}}(x),y)|\mathcal{T}] \approx \mathbb{E}_{(x,y) \sim \mathcal{T}^{(k)}}[L(\hat{f}_{\mathcal{T}^{(-k)}}(x),y)|\mathcal{T}^{(-k)}],
 \]</span></p>
-<p>which is required for reasonable error estimates (by definition). Let us see an example to make this more concrete.</p>
+<p>which is required for reasonable performance estimates. Let us see an example to make this more concrete.</p>
 </section>
 <section id="predicting-energy-consumption-for-distinct-us-regions" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> Predicting energy consumption for distinct US regions</h1>
-<p>We have hourly electricity demand from 2023-01-01 to 2026-10-07 for six US <strong>balancing authorities</strong> (BAs). A BA is the grid operator that keeps supply and demand balanced over its area, which may be part of a state, one state or several states. The six BAs, with the two weather stations used for each:</p>
+<p>We have hourly electricity demand from 2023-01-01 to 2026-10-03 for six US <strong>balancing authorities</strong> (BAs). A BA is the grid operator that keeps supply and demand balanced over its area, which may be part of a state, one state or several states. The six BAs, with the two weather stations used for each:</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
@@ -340,10 +339,10 @@ window.Quarto = {
 </table>
 <p><strong>Sources.</strong></p>
 <ul>
-<li>Demand: the <a href="https://www.eia.gov/electricity/gridmonitor/">EIA-930 Hourly Electric Grid Monitor</a>, published by the U.S. Energy Information Administration with about a one-day lag. We use EIA’s cleaned <em>adjusted</em> demand series, because the raw series has obvious reporting errors (negative values, spikes of millions of MW). Hours outside 0.3 to 3 times the BA’s median demand are also dropped.</li>
+<li>Demand: the <a href="https://www.eia.gov/electricity/gridmonitor/">EIA-930 Hourly Electric Grid Monitor</a>, published by the U.S. Energy Information Administration with about a one-day lag.</li>
 <li>Weather: <a href="https://open-meteo.com/">Open-Meteo</a>, hourly values at each station.</li>
 </ul>
-<p><strong>Columns.</strong> One row per BA and hour (198,048 rows, about 33,000 per BA):</p>
+<p><strong>Columns.</strong> One row per BA and hour (197,472 rows, about 33,000 per BA):</p>
 <ul>
 <li><code>ba</code>: the balancing authority.</li>
 <li><code>timestamp_utc</code>, <code>timestamp_local</code>: the start of the hour, in UTC and in the BA’s local time. These are for splitting and plotting, not features.</li>
@@ -351,7 +350,7 @@ window.Quarto = {
 <li>Weather features for each station (<code>st1_*</code>, <code>st2_*</code>): <code>temp</code> (°C), <code>rh</code> (relative humidity, %), <code>rad</code> (solar radiation, W/m²), and <code>tmax_24h</code>/<code>tmin_24h</code> (the highest and lowest temperature over the 24 hours ending at that row).</li>
 <li>Response: <code>demand_mw</code>, the BA’s demand in megawatts.</li>
 </ul>
-<p>Weather is the <em>observed</em> value at that hour, so predictions assume a perfect weather forecast. Past demand is deliberately not included as a feature. The BAs differ a lot in size (ERCOT averages about 55,000 MW, ISO New England about 13,000 MW), so below we predict demand relative to each BA’s mean.</p>
+<p>Weather is the <em>observed</em> value at that hour, so predictions assume a perfect weather forecast. The BAs differ a lot in size (ERCOT averages about 55,000 MW, ISO New England about 13,000 MW), so below we predict demand relative to each BA’s mean.</p>
 <div id="44a6820e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T07:07:42.717272Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-09T07:07:42.716856Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-09T07:07:43.345060Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T07:07:43.344488Z&quot;}}" data-execution_count="1">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -600,8 +599,8 @@ window.Quarto = {
 <p>Shuffled CV reports roughly half the error we actually get on the new region: every test row has rows from the same BA, often from the neighbouring hours, in its training folds, so the model never has to generalise to a new grid. Leaving whole BAs out reproduces the real task and lands close to the true error, at the price of a noisy estimate (only five folds, and the folds differ a lot from one another).</p>
 <section id="every-region-as-the-deployed-one" class="level3" data-number="2.1.1">
 <h3 data-number="2.1.1" class="anchored" data-anchor-id="every-region-as-the-deployed-one"><span class="header-section-number">2.1.1</span> Every region as the deployed one</h3>
-<p>One held-out region is a single draw. Repeating the experiment with each of the six BAs as the deployment target shows whether the pattern holds (this cell fits 66 models and takes a few minutes).</p>
-<div id="2b90cf26" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T07:08:14.368260Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-09T07:08:14.367941Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-09T07:11:42.185440Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T07:11:42.184602Z&quot;}}" data-execution_count="6">
+<p>One held-out region is a single draw. Repeating the experiment with each of the six BAs as the deployment target shows whether the pattern holds.</p>
+<div id="2b90cf26" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T07:08:14.368260Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-09T07:08:14.367941Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-09T07:11:42.185440Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T07:11:42.184602Z&quot;}}" data-execution_count="9">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> []</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ba <span class="kw">in</span> <span class="bu">sorted</span>(energy[<span class="st">"ba"</span>].unique()):</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    is_test <span class="op">=</span> energy[<span class="st">"ba"</span>] <span class="op">==</span> ba</span>
@@ -612,13 +611,16 @@ window.Quarto = {
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    by_ba <span class="op">=</span> <span class="op">-</span>cross_val_score(model, X_tr, y_tr, groups<span class="op">=</span>groups, cv<span class="op">=</span>LeaveOneGroupOut(),</span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                             scoring<span class="op">=</span><span class="st">"neg_root_mean_squared_error"</span>)</span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    true_error <span class="op">=</span> np.sqrt(np.mean((y_te <span class="op">-</span> model.fit(X_tr, y_tr).predict(X_te)) <span class="op">**</span> <span class="dv">2</span>))</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    rows.append({<span class="st">"deployed BA"</span>: ba, <span class="st">"Shuffled 5-fold CV"</span>: shuffled.mean(),</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Leave-one-BA-out CV"</span>: by_ba.mean(), <span class="st">"True error"</span>: true_error})</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>by_region <span class="op">=</span> (<span class="dv">100</span> <span class="op">*</span> pd.DataFrame(rows).set_index(<span class="st">"deployed BA"</span>)).<span class="bu">round</span>(<span class="dv">1</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>by_region.loc[<span class="st">"mean"</span>] <span class="op">=</span> by_region.mean().<span class="bu">round</span>(<span class="dv">1</span>)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>by_region</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-display" data-execution_count="6">
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    rows.append({<span class="st">"deployed BA"</span>: ba,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Shuffled 5-fold CV"</span>: shuffled.mean(), <span class="st">"Shuffled SD"</span>: shuffled.std(ddof<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"Leave-one-BA-out CV"</span>: by_ba.mean(), <span class="st">"Leave-one-BA-out SD"</span>: by_ba.std(ddof<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                 <span class="st">"True error"</span>: true_error})</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>by_region <span class="op">=</span> <span class="dv">100</span> <span class="op">*</span> pd.DataFrame(rows).set_index(<span class="st">"deployed BA"</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>by_region.loc[<span class="st">"mean"</span>] <span class="op">=</span> by_region.mean()</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>by_region <span class="op">=</span> by_region.<span class="bu">round</span>({c: <span class="dv">3</span> <span class="cf">if</span> <span class="st">"SD"</span> <span class="kw">in</span> c <span class="cf">else</span> <span class="dv">2</span> <span class="cf">for</span> c <span class="kw">in</span> by_region.columns})</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>by_region</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="9">
 <div>
 
 
@@ -627,11 +629,15 @@ window.Quarto = {
 <tr class="header">
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th">Shuffled 5-fold CV</th>
+<th data-quarto-table-cell-role="th">Shuffled SD</th>
 <th data-quarto-table-cell-role="th">Leave-one-BA-out CV</th>
+<th data-quarto-table-cell-role="th">Leave-one-BA-out SD</th>
 <th data-quarto-table-cell-role="th">True error</th>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">deployed BA</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
 <th data-quarto-table-cell-role="th"></th>
@@ -640,45 +646,59 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">CISO</th>
-<td>5.1</td>
-<td>9.6</td>
-<td>11.2</td>
+<td>5.12</td>
+<td>0.045</td>
+<td>9.58</td>
+<td>0.688</td>
+<td>11.17</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">ERCO</th>
-<td>5.3</td>
-<td>10.3</td>
-<td>8.7</td>
+<td>5.28</td>
+<td>0.038</td>
+<td>10.27</td>
+<td>1.224</td>
+<td>8.70</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">FPL</th>
-<td>5.2</td>
-<td>9.9</td>
-<td>9.6</td>
+<td>5.24</td>
+<td>0.012</td>
+<td>9.89</td>
+<td>1.427</td>
+<td>9.61</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">ISNE</th>
-<td>5.0</td>
-<td>11.0</td>
-<td>9.9</td>
+<td>4.98</td>
+<td>0.028</td>
+<td>10.97</td>
+<td>2.409</td>
+<td>9.94</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">NYIS</th>
-<td>5.3</td>
-<td>10.8</td>
-<td>9.5</td>
+<td>5.33</td>
+<td>0.039</td>
+<td>10.83</td>
+<td>2.172</td>
+<td>9.45</td>
 </tr>
 <tr class="even">
 <th data-quarto-table-cell-role="th">TVA</th>
-<td>4.8</td>
-<td>9.5</td>
-<td>10.7</td>
+<td>4.75</td>
+<td>0.049</td>
+<td>9.47</td>
+<td>1.414</td>
+<td>10.73</td>
 </tr>
 <tr class="odd">
 <th data-quarto-table-cell-role="th">mean</th>
-<td>5.1</td>
-<td>10.2</td>
-<td>9.9</td>
+<td>5.12</td>
+<td>0.035</td>
+<td>10.17</td>
+<td>1.556</td>
+<td>9.93</td>
 </tr>
 </tbody>
 </table>
@@ -687,7 +707,7 @@ window.Quarto = {
 </div>
 </div>
 <div id="0b63b5cc" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T07:11:42.187365Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-09T07:11:42.187167Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-09T07:11:42.421689Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T07:11:42.421022Z&quot;}}" data-execution_count="7">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> by_region.drop(<span class="st">"mean"</span>).plot.bar(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">3.5</span>), color<span class="op">=</span>[<span class="st">"0.3"</span>, <span class="st">"tab:blue"</span>, <span class="st">"tab:orange"</span>], rot<span class="op">=</span><span class="dv">0</span>)</span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> by_region.drop(<span class="st">"mean"</span>)[[<span class="st">"Shuffled 5-fold CV"</span>, <span class="st">"Leave-one-BA-out CV"</span>, <span class="st">"True error"</span>]].plot.bar(figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="fl">3.5</span>), color<span class="op">=</span>[<span class="st">"0.3"</span>, <span class="st">"tab:blue"</span>, <span class="st">"tab:orange"</span>], rot<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="st">"RMSE, </span><span class="sc">% o</span><span class="st">f mean demand"</span>)</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"CV estimates vs. true error, each BA as the deployed region"</span>)</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>plt.tight_layout()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -699,59 +719,29 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<p>Shuffled CV is about half the true error for every region, and it barely changes with the region left out: it measures how well we interpolate within grids we have seen. Leave-one-BA-out CV is close to the true error on average, but for a single region it can be off by a point or two in either direction.</p>
+<p>Shuffled CV is about half the true error for every region, and it barely changes with the region left out: it measures how well we interpolate within grids we have seen. Leave-one-BA-out CV is close to the true error on average, but for a single region it can be off by a point or two in either direction. If we take into account the estimated SDs we see that we get even more accurate expectations about what the held-out error will look like.</p>
 </section>
 </section>
 <section id="takeaway" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="takeaway"><span class="header-section-number">2.2</span> Takeaway</h2>
 <p>To grasp a little better the difference between the estimates, let us think about what each is attempting to estimate.</p>
-<p>The shuffled CV estimate is roughly estimating the final performance of the following procedure: - take all consumption observations across all regions and time, and put them all in a bag. - draw uniformly at random a fration of the observations and fit a model to predict consumption on it. - draw another distinct fraction of the data uniformly as random and use the model to predict consumption on it.</p>
-<p>The region aware split, on the other hand, estimates the final performance of the following procedure: - take a subset of regions and the observations of consumption on them across all time. - train a model to predict consumption on them given a set of features. - take observations from a new region and use the model to predict consumption on it.</p>
+<p>The shuffled CV estimate is roughly estimating the final performance of the following procedure:</p>
+<ul>
+<li><p>take all consumption observations across all regions and time, and put them all in a bag.</p></li>
+<li><p>draw uniformly at random a fration of the observations and fit a model to predict consumption on it.</p></li>
+<li><p>draw another distinct fraction of the data uniformly as random and use the model to predict consumption on it.</p></li>
+</ul>
+<p>The region aware split, on the other hand, estimates the final performance of the following procedure:</p>
+<ul>
+<li><p>take a subset of regions and the observations of consumption on them across all times.</p></li>
+<li><p>train a model to predict consumption on them given a set of features.</p></li>
+<li><p>take observations from a new region and use the same model to predict consumption on it.</p></li>
+</ul>
 <p>Even though the regions available to us on the full training may differ from the region of final deployment, the within training data error estimation procedure mimics the procedure we are actually carrying and estimating the error of: we are training in a subset of regions to predict into a new region. The more closely we can mimic the specific details of this relation, the better our error estimates.</p>
 <p>For example, if we had data from regions in both Mexico and the US, and our final deployment would be in a new region in the US, our hold-out set in the CV should also be a US and not a Mexico region, even thought we could still train regions from Mexico, as those would be plausibly present in the final training run.</p>
-</section>
-</section>
-<section id="summary" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Summary</h1>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>Estimate</th>
-<th>Unbiased for</th>
-<th>As an estimate of the final model’s risk</th>
-<th>Variance</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Training error</td>
-<td>not the risk (it measures the fit to the training labels)</td>
-<td>too optimistic, worse for complex models</td>
-<td></td>
-</tr>
-<tr class="even">
-<td>Validation error</td>
-<td>risk of the model trained on <span class="math inline">\(N_{\text{train}}\)</span> points</td>
-<td>too pessimistic; less so as <span class="math inline">\(N_{\text{train}} \to N\)</span></td>
-<td>grows as <span class="math inline">\(N_{\text{valid}}\)</span> shrinks</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(K\)</span>-fold CV error</td>
-<td>expected risk of a model trained on <span class="math inline">\(N - N/K\)</span> points</td>
-<td>slightly pessimistic; less so as <span class="math inline">\(K\)</span> grows</td>
-<td>not monotone in <span class="math inline">\(K\)</span></td>
-</tr>
-</tbody>
-</table>
-<p>In the exercise you will see each row of this table in the practice world, where you can compare every estimate with the true risk. Then you will use CV to tune LightGBM on a challenge dataset with no true risk, as in real life.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

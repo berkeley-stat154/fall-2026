@@ -8,7 +8,7 @@
 
 <meta name="author" content="Josh Davis/Lucas Schwengber">
 
-<title>Lab 4 Exercise - Cross Validation</title>
+<title>Lab 5 Exercise - Cross Validation (cont.)</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -216,7 +216,9 @@ window.Quarto = {
   <li><a href="#learning-goals" id="toc-learning-goals" class="nav-link active" data-scroll-target="#learning-goals">Learning goals</a></li>
   <li><a href="#challenge" id="toc-challenge" class="nav-link" data-scroll-target="#challenge"><span class="header-section-number">1</span> Challenge</a>
   <ul class="collapse">
-  <li><a href="#allowed-methods" id="toc-allowed-methods" class="nav-link" data-scroll-target="#allowed-methods"><span class="header-section-number">1.1</span> Allowed methods</a></li>
+  <li><a href="#the-training-data" id="toc-the-training-data" class="nav-link" data-scroll-target="#the-training-data"><span class="header-section-number">1.1</span> The training data</a></li>
+  <li><a href="#how-it-relates-to-the-evaluation-data" id="toc-how-it-relates-to-the-evaluation-data" class="nav-link" data-scroll-target="#how-it-relates-to-the-evaluation-data"><span class="header-section-number">1.2</span> How it relates to the evaluation data</a></li>
+  <li><a href="#allowed-methods" id="toc-allowed-methods" class="nav-link" data-scroll-target="#allowed-methods"><span class="header-section-number">1.3</span> Allowed methods</a></li>
   </ul></li>
   <li><a href="#how-to-submit-your-assignment" id="toc-how-to-submit-your-assignment" class="nav-link" data-scroll-target="#how-to-submit-your-assignment"><span class="header-section-number">2</span> How to submit your assignment</a></li>
   <li><a href="#how-your-hyperparameters-will-be-scored" id="toc-how-your-hyperparameters-will-be-scored" class="nav-link" data-scroll-target="#how-your-hyperparameters-will-be-scored"><span class="header-section-number">3</span> How your hyperparameters will be scored</a></li>
@@ -229,7 +231,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Lab 4 Exercise - Cross Validation</h1>
+<h1 class="title">Lab 5 Exercise - Cross Validation (cont.)</h1>
 </div>
 
 
@@ -269,20 +271,36 @@ window.Quarto = {
 </section>
 <section id="challenge" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Challenge</h1>
-<p>We provide historical data from EIA energy consumption. Your goal is to select a set of optimal hyperparameters, <em>and</em> estimate its performance on predicting consumption (given the same covariates) from Thursday and Friday from this week (full two days 10/15/2026 &amp; 10/16/2026).</p>
-<p>The data covers California ISO (CAISO) hourly demand and Sacramento and Los Angeles weather:</p>
+<p>We provide historical data from EIA energy consumption. Your goal is to select a set of optimal hyperparameters, <em>and</em> estimate its performance on predicting consumption (given the same covariates) over a continuous stretch of hourly data from this week, from Thursday 10/15/2026 at 9 AM until Saturday 10/17/2026 at 9 PM (California time).</p>
+<p>The data covers hourly electricity demand in the California ISO (CAISO) balancing area, together with weather at two locations inside it:</p>
 <ul>
 <li><a href="../../datasets/cv_lab_cont/data/X_train.csv">X_train.csv</a></li>
 <li><a href="../../datasets/cv_lab_cont/data/y_train.csv">y_train.csv</a></li>
 </ul>
-<section id="allowed-methods" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="allowed-methods"><span class="header-section-number">1.1</span> Allowed methods</h2>
-<p>You may only use <code>lgb.LGBMClassifier</code>, with any hyperparameters you like, trained only on <code>X_train</code> and <code>y_train</code>. Your final model <em>should not</em> use the time slot columns. They are just to assist your data splitting (see below).</p>
+<section id="the-training-data" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="the-training-data"><span class="header-section-number">1.1</span> The training data</h2>
+<p>Both files have one row per hour, in the same order, from 2023-01-01 to 2026-10-10 (32,966 rows).</p>
+<p><strong>Response (<code>y_train.csv</code>).</strong> <code>demand_mw</code> is the hourly electricity demand of the CAISO balancing area, in megawatts. It comes from the <a href="https://www.eia.gov/electricity/gridmonitor/">EIA-930 Hourly Electric Grid Monitor</a>, where each grid operator reports its demand to the U.S. Energy Information Administration.</p>
+<p><strong>Features (<code>X_train.csv</code>).</strong></p>
+<ul>
+<li><code>timestamp_utc</code>, <code>timestamp_local</code>: the start of the hour, in UTC and in California time. These are <em>only</em> to help you split the data, and must not be used as features.</li>
+<li>Calendar: <code>hour</code>, <code>day_of_week</code> (0 = Monday), <code>day_of_year</code>, <code>is_holiday</code> (U.S. federal holidays) and <code>day_index</code> (number of days since 2023-01-01).</li>
+<li>Weather, for each of two stations, Fresno (<code>fresno_*</code>) and Riverside (<code>riverside_*</code>), chosen to represent the northern and southern parts of the state: <code>temp</code> (temperature in °C), <code>rh</code> (relative humidity, %), <code>rad</code> (shortwave solar radiation in W/m²), and <code>tmax_24h</code>/<code>tmin_24h</code> (the highest and lowest temperature over the 24 hours ending at that row).</li>
+</ul>
+<p><strong>How it was obtained.</strong> The demand was downloaded from the six-month bulk files that EIA publishes on its website, which are updated with about a one-day lag. The weather was downloaded from <a href="https://open-meteo.com/">Open-Meteo</a> (its historical forecast API), which serves hourly values from a weather model at the given coordinates. The two sources were joined by timestamp, and the features above were computed from them. Hours with missing demand (about 130, mostly around daylight saving changes) and one obvious reporting glitch were removed.</p>
+</section>
+<section id="how-it-relates-to-the-evaluation-data" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="how-it-relates-to-the-evaluation-data"><span class="header-section-number">1.2</span> How it relates to the evaluation data</h2>
+<p>The evaluation data is built with exactly the same process, the same balancing area, the same two weather stations, the same columns and the same <code>day_index</code> origin. The only difference is the time period: the rows are a continuous series from Thursday 10/15/2026 at 9 AM until Saturday 10/17/2026 at 9 PM (California time), which come <em>after</em> the last training row. They did not exist when the training data was downloaded, and the EIA only publishes the demand for those days after they have happened, so the evaluation data is genuinely unseen: it is in the future with respect to everything you have, rather than a random subset of the same period. That is why a model’s error on the training period, as estimated by a standard shuffled cross-validation, is not guaranteed to reflect its error on this new data.</p>
+</section>
+<section id="allowed-methods" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="allowed-methods"><span class="header-section-number">1.3</span> Allowed methods</h2>
+<p>You may only use <code>lgb.LGBMRegressor</code>, with any hyperparameters you like, trained only on <code>X_train</code> and <code>y_train</code>. Your final model <em>should not</em> use the time slot columns. They are just to assist your data splitting (see below).</p>
 </section>
 </section>
 <section id="how-to-submit-your-assignment" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> How to submit your assignment</h1>
-<p>You will submit a JSON file containing a dictionary with the hyperparameters you optimized <em>and</em> your estimate for its performance on the future data described above. Your estimate of the error should be as the RMSE for the fraction of mean consumption (like in the <a href="labs/lab5_cross_val_cont/lab5_presentation_2026.ipynb">presentation</a>).</p>
+<p>You will submit a JSON file containing a dictionary with the hyperparameters you optimized <em>and</em> your estimate for its performance on the future data described above. Your estimate of the error should be as the RMSE for the fraction of mean consumption in the training data (like in the <a href="labs/lab5_cross_val_cont/lab5_presentation_2026.ipynb">presentation</a>).</p>
 <p>You should also submit your <em>code</em>.</p>
 <p>You can save the JSON file like this:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
@@ -291,43 +309,46 @@ window.Quarto = {
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"min_child_samples"</span>: <span class="dv">20</span>,</span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"learning_rate"</span>: <span class="fl">0.1</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"n_estimators"</span>: <span class="dv">100</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"error_estimate"</span>: <span class="fl">0.1412</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"error_estimate"</span>: <span class="fl">0.1412</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"error_estimate_sd"</span>: <span class="fl">0.0552</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>}</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>output_fn <span class="op">=</span> <span class="ss">f"hparams_info_</span><span class="sc">{</span>codename<span class="sc">}</span><span class="ss">.json"</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>output_fn<span class="sc">}</span><span class="ss">"</span>, <span class="st">"w"</span>) <span class="im">as</span> f:</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    f.write(json.dumps(hparams_info))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The name of the json file should be <code>"hparams_info_{codename}.json"</code> where <code>{codename}</code> is a secret codename of your group’s choosing, that you will be able to use later to identify your submission in the leaderboard. The file, alongside your code, should be submitted to GradeScope by Thursday at 9 PM.</p>
+<p>The name of the json file should be <code>"hparams_info_{codename}.json"</code> where <code>{codename}</code> is a secret codename of your group’s choosing, that you will be able to use later to identify your submission in the leaderboard. The file, alongside your code, should be submitted to GradeScope by Tuesday at 9 PM.</p>
 </section>
 <section id="how-your-hyperparameters-will-be-scored" class="level1" data-number="3">
 <h1 data-number="3"><span class="header-section-number">3</span> How your hyperparameters will be scored</h1>
-<p>I will train a <code>lightgbm</code> model on the data <code>(X,y)</code> using the hyperparameters you submitted, then evaluate the model on a held-out set comprising data from the year 2013 from June to September. I will run this code:</p>
+<p>We will train a <code>lightgbm</code> model on the training data provided using the hyperparameters you submitted, then evaluate the model on a held-out set comprising data with the same features (except the time slot columns) but collected as a continuous series from Thursday 10/15/2026 at 9 AM until Saturday 10/17/2026 at 9 PM (California time).</p>
+<p>We will run this code:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> lightgbm <span class="im">as</span> lgb</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> json</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> logloss(y, pred):</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>np.mean(y <span class="op">*</span> np.log(pred) <span class="op">+</span> (<span class="dv">1</span><span class="op">-</span>y) <span class="op">*</span> np.log(<span class="dv">1</span><span class="op">-</span>pred))</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>params_fn <span class="op">=</span> <span class="ss">f"params_</span><span class="sc">{</span>codename<span class="sc">}</span><span class="ss">.json"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>params_fn<span class="sc">}</span><span class="ss">"</span>) <span class="im">as</span> f:</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> json.loads(f.read())</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/X_cv_competition.csv"</span>).drop(<span class="st">"Date"</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>X.Species <span class="op">=</span> X.Species.astype(<span class="st">"category"</span>)</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>X_holdout <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/X_cv_holdout.csv"</span>).drop(<span class="st">"Date"</span>, axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>X_holdout.Species <span class="op">=</span> X_holdout.Species.astype(<span class="st">"category"</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/y_cv_competition.csv"</span>).squeeze()</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>y_holdout <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/y_cv_holdout.csv"</span>).squeeze()</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> lgb.LGBMClassifier(<span class="op">**</span>params)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>model.fit(X, y, categorical_feature<span class="op">=</span><span class="st">"Species"</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> model.predict_proba(X_holdout)[:,<span class="dv">1</span>]</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>logloss(y_holdout, pred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Your model should not use <code>Date</code> as a feature. As you can see, I’m passing your hyperparameters to <code>LGBMClassifier</code>’s constructor. You are free to optimize any and all of the hyperparameters that the constructor accepts.</p>
-<p>A leaderboard will be published with every group’s codename alongside its loss on the holdout set, ranked from low to high. No other identifying information will be shared, so no other student will be able know your rank on the leaderboard. The leaderboard is for your own benefit! # Submission {.unnumbered}</p>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/hparams_info_</span><span class="sc">{</span>codename<span class="sc">}</span><span class="ss">.json"</span>) <span class="im">as</span> f:</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    hparams_info <span class="op">=</span> json.load(f)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {k: v <span class="cf">for</span> k, v <span class="kw">in</span> hparams_info.items() <span class="cf">if</span> <span class="kw">not</span> k.startswith(<span class="st">"error_estimate"</span>)}</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>feature_cols <span class="op">=</span> [<span class="st">"hour"</span>, <span class="st">"day_of_week"</span>, <span class="st">"day_of_year"</span>, <span class="st">"is_holiday"</span>, <span class="st">"day_index"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>                <span class="st">"fresno_temp"</span>, <span class="st">"fresno_rh"</span>, <span class="st">"fresno_rad"</span>, <span class="st">"fresno_tmax_24h"</span>, <span class="st">"fresno_tmin_24h"</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>                <span class="st">"riverside_temp"</span>, <span class="st">"riverside_rh"</span>, <span class="st">"riverside_rad"</span>, <span class="st">"riverside_tmax_24h"</span>, <span class="st">"riverside_tmin_24h"</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>X <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/X_train.csv"</span>)[feature_cols]</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/y_train.csv"</span>).squeeze()</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>X_holdout <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/X_holdout.csv"</span>)[feature_cols]</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>y_holdout <span class="op">=</span> pd.read_csv(<span class="ss">f"</span><span class="sc">{</span>path<span class="sc">}</span><span class="ss">/y_holdout.csv"</span>).squeeze()</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># demand as a fraction of mean consumption in the training data</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>mean_demand <span class="op">=</span> y.mean()</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> lgb.LGBMRegressor(<span class="op">**</span>params)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>model.fit(X, y <span class="op">/</span> mean_demand)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> model.predict(X_holdout)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> np.sqrt(np.mean((y_holdout <span class="op">/</span> mean_demand <span class="op">-</span> pred) <span class="op">**</span> <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Your model should only use the 15 feature columns listed above; in particular, it should not use the <code>timestamp_utc</code> and <code>timestamp_local</code> columns. As you can see, I’m passing your hyperparameters to <code>LGBMRegressor</code>’s constructor. You are free to optimize any and all of the hyperparameters that the constructor accepts. Any hyperparameter you do not include in the JSON file is left at <code>LGBMRegressor</code>’s default value.</p>
+<p>A leaderboard will be published with every group’s codename alongside its loss on the holdout set together with the estimated error. The rank will be based on both the loss and the estimated error. No other identifying information will be shared, so no other student will be able know your rank on the leaderboard. The leaderboard is for your own benefit! # Submission {.unnumbered}</p>
 <div class="callout callout-style-default callout-important callout-titled" title="TODO (Submission)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -340,10 +361,10 @@ window.Quarto = {
 <div class="callout-body-container callout-body">
 <p>Upload the two files on Gradescope by <strong>Tuesday at 9 PM</strong>:</p>
 <ol type="1">
-<li>your notebook, with every TODO in Parts 1-6 done and every question answered,</li>
-<li><code>pred_{codename}.npy</code> from TODO 6.5.</li>
+<li>your code</li>
+<li><code>hparams_info_{codename}.json</code> as described earlier.</li>
 </ol>
-<p>The grading will be based on completion of Parts 1-6.</p>
+<p>The grading will be based on completion of the task.</p>
 </div>
 </div>
 </section>
