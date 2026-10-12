@@ -222,6 +222,7 @@ window.Quarto = {
   </ul></li>
   <li><a href="#how-to-submit-your-assignment" id="toc-how-to-submit-your-assignment" class="nav-link" data-scroll-target="#how-to-submit-your-assignment"><span class="header-section-number">2</span> How to submit your assignment</a></li>
   <li><a href="#how-your-hyperparameters-will-be-scored" id="toc-how-your-hyperparameters-will-be-scored" class="nav-link" data-scroll-target="#how-your-hyperparameters-will-be-scored"><span class="header-section-number">3</span> How your hyperparameters will be scored</a></li>
+  <li><a href="#submission" id="toc-submission" class="nav-link" data-scroll-target="#submission">Submission</a></li>
   <li><a href="#llm-usage-policy" id="toc-llm-usage-policy" class="nav-link" data-scroll-target="#llm-usage-policy">LLM usage policy</a></li>
   </ul>
 </nav>
@@ -349,7 +350,10 @@ window.Quarto = {
 <span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> model.predict(X_holdout)</span>
 <span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>rmse <span class="op">=</span> np.sqrt(np.mean((y_holdout <span class="op">/</span> mean_demand <span class="op">-</span> pred) <span class="op">**</span> <span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Your model should only use the 15 feature columns listed above; in particular, it should not use the <code>timestamp_utc</code> and <code>timestamp_local</code> columns. As you can see, I’m passing your hyperparameters to <code>LGBMRegressor</code>’s constructor. You are free to optimize any and all of the hyperparameters that the constructor accepts. Any hyperparameter you do not include in the JSON file is left at <code>LGBMRegressor</code>’s default value.</p>
-<p>A leaderboard will be published with every group’s codename alongside its loss on the holdout set together with the estimated error. The rank will be based on both the loss and the estimated error. No other identifying information will be shared, so no other student will be able know your rank on the leaderboard. The leaderboard is for your own benefit! # Submission {.unnumbered}</p>
+<p>A leaderboard will be published with every group’s codename alongside its loss on the holdout set together with the estimated error. The rank will be based on both the loss and the estimated error. No other identifying information will be shared, so no other student will be able know your rank on the leaderboard. The leaderboard is for your own benefit!</p>
+</section>
+<section id="submission" class="level1 unnumbered">
+<h1 class="unnumbered">Submission</h1>
 <div class="callout callout-style-default callout-important callout-titled" title="TODO (Submission)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -360,7 +364,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Upload the two files on Gradescope by <strong>Tuesday at 9 PM</strong>:</p>
+<p>Upload the two files on Gradescope by <strong>Tuesday Oct.&nbsp;13th at 9 PM</strong>:</p>
 <ol type="1">
 <li>your code</li>
 <li><code>hparams_info_{codename}.json</code> as described earlier.</li>
