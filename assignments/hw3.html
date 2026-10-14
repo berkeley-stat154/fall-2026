@@ -184,8 +184,7 @@ window.Quarto = {
   <li><a href="#vc-dimension-of-linear-classifiers" id="toc-vc-dimension-of-linear-classifiers" class="nav-link" data-scroll-target="#vc-dimension-of-linear-classifiers"><span class="header-section-number">5</span> VC dimension of linear classifiers</a></li>
   <li><a href="#vc-dimension-of-zeroone-loss" id="toc-vc-dimension-of-zeroone-loss" class="nav-link" data-scroll-target="#vc-dimension-of-zeroone-loss"><span class="header-section-number">6</span> VC dimension of zero–one loss</a></li>
   <li><a href="#use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#use-the-ulln-to-prove-logistic-regression-consistency-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">7</span> Use the ULLN to prove logistic regression consistency (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
-  <li><a href="#an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">8</span> An Information Criterion partial derivation (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
-  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">9</span> Bibliography</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">8</span> Bibliography</a></li>
   </ul>
 </nav>
     </div>
@@ -455,92 +454,9 @@ y_n - \boldsymbol{x}_n^\intercal\hat{\boldsymbol{\beta}}_{-n} = \frac{\hat{\vare
 \sup_{f\in \mathcal{F}} \left|\hat{\mathscr{R}}(f) - \mathscr{R}(f)\right| \rightarrow 0.
 \]</span></p>
 <p><strong>Hint: you can establish that a function is Lipschitz by bounding the derivative.</strong></p>
-<!-- ------------------------------------------------- -->
-<!-- ------------------------------------------------- -->
-<!-- ------------------------------------------------- -->
 </section>
-<section id="an-information-criterion-partial-derivation-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="8">
-<h1 data-number="8"><span class="header-section-number">8</span> An Information Criterion partial derivation (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
-<p>In this problem, we will informally derive part of the “AIC,” often known as the “Akaike information criterion.” (Though Akaike himself modestly claimed that the acronym was “an information criterion.”) AIC was an early and important attempt at correcting for the fact that empirical risk minimization tends to be optimistic.</p>
-<p>The purpose of this derivation is to make it clear that the AIC depends on assumptions of correct specification that are untenable in machine learning, and so to recommend against its use when cross–validation is possible.</p>
-<p>For this problem, assume that</p>
-<ul>
-<li><span class="math inline">\(z_n \overset{\mathrm{IID}}{\sim}p(z_n \vert \theta_0) \textrm{ for some }\theta_0 \in \mathbb{R}^{P}\)</span></li>
-<li><span class="math inline">\(\mathscr{L}(z_n; \theta) = - \log p(z_n \vert\theta)\)</span></li>
-<li><span class="math inline">\(\hat{\theta}:= \underset{\theta}{\mathrm{argmin}}\, \hat{\mathscr{R}}(\theta)\)</span> exists and <span class="math inline">\(\hat{\theta}\rightarrow \theta_0\)</span> as <span class="math inline">\(N \rightarrow \infty\)</span>.</li>
-</ul>
-<p>We will also assume that <span class="math inline">\(\hat{\mathscr{R}}(\theta)\)</span> is three times continuously differentiable and so, for any <span class="math inline">\(\theta\)</span> sufficiently close to <span class="math inline">\(\theta'\)</span>, we can form the second–order Taylor series evaluated at <span class="math inline">\(\theta'\)</span>, cenetered at <span class="math inline">\(\theta\)</span>:</p>
-<p><span class="math display">\[
-\hat{\mathscr{R}}(\theta') \approx \hat{\mathscr{R}}(\theta) +
-  \nabla_\theta \hat{\mathscr{R}}(\theta)(\theta' - \theta) +
-\frac{1}{2} (\theta' - \theta)^\intercal
-  \nabla^2_{\theta} \hat{\mathscr{R}}(\theta)(\theta' - \theta).
-\]</span></p>
-<p>Here, the <span class="math inline">\(\nabla_\theta\)</span> notation means</p>
-<p><span class="math display">\[
-\begin{aligned}
-\nabla_\theta \hat{\mathscr{R}}(\theta) ={}&amp;
-  \left. \frac{\partial \hat{\mathscr{R}}(\theta)}{\partial \theta} \right|_{\theta=\theta}
-&amp;
-\nabla^2_{\theta} \hat{\mathscr{R}}(\theta) ={}&amp;
-  \left. \frac{\partial^2 \hat{\mathscr{R}}(\theta)}{\partial \theta \partial \theta^\intercal} \right|_{\theta=\theta}.
-\end{aligned}
-\]</span></p>
-<p>We will use <span class="math inline">\(\mathbb{E}_{z}\left[\cdot\right]\)</span> to denote expectation with respect to a new datapoint <span class="math inline">\(z\)</span>, and <span class="math inline">\(\mathbb{E}_{\mathcal{D}}\left[\cdot\right]\)</span> to denote expectation with respect to the data, <span class="math inline">\(z_1,\ldots,z_N\)</span>.</p>
-<section id="a-6" class="level4">
-<h4 class="anchored" data-anchor-id="a-6">(a)</h4>
-<p>Show that <span class="math inline">\(\nabla_\theta \hat{\mathscr{R}}(\hat{\theta}) = \boldsymbol{0}\)</span>, and so</p>
-<p><span class="math display">\[
-\hat{\mathscr{R}}(\theta_0) \approx \hat{\mathscr{R}}(\hat{\theta}) +
-\frac{1}{2} (\theta_0 - \hat{\theta})^\intercal
-  \nabla^2_{\theta} \hat{\mathscr{R}}(\hat{\theta})(\theta_0 - \hat{\theta}),
-\]</span></p>
-<p>which is reasonable because <span class="math inline">\(\theta_0 - \hat{\theta}\)</span> is small as <span class="math inline">\(N\rightarrow \infty\)</span>.</p>
-</section>
-<section id="b-6" class="level4">
-<h4 class="anchored" data-anchor-id="b-6">(b)</h4>
-<p>Show that <span class="math inline">\(\mathbb{E}_{\mathcal{D}}\left[\hat{\mathscr{R}}(\theta_0)\right] = \mathbb{E}_{z}\left[\mathscr{R}(z; \theta_0)\right] = \mathscr{R}(\theta_0)\)</span>.</p>
-</section>
-<section id="c-6" class="level4">
-<h4 class="anchored" data-anchor-id="c-6">(c)</h4>
-<p>Show that, if <span class="math inline">\(\nabla^2_{\theta} \hat{\mathscr{R}}(\hat{\theta}) \approx \nabla^2_{\theta} \mathscr{R}(\theta_0)\)</span>, which is reasonable because <span class="math inline">\(\theta_0 - \hat{\theta}\)</span> is small as <span class="math inline">\(N\rightarrow \infty\)</span>, <span class="math display">\[
-\mathscr{R}(\theta_0) \approx
-  \mathbb{E}_{\vphantom{}}\left[\hat{\mathscr{R}}(\hat{\theta})\right] +
-  \frac{1}{2} \mathrm{trace}\left(
-    \nabla^2_{\theta} \mathscr{R}(\theta_0)
-  \mathbb{E}_{\mathcal{D}}\left[
-    (\theta_0 - \hat{\theta})(\theta_0 - \hat{\theta})^\intercal\right]\right).
-\]</span></p>
-</section>
-<section id="d-6" class="level4">
-<h4 class="anchored" data-anchor-id="d-6">(d)</h4>
-<p>Recall from introductory statistics that, <em>if the model is correctly specified</em>, then</p>
-<p><span class="math display">\[
-\mathbb{E}_{\mathcal{D}}\left[
-    (\theta_0 - \hat{\theta})(\theta_0 - \hat{\theta})^\intercal\right]
-\approx
-\frac{1}{N} \nabla^2_{\theta} \mathscr{R}(\theta_0)^{-1}.
-\]</span></p>
-<p>Using this, conclude that</p>
-<p><span class="math display">\[
-\mathscr{R}(\theta_0) \approx
-  \mathbb{E}_{\vphantom{}}\left[\hat{\mathscr{R}}(\hat{\theta})\right] + \frac{1}{2} \frac{P}{N},
-\]</span></p>
-<p>where <span class="math inline">\(P\)</span> is the dimension of <span class="math inline">\(\theta\)</span>.</p>
-</section>
-<section id="e-4" class="level4">
-<h4 class="anchored" data-anchor-id="e-4">(e)</h4>
-<p>The full AIC uses a similar argument to control the difference <span class="math inline">\(\mathscr{R}(\hat{\theta}) - \mathscr{R}(\theta_0)\)</span>, giving another factor of <span class="math inline">\(P / N\)</span> (again under correct specification), and</p>
-<p><span class="math display">\[
-2 \mathscr{R}(\hat{\theta}) \approx
-  2 \mathbb{E}_{\vphantom{}}\left[\hat{\mathscr{R}}(\hat{\theta})\right] + 2 \frac{P}{N} := AIC.
-\]</span></p>
-<p>Comment on the relative strengths and weakness of cross validation relative to the AIC approximation to estimate <span class="math inline">\(\mathscr{R}(\hat{\theta})\)</span>.</p>
-<!-- ------------------------------------------------- -->
-</section>
-</section>
-<section id="bibliography" class="level1" data-number="9">
-<h1 data-number="9"><span class="header-section-number">9</span> Bibliography</h1>
+<section id="bibliography" class="level1" data-number="8">
+<h1 data-number="8"><span class="header-section-number">8</span> Bibliography</h1>
 
 
 </section>
