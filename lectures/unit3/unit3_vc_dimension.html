@@ -204,6 +204,10 @@ window.Quarto = {
   </ul></li>
   <li><a href="#vc-dimension" id="toc-vc-dimension" class="nav-link" data-scroll-target="#vc-dimension">VC dimension</a>
   <ul class="collapse">
+  <li><a href="#ullns-from-vc-dimension." id="toc-ullns-from-vc-dimension." class="nav-link" data-scroll-target="#ullns-from-vc-dimension.">ULLNs from VC dimension.</a>
+  <ul class="collapse">
+  <li><a href="#finite-function-class-ulln-reminder" id="toc-finite-function-class-ulln-reminder" class="nav-link" data-scroll-target="#finite-function-class-ulln-reminder">Finite function class ULLN reminder</a></li>
+  </ul></li>
   <li><a href="#from-classifiers-to-loss" id="toc-from-classifiers-to-loss" class="nav-link" data-scroll-target="#from-classifiers-to-loss">From classifiers to loss</a></li>
   </ul></li>
   </ul>
@@ -292,32 +296,67 @@ f(x; \theta) = \mathrm{I}\left(x\ge \theta\right).
 </div>
 <p>Note that the VC dimension doesn’t mean you can shatter <em>all</em> sets of size <span class="math inline">\(VC(\mathcal{F})\)</span>. In fact, this is obviously impossible, since a set consisting of <span class="math inline">\(N\)</span> copies of the same value cannot be shattered, no matter how complex <span class="math inline">\(\mathcal{F}\)</span> is. The VC dimension requires only that you can find <em>some</em> set <span class="math inline">\(\xvec\)</span> of size <span class="math inline">\(VC(\mathcal{F})\)</span> that is shattered, but <em>no such set</em> <span class="math inline">\(VC(\mathcal{F}) + 1\)</span>.</p>
 <p>We have already shown that the VC dimension of the boundary classifier is <span class="math inline">\(1\)</span>.</p>
-<p>The passage from VC dimension to ULLNs is somewhat complex, and beyond the scope of this (undergraduate) course. An end–to–end treatment can be found in <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> chapter four, from which we simply state the result.</p>
-<p>Let <span class="math inline">\(VC(\mathcal{F}) = \nu\)</span>, and <span class="math inline">\(f\in \mathcal{F}\)</span> take values in <span class="math inline">\(\{0,1\}\)</span>. Then, by <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span>:</p>
-<p><span class="math display">\[
+<section id="ullns-from-vc-dimension." class="level2">
+<h2 class="anchored" data-anchor-id="ullns-from-vc-dimension.">ULLNs from VC dimension.</h2>
+<p>The passage from VC dimension to ULLNs is somewhat complex, and beyond the scope of this (undergraduate) course. An end–to–end treatment can be found in <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> chapter four, from which we simply state the result with some intuition. Alternatively, see Section 6.5.2 of <span class="citation" data-cites="shalev:2014:understandingml">Shalev-Shwartz and Ben-David (<a href="#ref-shalev:2014:understandingml" role="doc-biblioref">2014</a>)</span>.</p>
+<section id="finite-function-class-ulln-reminder" class="level3">
+<h3 class="anchored" data-anchor-id="finite-function-class-ulln-reminder">Finite function class ULLN reminder</h3>
+<p>Recall from our proof of ULLNs for finite function classes that if <span class="math inline">\(|\mathcal{F}| = K &lt; \infty\)</span>, and if there is an <span class="math inline">\(N^*\)</span> such that <span id="eq-lln"><span class="math display">\[
+N &gt; N^* \Rightarrow p\left(  \left|\frac{1}{N} \sum_{n=1}^Nf(z_n) - \mathbb{E}_{\vphantom{}}\left[f(z)\right]\right| &gt; \epsilon \right) &lt; \delta
+  \textrm{ for each }f \in \mathcal{F},
+\tag{1}\]</span></span> then by a union bound, <span class="math display">\[
+N &gt; N^* \Rightarrow p\left(  \sup_{f\in \mathcal{F}} \left|\frac{1}{N} \sum_{n=1}^Nf(z_n) - \mathbb{E}_{\vphantom{}}\left[f(z)\right]\right| &gt; \epsilon \right) \le K \delta.
+\]</span> The first tool that we will state but not prove is Hoeffding’s inequality (<span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> Proposition 2.5) for binary random variables. Specifically, if <span class="math inline">\(f\)</span> takes values in <span class="math inline">\(\{0,1\}\)</span> (as is the case for zero-one loss), then <a href="#eq-lln" class="quarto-xref">Equation&nbsp;1</a> is satisfied with <span class="math display">\[
+\delta = 2 \exp\left( -2 N \epsilon^2 \right)
+\textrm{ (when $f$ is binary-valued)}.
+\]</span> Note that this result is stronger than our asymptotic results, in the sense that it is a finite–sample exact bound, rather than an (otherwise uncontrolled) guarantee as <span class="math inline">\(N \rightarrow \infty\)</span>. Finite–sample bounds are much easier to obtain when the function <span class="math inline">\(f(x)\)</span> is bounded as a function of <span class="math inline">\(x\)</span>, as is the case for zero–one loss, but which is not typically the case for regression loss.</p>
+<p>The key useful fact about the Hoeffding bound is that the number of functions in our class, <span class="math inline">\(K\)</span>, can grow with <span class="math inline">\(N\)</span>, as long as it grows more slowly than <span class="math inline">\(1 / \delta\)</span>.</p>
+<p>The second tool that we will state but not prove is the Sauer-Shelah lemma (<span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span> Proposition 4.18). This states that, if a class has VC dimension <span class="math inline">\(\nu\)</span>, then the number of binary vectors that can be produced from <span class="math inline">\(N\)</span> points is not only less than <span class="math inline">\(2^N\)</span>, but must be less than <span class="math inline">\((N + 1)^\nu\)</span>: <span class="math display">\[
+f(\xvec) \textrm{ takes at most }(N+1)^{\nu}\textrm{ distinct values when the
+VC dimension }\nu &lt; \infty.
+\]</span> This lemma states that, although a function class with finite VC dimension may be infinite (think of separating hyperplanes, for example), it can produce only a <em>polynomially growing</em> number of distinct classifications on any particular dataset of size <span class="math inline">\(N\)</span>. This is almost like having an effectively finite function class, of polynomial size, for a given dataset, though of course the particular binary vectors achievable will vary from one dataset to the next. The proof of a ULLN for classes with finite VC dimension uses a clever “symmetrization trick” to make this intuition precise.</p>
+<p>The formal result follows. Let <span class="math inline">\(VC(\mathcal{F}) = \nu\)</span>, and <span class="math inline">\(f\in \mathcal{F}\)</span> take values in <span class="math inline">\(\{0,1\}\)</span>. Then, by <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span>: <span class="math display">\[
+p\left(
 \sup_{f\in \mathcal{F}} \left|
   \frac{1}{N} \sum_{n=1}^Nf(z_n) - \mathbb{E}_{\vphantom{}}\left[f(z)\right]
-\right| \le
-\sqrt{\frac{\nu \log (N+1)}{N}} + \delta
-\quad\textrm{with probability at least}\quad
-1 - \exp\left(-N \delta^2 / 2 \right).
-\]</span></p>
-<p>Specifically, this is a consequence of the following results from <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span>:</p>
+\right| &gt;
+C \sqrt{\frac{\nu \log (N+1)}{N}} + t
+\right) \le
+\exp\left(-N t^2 / 2 \right),
+\textrm{ for a universal constant }C.
+\]</span> (Note that <span class="math inline">\(C=8\)</span> in the textbook but its precise value doesn’t matter here.) Specifically, this is a consequence of the following results from <span class="citation" data-cites="wainwright:2019:high">Wainwright (<a href="#ref-wainwright:2019:high" role="doc-biblioref">2019</a>)</span>:</p>
 <ul>
 <li>Proposition 4.18 and Definition 4.13 (VC dimension implies polynomial discrimination)</li>
 <li>Lemma 4.14 and equation 4.24 (polynomial discrimination controls Rademacher complexity)</li>
 <li>Theorem 4.10 (Rademacher complexity controls the ULLN)</li>
 </ul>
-<p>Alternatively, see Section 6.5.2 of <span class="citation" data-cites="shalev:2014:understandingml">Shalev-Shwartz and Ben-David (<a href="#ref-shalev:2014:understandingml" role="doc-biblioref">2014</a>)</span>.</p>
-<!--
-TODO: Find some way to simply and formally connect this with the fact that,
-by Hoeffding you'd expect N to be logarithmic in the number of function
-classes, together with VC dimension controlling the effective number of
-function classes via Sauer's lemma.  I think a simplification of Shalev + Schwartz,
-omtting the finite sample constants, could probably do the trick and provide
-good intuition to the students.
--->
-<p>Note that this result is stronger than our asymptotic results, in the sense that it is a finite–sample exact bound, rather than an (otherwise uncontrolled) guarantee as <span class="math inline">\(N \rightarrow \infty\)</span>. Finite–sample bounds are much easier to obtain when the function <span class="math inline">\(f(x)\)</span> is bounded as a function of <span class="math inline">\(x\)</span>, as is the case for zero–one loss, but which is not typically the case for regression loss.</p>
+<p>Rearranging the above result slightly to match the finite function class bound, we get <span class="math display">\[
+p\left(
+\sup_{f\in \mathcal{F}} \left|
+  \frac{1}{N} \sum_{n=1}^Nf(z_n) - \mathbb{E}_{\vphantom{}}\left[f(z)\right]
+\right| &gt;
+\varepsilon
+\right) \le
+(N+1)^{\nu / 2} \exp\left( -N \varepsilon^2 / 2 \right).
+\]</span> since <span class="math display">\[
+\begin{aligned}
+\varepsilon ={}&amp; C \sqrt{\frac{\nu \log (N+1)}{N}} + t
+  \Rightarrow\\
+t^2 ={}&amp; \left(
+    \varepsilon^2 - C \sqrt{\frac{\nu \log (N+1)}{N}}
+  \right)^2
+\ge
+\varepsilon^2 - C^2 \frac{\nu \log (N+1)}{N}
+  \Rightarrow \\
+\exp\left(-N t^2 / 2 \right) \le {}&amp;
+\exp\left(
+    -N \varepsilon^2 / 2 + C^2 \frac{\nu}{2} \log (N+1)
+\right) \\={}&amp;
+(N+1)^{\nu C^2} \exp\left( -N \varepsilon^2 / 2 \right).
+\end{aligned}
+\]</span> This is similar to finite class bound, but with the number of distinct binary vectors <span class="math inline">\((N+1)^{\nu}\)</span> playing the role of the number of classes <span class="math inline">\(K\)</span>, up to some constant terms that occur because of the symmetrization argument.</p>
+</section>
+</section>
 <section id="from-classifiers-to-loss" class="level2">
 <h2 class="anchored" data-anchor-id="from-classifiers-to-loss">From classifiers to loss</h2>
 <p>You will show in your homework that if a classifier has finite VC dimension then its zero–one loss function also has finite VC dimension, and vice-versa.</p>

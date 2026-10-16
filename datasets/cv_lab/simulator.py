@@ -1,4 +1,4 @@
-"""Simulator for Lab 5 (cross validation).
+"""Simulator for Lab 4 (cross validation).
 
 This file defines a "practice world": a binary classification problem where we
 know the true probability P(y = 1 | x). Because we know it, we can compute the
