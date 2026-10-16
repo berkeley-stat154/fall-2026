@@ -392,17 +392,16 @@ f^{\star}(\boldsymbol{x}) = \underset{c \in \mathcal{Y}}{\mathrm{argmax}}\, \mat
 <p>You can readily see that the logit function maps <span class="math inline">\((0,1)\)</span> into the real line and is the inverse of the expit function. Note that if you plug this formula into the cross-entropy loss,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\lossce(\mathrm{Expit}\left(f\right), y) ={}&amp;  \\
-={}&amp; - y\mathrm{Logit}\left(\mathrm{Expit}\left(f\right)\right) + \log (1-\mathrm{Expit}\left(f\right))
-\\={}&amp; - yf+ \log (1- \frac{\exp(f)}{1 + \exp(f)})
-\\={}&amp; - yf- \log (1 + \exp(f)),
+\lossce(\mathrm{Expit}\left(f\right), y) ={}&amp; - y\mathrm{Logit}\left(\mathrm{Expit}\left(f\right)\right) - \log (1-\mathrm{Expit}\left(f\right))
+\\={}&amp; - yf- \log \left(1- \frac{\exp(f)}{1 + \exp(f)} \right)
+\\={}&amp; - yf+ \log \left(1 + \exp(f) \right),
 \end{aligned}
 \]</span></p>
 <p>And if we further take <span class="math inline">\(f(\boldsymbol{x}) = \boldsymbol{\beta}^\intercal\boldsymbol{x}\)</span>, we get</p>
 <p><span class="math display">\[
 \begin{aligned}
 \lossce(\mathrm{Expit}\left(\boldsymbol{\beta}^\intercal\boldsymbol{x}\right), y)
-={}&amp; - y\boldsymbol{\beta}^\intercal\boldsymbol{x}- \log (1 + \exp(\boldsymbol{\beta}^\intercal\boldsymbol{x})),
+={}&amp; - y\boldsymbol{\beta}^\intercal\boldsymbol{x}+ \log (1 + \exp(\boldsymbol{\beta}^\intercal\boldsymbol{x})),
 \end{aligned}
 \]</span></p>
 <p>which is <strong>logistic regression</strong>.</p>
