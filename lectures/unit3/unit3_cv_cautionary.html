@@ -251,6 +251,12 @@ window.Quarto = {
 <p>Please discuss precisely which assumption behind CV goes wrong in each of the following scenarios.</p>
 <section id="images-example" class="level2">
 <h2 class="anchored" data-anchor-id="images-example">Images example</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../../assets/tumor_image.png" class="img-fluid figure-img" width="300"></p>
+<figcaption>Tumor image (from <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12063847/pdf/pone.0322624.pdf">Wong et al 2025</a>)</figcaption>
+</figure>
+</div>
 <p>Suppose you have an imagine segmentation task where you have to identify whether each pixel is a tumor. You cast this problem as a classification problem, in which each pixel is classified correctly. Let <span class="math inline">\(x_{ip}\)</span> denote the information in pixel <span class="math inline">\(p\)</span> of image <span class="math inline">\(i\)</span>, and <span class="math inline">\(y_{ip}\)</span> the tumor classification. Your risk function thus looks like</p>
 <p><span class="math display">\[
 \hat{\mathscr{R}}(f) = \sum_{\textrm{image }i} \sum_{\textrm{pixel }p} \mathscr{L}(f(x_{ip}, y_{pi})).
@@ -266,7 +272,7 @@ out when you run cross--validation?  There are many choices:
 </section>
 <section id="super-useful-feature-example" class="level2">
 <h2 class="anchored" data-anchor-id="super-useful-feature-example">Super useful feature example</h2>
-<p>This is a popular (but probably apocryphal example)[https://gwern.net/tank]:</p>
+<p>This is a popular <a href="https://gwern.net/tank">but probably apocryphal example</a>:</p>
 <p>“The Army trained a program to differentiate American tanks from Russian tanks with 100% [CV] accuracy. Only later did analysts realized that the American tanks had been photographed on a sunny day and the Russian tanks had been photographed on a cloudy day. The computer had learned to detect brightness.”</p>
 <p>Whether or not this actually happened, how would you characterize the failure of CV to give a good estimate of the out-of-sample risk?</p>
 </section>

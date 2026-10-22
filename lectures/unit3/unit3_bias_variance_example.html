@@ -244,7 +244,7 @@ window.Quarto = {
 
 
 <p><span class="math inline">\(\,\)</span></p>
-<div id="558abb47-8bc5-4e21-a3c3-edb033b06ddf" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="3">
+<div id="558abb47-8bc5-4e21-a3c3-edb033b06ddf" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a feature matrix at the grid points x in [0,1] using pmax</span></span>
@@ -291,7 +291,7 @@ window.Quarto = {
 <h1>Simulated example: A sinusoidal basis</h1>
 <p>Let us suppose that we’re doing linear regression, where our features are sinusoids of increasing frequency, and we’re trying to decide how many to include.</p>
 <p>We’ll assume that the ground truth is a linear combination of some number of these regressors, but we don’t know how many.</p>
-<div id="7cb3945f-961e-4bf5-bbdc-0c7e6a34663a" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="4">
+<div id="7cb3945f-961e-4bf5-bbdc-0c7e6a34663a" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct a basis of sin functions of increasing frequency</span></span>
@@ -316,28 +316,31 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="eff5fc87-9f84-4025-914a-ef7eb53e176a" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="5">
+<div id="eff5fc87-9f84-4025-914a-ef7eb53e176a" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>n_obs <span class="ot">&lt;-</span> <span class="dv">500</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sigma_true <span class="ot">&lt;-</span> <span class="fl">0.4</span></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>models_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p_true <span class="cf">in</span> <span class="fu">seq</span>(<span class="dv">1</span>, pmax, <span class="dv">7</span>)) {</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    models_df <span class="ot">&lt;-</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">bind_rows</span>(models_df, <span class="fu">DrawData</span>(n_obs, sigma_true, <span class="fu">GetBeta</span>(p_true)) <span class="sc">%&gt;%</span> </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">mutate</span>(<span class="at">p_true=</span>p_true))</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>p_vals <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>, pmax, <span class="dv">7</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> p_vals) {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    models_df <span class="ot">&lt;-</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">bind_rows</span>(models_df, <span class="fu">DrawData</span>(n_obs, sigma_true, <span class="fu">GetBeta</span>(p)) <span class="sc">%&gt;%</span> </span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                  <span class="fu">mutate</span>(<span class="at">p_true=</span>p))</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
 <p>As we increase the number of true regressors, the functions get more wiggly, since we are including higher–frequency components. Our task is to try to figure out how wiggly our function should be by trying to estimate how many regressors to include in the model!</p>
-<div id="4b0ef837-b467-4697-953c-b9109911d937" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="6">
+<div id="4b0ef837-b467-4697-953c-b9109911d937" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#models_df</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(models_df) <span class="sc">+</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">x=</span>x, <span class="at">y=</span>ey_true, <span class="at">color=</span>p_true)) <span class="sc">+</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">facet_grid</span>(<span class="sc">~</span> p_true)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">facet_grid</span>(<span class="sc">~</span> p_true) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_x_continuous</span>(<span class="at">breaks=</span><span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">1</span>), <span class="at">labels=</span><span class="fu">c</span>(<span class="st">"0"</span>, <span class="st">"0.5"</span>, <span class="st">"1"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -351,7 +354,7 @@ window.Quarto = {
 <section id="fix-a-ground-truth-and-run-some-simulations" class="level1">
 <h1>Fix a ground truth and run some simulations</h1>
 <p>We’ll fix a particular number of components, fix our regressors, and then generate data to see the bias / variance tradeoff.</p>
-<div id="8bf7fdd4-a476-42a5-8f73-2614955f51d9" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="7">
+<div id="8bf7fdd4-a476-42a5-8f73-2614955f51d9" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p_true <span class="ot">&lt;-</span> <span class="dv">20</span></span>
@@ -372,7 +375,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="6b425efc-dfcf-4724-bc72-5e2a2da70275" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="8">
+<div id="6b425efc-dfcf-4724-bc72-5e2a2da70275" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>RegressionFormula <span class="ot">&lt;-</span> <span class="cf">function</span>(p) {</span>
@@ -392,7 +395,7 @@ window.Quarto = {
 </details>
 </div>
 <p>Now we run some simulations. For each simulation, we use a new draw of <span class="math inline">\(y\)</span>, but all the same <span class="math inline">\(x\)</span>, and all the same <span class="math inline">\(\beta\)</span>. For each dataset, we run regressions for a range of <span class="math inline">\(p\)</span>. Because we know the ground truth, we can compare the predictions to the truth.</p>
-<div id="38047464-a352-4dc3-89b9-d9ee785fce0c" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="9">
+<div id="38047464-a352-4dc3-89b9-d9ee785fce0c" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>n_obs <span class="ot">&lt;-</span> <span class="dv">500</span></span>
@@ -407,18 +410,19 @@ window.Quarto = {
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># sanity check that all the datasets have the same x</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">abs</span>((data_df_list[[<span class="dv">1</span>]])<span class="sc">$</span>x[<span class="dv">1</span>] <span class="sc">-</span> (data_df_list[[<span class="dv">2</span>]])<span class="sc">$</span>x[<span class="dv">1</span>]) <span class="sc">&lt;</span> <span class="fl">1e-8</span>)</span>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>p_seq <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="fu">seq</span>(<span class="dv">1</span>, pmax, <span class="dv">5</span>)))</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>pb <span class="ot">&lt;-</span> <span class="fu">txtProgressBar</span>(<span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span>n_sims, <span class="at">style=</span><span class="dv">3</span>)</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (sim <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sims) {</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setTxtProgressBar</span>(pb, sim)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (p <span class="cf">in</span> p_seq) {</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        data_df <span class="ot">&lt;-</span> data_df_list[[sim]]</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        pred_df <span class="ot">&lt;-</span> <span class="fu">ComputePredictions</span>(data_df, p)</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        this_err_df <span class="ot">&lt;-</span> pred_df <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">p=</span>p, <span class="at">sim=</span>sim)</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        err_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(err_df, this_err_df)</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="fu">close</span>(pb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Make sure the truth is included in our simulations</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>p_seq <span class="ot">&lt;-</span> <span class="fu">sort</span>(<span class="fu">unique</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="fu">seq</span>(p_true <span class="sc">-</span><span class="dv">5</span>, p_true <span class="sc">+</span> <span class="dv">5</span>), <span class="fu">seq</span>(<span class="dv">1</span>, pmax, <span class="dv">5</span>))))</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>pb <span class="ot">&lt;-</span> <span class="fu">txtProgressBar</span>(<span class="at">min=</span><span class="dv">0</span>, <span class="at">max=</span>n_sims, <span class="at">style=</span><span class="dv">3</span>)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (sim <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_sims) {</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">setTxtProgressBar</span>(pb, sim)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (p <span class="cf">in</span> p_seq) {</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        data_df <span class="ot">&lt;-</span> data_df_list[[sim]]</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>        pred_df <span class="ot">&lt;-</span> <span class="fu">ComputePredictions</span>(data_df, p)</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>        this_err_df <span class="ot">&lt;-</span> pred_df <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">p=</span>p, <span class="at">sim=</span>sim)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>        err_df <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(err_df, this_err_df)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="fu">close</span>(pb)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  |======================================================================| 100%</code></pre>
@@ -431,7 +435,7 @@ window.Quarto = {
 <li><code>bias</code> = <span class="math inline">\(\mathbb{E}[\hat\beta]^T x_n - \beta^T x_n\)</span></li>
 </ul>
 <p>so that <code>pred_err = reg_err + bias</code>.</p>
-<div id="0f59fef3-9913-4a00-8f03-5eef425b1b60" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="10">
+<div id="0f59fef3-9913-4a00-8f03-5eef425b1b60" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Estimate the expectated prediction at each datapoint (to estimate the bias)</span></span>
@@ -457,14 +461,14 @@ window.Quarto = {
 <span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">mse_check=</span>(mse <span class="sc">-</span> (var <span class="sc">+</span> bias2)) <span class="sc">/</span> mse) <span class="co"># Sanity check -- should be zero</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="7f08be8a-c7c7-4228-9167-69fef0caefd6" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="11">
+<div id="7f08be8a-c7c7-4228-9167-69fef0caefd6" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>mse_df</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <table class="dataframe caption-top table table-sm table-striped small">
-<caption>A tibble: 14 × 6</caption>
+<caption>A tibble: 23 × 6</caption>
 <thead>
 <tr class="header">
 <th data-quarto-table-cell-role="th" scope="col">p</th>
@@ -486,113 +490,185 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td>1</td>
-<td>0.154295538</td>
-<td>0.0002612088</td>
-<td>0.1540343294</td>
+<td>0.144397119</td>
+<td>0.0003318704</td>
+<td>0.1440652482</td>
 <td>0.16</td>
-<td>-1.798858e-16</td>
+<td>0.000000e+00</td>
 </tr>
 <tr class="even">
 <td>2</td>
-<td>0.071492438</td>
-<td>0.0004750056</td>
-<td>0.0710174322</td>
+<td>0.074373839</td>
+<td>0.0006035173</td>
+<td>0.0737703214</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="odd">
 <td>3</td>
-<td>0.025757448</td>
-<td>0.0007859902</td>
-<td>0.0249714576</td>
+<td>0.054564592</td>
+<td>0.0008010770</td>
+<td>0.0537635151</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="even">
 <td>4</td>
-<td>0.024913654</td>
-<td>0.0010975353</td>
-<td>0.0238161190</td>
+<td>0.045672913</td>
+<td>0.0012053838</td>
+<td>0.0444675292</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="odd">
 <td>5</td>
-<td>0.023965436</td>
-<td>0.0013810972</td>
-<td>0.0225843386</td>
+<td>0.019624898</td>
+<td>0.0014391961</td>
+<td>0.0181857017</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="even">
 <td>6</td>
-<td>0.013597196</td>
-<td>0.0015696131</td>
-<td>0.0120275824</td>
+<td>0.012737836</td>
+<td>0.0016227101</td>
+<td>0.0111151256</td>
 <td>0.16</td>
-<td>0.000000e+00</td>
+<td>1.361867e-16</td>
 </tr>
 <tr class="odd">
 <td>11</td>
-<td>0.004800805</td>
-<td>0.0026488117</td>
-<td>0.0021519935</td>
+<td>0.010734171</td>
+<td>0.0030682360</td>
+<td>0.0076659355</td>
 <td>0.16</td>
-<td>-1.806701e-16</td>
+<td>0.000000e+00</td>
 </tr>
 <tr class="even">
+<td>15</td>
+<td>0.007660799</td>
+<td>0.0045887043</td>
+<td>0.0030720944</td>
+<td>0.16</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
 <td>16</td>
-<td>0.005012249</td>
-<td>0.0039636371</td>
-<td>0.0010486124</td>
+<td>0.007731513</td>
+<td>0.0048346261</td>
+<td>0.0028968865</td>
+<td>0.16</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
+<td>17</td>
+<td>0.007941739</td>
+<td>0.0051560538</td>
+<td>0.0027856855</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="odd">
+<td>18</td>
+<td>0.005955155</td>
+<td>0.0053044646</td>
+<td>0.0006506905</td>
+<td>0.16</td>
+<td>1.456489e-16</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>0.006300775</td>
+<td>0.0056364454</td>
+<td>0.0006643294</td>
+<td>0.16</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<td>20</td>
+<td>0.006208073</td>
+<td>0.0059245068</td>
+<td>0.0002835659</td>
+<td>0.16</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="even">
 <td>21</td>
-<td>0.006122883</td>
-<td>0.0059289516</td>
-<td>0.0001939315</td>
+<td>0.006674905</td>
+<td>0.0063883851</td>
+<td>0.0002865196</td>
+<td>0.16</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<td>22</td>
+<td>0.007003827</td>
+<td>0.0067167152</td>
+<td>0.0002871120</td>
+<td>0.16</td>
+<td>-1.238411e-16</td>
+</tr>
+<tr class="even">
+<td>23</td>
+<td>0.007245408</td>
+<td>0.0069408104</td>
+<td>0.0003045976</td>
+<td>0.16</td>
+<td>0.000000e+00</td>
+</tr>
+<tr class="odd">
+<td>24</td>
+<td>0.007679971</td>
+<td>0.0073568762</td>
+<td>0.0003230947</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="even">
+<td>25</td>
+<td>0.007809146</td>
+<td>0.0074834789</td>
+<td>0.0003256672</td>
+<td>0.16</td>
+<td>1.110700e-16</td>
+</tr>
+<tr class="odd">
 <td>26</td>
-<td>0.007831561</td>
-<td>0.0075814637</td>
-<td>0.0002500975</td>
+<td>0.008112397</td>
+<td>0.0077835120</td>
+<td>0.0003288850</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>31</td>
-<td>0.009338688</td>
-<td>0.0090346805</td>
-<td>0.0003040077</td>
-<td>0.16</td>
-<td>0.000000e+00</td>
-</tr>
-<tr class="even">
-<td>36</td>
-<td>0.010682421</td>
-<td>0.0103274960</td>
-<td>0.0003549251</td>
+<td>0.009577966</td>
+<td>0.0090732243</td>
+<td>0.0005047420</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
 <tr class="odd">
+<td>36</td>
+<td>0.011634683</td>
+<td>0.0110301153</td>
+<td>0.0006045673</td>
+<td>0.16</td>
+<td>-1.490993e-16</td>
+</tr>
+<tr class="even">
 <td>41</td>
-<td>0.012504986</td>
-<td>0.0119679744</td>
-<td>0.0005370119</td>
+<td>0.013612265</td>
+<td>0.0129209808</td>
+<td>0.0006912838</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>46</td>
-<td>0.014585520</td>
-<td>0.0139529689</td>
-<td>0.0006325514</td>
+<td>0.015118718</td>
+<td>0.0143466518</td>
+<td>0.0007720666</td>
 <td>0.16</td>
 <td>0.000000e+00</td>
 </tr>
@@ -601,18 +677,19 @@ window.Quarto = {
 </div>
 </div>
 <p>Look at how the MSE and its components vary with <code>p</code>, the number of regressors included in the regression.</p>
-<div id="ca1857d5-d5b7-49e0-8cbe-b294a2267426" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="12">
+<div id="ca1857d5-d5b7-49e0-8cbe-b294a2267426" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mse_graph <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(mse_df, <span class="fu">aes</span>(<span class="at">x=</span>p)) <span class="sc">+</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>mse, <span class="at">color=</span><span class="st">"MSE"</span>)) <span class="sc">+</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>var, <span class="at">color=</span><span class="st">"var"</span>)) <span class="sc">+</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y=</span>bias2, <span class="at">color=</span><span class="st">"bias2"</span>)) <span class="sc">+</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span>p_true), <span class="at">color=</span><span class="st">"purple"</span>)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    mse_graph,</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    mse_graph <span class="sc">+</span> <span class="fu">scale_y_log10</span>(),</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">ncol=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y=</span>bias2, <span class="at">color=</span><span class="st">"bias2"</span>)) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_vline</span>(<span class="fu">aes</span>(<span class="at">xintercept=</span>p_true), <span class="at">color=</span><span class="st">"purple"</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    mse_graph,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    mse_graph <span class="sc">+</span> <span class="fu">scale_y_log10</span>(),</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">ncol=</span><span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
@@ -629,7 +706,7 @@ window.Quarto = {
 <h1>Cross-validation</h1>
 <p>Now let’s see whether we can accurately recover the above curves using cross-validation.</p>
 <p>We’ll use k-fold cross validation. We run the regression once for each <code>p</code>, and once for each simulated dataset, so we can see the variability in the CV procedure.</p>
-<div id="7415d6e6-d395-4ca4-957e-2a3ce1d72559" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="13">
+<div id="7415d6e6-d395-4ca4-957e-2a3ce1d72559" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform cross-validation.</span></span>
@@ -664,7 +741,7 @@ window.Quarto = {
 <pre><code>  |======================================================================| 100%</code></pre>
 </div>
 </div>
-<div id="2ba46716-3ea7-4b20-af43-55b23df8ed8a" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="14">
+<div id="2ba46716-3ea7-4b20-af43-55b23df8ed8a" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># For each p, and each dataset, average the mse over folds,</span></span>
@@ -700,10 +777,10 @@ window.Quarto = {
 </div>
 <p>We see that</p>
 <ul>
-<li>CV selects more variables than are correct</li>
+<li>CV doesn’t necessarily select the correct number of variables</li>
 <li>There is a fair amount of variability in the estimated MSE</li>
 </ul>
-<div id="fa29706f-b1e9-48cf-995d-43b3464ee3f4" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="15">
+<div id="fa29706f-b1e9-48cf-995d-43b3464ee3f4" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(err_cv_agg_df, <span class="fu">aes</span>(<span class="at">x=</span>p)) <span class="sc">+</span></span>
@@ -721,7 +798,7 @@ window.Quarto = {
 </div>
 </div>
 </div>
-<div id="789ac671-0db9-447f-b402-973d6badcf66" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="16">
+<div id="789ac671-0db9-447f-b402-973d6badcf66" class="cell" data-tags="[]" data-quarto-private-1="{&quot;key&quot;:&quot;vscode&quot;,&quot;value&quot;:{&quot;languageId&quot;:&quot;r&quot;}}" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a></span>
@@ -736,10 +813,26 @@ window.Quarto = {
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">scale_y_log10</span>()</span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output cell-output-stderr">
+<div class="ansi-escaped-output">
+<pre>Warning message in geom_point(aes(x = p_cv, y = min_mse + min_mse_sd)):
+
+“All aesthetics have length 1, but the data has 460 rows.
+
+<span class="ansi-cyan-fg">ℹ</span> Please consider using `annotate()` or provide this layer with data containing a single row.”
+
+Warning message in geom_point(aes(x = min_p, y = min_mse)):
+
+“All aesthetics have length 1, but the data has 460 rows.
+
+<span class="ansi-cyan-fg">ℹ</span> Please consider using `annotate()` or provide this layer with data containing a single row.”
+</pre>
+</div>
+</div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="unit3_bias_variance_example_files/figure-html/cell-16-output-1.png" width="720" height="360" class="figure-img"></p>
+<p><img src="unit3_bias_variance_example_files/figure-html/cell-16-output-2.png" width="720" height="360" class="figure-img"></p>
 </figure>
 </div>
 </div>
