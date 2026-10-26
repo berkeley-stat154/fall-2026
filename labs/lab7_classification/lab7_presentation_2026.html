@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Josh Davis/Lucas Schwengber">
+
+<title>Lab 7 Presentation - Proxy Losses, Logistic Regression and ROC Curves</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-3867eb42f8fdd605ac4466d47c53ceea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo light-content">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Fall 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../schedule.html"> 
+<span class="menu-text">Course Schedule</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#classification-as-empirical-risk-minimization" id="toc-classification-as-empirical-risk-minimization" class="nav-link active" data-scroll-target="#classification-as-empirical-risk-minimization"><span class="header-section-number">1</span> Classification as empirical risk minimization</a>
+  <ul class="collapse">
+  <li><a href="#a-practice-world" id="toc-a-practice-world" class="nav-link" data-scroll-target="#a-practice-world"><span class="header-section-number">1.1</span> A practice world</a></li>
+  </ul></li>
+  <li><a href="#why-not-minimize-the-zero-one-loss-directly" id="toc-why-not-minimize-the-zero-one-loss-directly" class="nav-link" data-scroll-target="#why-not-minimize-the-zero-one-loss-directly"><span class="header-section-number">2</span> Why not minimize the zero-one loss directly?</a></li>
+  <li><a href="#proxy-losses" id="toc-proxy-losses" class="nav-link" data-scroll-target="#proxy-losses"><span class="header-section-number">3</span> Proxy losses</a>
+  <ul class="collapse">
+  <li><a href="#logistic-regression-is-erm-with-the-log-loss" id="toc-logistic-regression-is-erm-with-the-log-loss" class="nav-link" data-scroll-target="#logistic-regression-is-erm-with-the-log-loss"><span class="header-section-number">3.1</span> Logistic regression is ERM with the log loss</a></li>
+  </ul></li>
+  <li><a href="#lda-a-generative-route-to-pboldsymbolx" id="toc-lda-a-generative-route-to-pboldsymbolx" class="nav-link" data-scroll-target="#lda-a-generative-route-to-pboldsymbolx"><span class="header-section-number">4</span> LDA: a generative route to <span class="math inline">\(p(\boldsymbol{x})\)</span></a></li>
+  <li><a href="#from-probabilities-to-decisions-thresholds-and-roc-curves" id="toc-from-probabilities-to-decisions-thresholds-and-roc-curves" class="nav-link" data-scroll-target="#from-probabilities-to-decisions-thresholds-and-roc-curves"><span class="header-section-number">5</span> From probabilities to decisions: thresholds and ROC curves</a></li>
+  <li><a href="#when-one-class-is-rare" id="toc-when-one-class-is-rare" class="nav-link" data-scroll-target="#when-one-class-is-rare"><span class="header-section-number">6</span> When one class is rare</a></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary"><span class="header-section-number">7</span> Summary</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="lab7_presentation_2026.out.ipynb" download="lab7_presentation_2026.out.ipynb"><i class="bi bi-journal-code"></i>Jupyter</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 7 Presentation - Proxy Losses, Logistic Regression and ROC Curves</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Josh Davis/Lucas Schwengber </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Today’s goals (see the <a href="../../labs/lab7_classification/lab7_exercise_2026.html">exercise</a> for the full list):</p>
+<ol type="1">
+<li>Classification as empirical risk minimization, and the Bayes classifier for a (weighted) zero-one loss.</li>
+<li>Why we do not minimize the zero-one loss directly, and use a <strong>proxy loss</strong> instead.</li>
+<li>Proxy losses such as the log loss recover <span class="math inline">\(p(\boldsymbol{x}) = \mathbb{P}_{\,}\left(y = 1 \mid \boldsymbol{x}\right) = \mathbb{E}_{\vphantom{}}\left[y \mid \boldsymbol{x}\right]\)</span>. Logistic regression is ERM with the log loss.</li>
+<li>LDA: a generative route to the same kind of estimate.</li>
+<li>Turning probabilities into decisions: thresholds, false positives and negatives, and ROC curves.</li>
+<li>A common failure mode: with a rare class, a classifier can look accurate while mostly ignoring that class. ROC curves help you detect it.</li>
+</ol>
+<p>The common thread: <strong>every method today estimates <span class="math inline">\(p(\boldsymbol{x})\)</span>, then thresholds it.</strong> Trees, and the <span class="math inline">\(F_1\)</span> score as one way of dealing with rare classes, are the topics of the next lab.</p>
+<p>LLM assistance was used during the elaboration of this presentation and the exercise.</p>
+<section id="classification-as-empirical-risk-minimization" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Classification as empirical risk minimization</h1>
+<p>We observe features <span class="math inline">\(\boldsymbol{x}\in \mathbb{R}^P\)</span> and a label <span class="math inline">\(y \in \{0, 1\}\)</span>, and want a classifier <span class="math inline">\(\hat y(\boldsymbol{x}) \in \{0, 1\}\)</span>. The loss we usually care about counts mistakes, possibly weighting the two kinds differently: <span class="math display">\[
+\mathscr{L}(\hat y, y) = c_{\text{FN}} \mathrm{I}\left(\hat y = 0, y = 1\right) + c_{\text{FP}} \mathrm{I}\left(\hat y = 1, y = 0\right),
+\]</span> where <span class="math inline">\(c_{\text{FN}}\)</span> is the cost of a false negative and <span class="math inline">\(c_{\text{FP}}\)</span> the cost of a false positive. With <span class="math inline">\(c_{\text{FN}} = c_{\text{FP}} = 1\)</span> this is the zero-one loss, the misclassification rate.</p>
+<p><strong>The Bayes classifier.</strong> The classifier with the smallest risk <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[\mathscr{L}(\hat y(\boldsymbol{x}), y)\right]\)</span> predicts <span class="math inline">\(1\)</span> exactly when <span class="math display">\[
+p(\boldsymbol{x}) &gt; \frac{c_{\text{FP}}}{c_{\text{FP}} + c_{\text{FN}}}, \qquad p(\boldsymbol{x}) = \mathbb{P}_{\,}\left(y = 1 \mid \boldsymbol{x}\right).
+\]</span> You proved this in <a href="../../assignments/hw2.html#risk-minimizers-for-general-zeroone-loss">Homework 2, Problem 1</a>, where <span class="math inline">\(c_{10}\)</span> is the cost of a false positive and <span class="math inline">\(c_{01}\)</span> the cost of a false negative. With equal costs the threshold is <span class="math inline">\(0.5\)</span> (<a href="../../lectures/unit2/unit2_classification_loss.html#first-version-the-ml-procedure-returns-a-category">Unit 2 lecture</a>).</p>
+<p>So whatever the costs, the optimal decision only depends on <span class="math inline">\(p(\boldsymbol{x})\)</span>. Since <span class="math inline">\(y \in \{0, 1\}\)</span>, <span class="math display">\[
+p(\boldsymbol{x}) = \mathbb{P}_{\,}\left(y = 1 \mid \boldsymbol{x}\right) = \mathbb{E}_{\vphantom{}}\left[y \mid \boldsymbol{x}\right],
+\]</span> the regression function of <span class="math inline">\(y\)</span> on <span class="math inline">\(\boldsymbol{x}\)</span>. <strong>Estimating <span class="math inline">\(p(\boldsymbol{x})\)</span> is a regression problem</strong>, and once we have an estimate <span class="math inline">\(q(\boldsymbol{x})\)</span>, we can plug it into the Bayes rule for whatever costs we face.</p>
+<section id="a-practice-world" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="a-practice-world"><span class="header-section-number">1.1</span> A practice world</h2>
+<p>As in Lab 4, we use simulated data in which we know <span class="math inline">\(p(\boldsymbol{x})\)</span>, so that we can draw the true decision boundary <span class="math inline">\(\{\boldsymbol{x}: p(\boldsymbol{x}) = 0.5\}\)</span> and compare any method with the best possible one. Here each class is a Gaussian with the same covariance, and both classes are equally likely. <strong>How do we know the true boundary?</strong> We chose how the data are generated: class 0 is <span class="math inline">\(N(\boldsymbol{\mu}_0, \boldsymbol{\Sigma})\)</span> and class 1 is <span class="math inline">\(N(\boldsymbol{\mu}_1, \boldsymbol{\Sigma})\)</span>, each with probability <span class="math inline">\(1/2\)</span>, with <span class="math inline">\(\boldsymbol{\mu}_0\)</span>, <span class="math inline">\(\boldsymbol{\mu}_1\)</span> and <span class="math inline">\(\boldsymbol{\Sigma}\)</span> written in <code>simulator.py</code>. Knowing these distributions, Bayes’ rule gives <span class="math inline">\(p(\boldsymbol{x})\)</span> exactly at every <span class="math inline">\(\boldsymbol{x}\)</span> (we will see how in the LDA section below), and the true boundary is the curve where it equals <span class="math inline">\(0.5\)</span>, which here is a straight line. With real data we never know these distributions, so we can only estimate <span class="math inline">\(p(\boldsymbol{x})\)</span>. The line <code>world = PracticeWorld("shared")</code> below creates this world as a Python object, which can draw training data from it (<code>world.simulate</code>), tell us the true <span class="math inline">\(p(\boldsymbol{x})\)</span> (<code>world.true_prob</code>), and draw the true decision boundary (<code>world.plot_true_boundary</code>).</p>
+<div id="64c2e44e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-26T02:55:43.742364Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-26T02:55:43.742248Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-26T02:55:45.919511Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-26T02:55:45.918760Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> expit</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.discriminant_analysis <span class="im">import</span> LinearDiscriminantAnalysis</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.inspection <span class="im">import</span> DecisionBoundaryDisplay</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> roc_curve, roc_auc_score</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>sys.path.insert(<span class="dv">0</span>, <span class="st">"../../datasets/classification_lab"</span>)    <span class="co"># in your notebook: download simulator.py as in the exercise</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> simulator <span class="im">import</span> PracticeWorld</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_boundary(model, X, ax, color, label, level<span class="op">=</span><span class="fl">0.5</span>):</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Draw the curve where the model's predicted probability equals `level`."""</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    DecisionBoundaryDisplay.from_estimator(model, X, response_method<span class="op">=</span><span class="st">"predict_proba"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                                           plot_method<span class="op">=</span><span class="st">"contour"</span>, levels<span class="op">=</span>[level], ax<span class="op">=</span>ax, colors<span class="op">=</span>color)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    ax.plot([], [], color<span class="op">=</span>color, label<span class="op">=</span>label)    <span class="co"># empty line, so the boundary shows up in the legend</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>world <span class="op">=</span> PracticeWorld(<span class="st">"shared"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>X, y <span class="op">=</span> world.simulate(<span class="dv">200</span>, seed<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="fl">4.5</span>))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>ax.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, s<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>world.plot_true_boundary(ax)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>ax.plot([], [], <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"true boundary $p(x) = 0.5$"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"$x_1$"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"$x_2$"</span>)<span class="op">;</span> ax.legend()</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab7_presentation_2026_files/figure-html/cell-2-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="why-not-minimize-the-zero-one-loss-directly" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Why not minimize the zero-one loss directly?</h1>
+<p>ERM with the zero-one loss would choose, among linear classifiers <span class="math inline">\(\hat y(\boldsymbol{x}) = \mathrm{I}\left(\beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}&gt; 0\right)\)</span>, the one with the fewest training mistakes. Two problems:</p>
+<ol type="1">
+<li><strong>It cannot be optimized with gradients.</strong> The training error only changes when the boundary crosses a training point, so as a function of <span class="math inline">\((\beta_0, \boldsymbol{\beta})\)</span> it is a step function: flat almost everywhere, with jumps in between. Its gradient is zero wherever it exists, and finding the minimum is a combinatorial search.</li>
+<li><strong>It only sees the predicted label, not the probability.</strong> Two models with the same boundary but very different confidence have exactly the same zero-one loss. So the zero-one loss cannot tell us <span class="math inline">\(p(\boldsymbol{x})\)</span>, and a classifier fit to minimize it cannot be re-thresholded when the costs change.</li>
+</ol>
+<p>Below we start from the logistic regression fit <span class="math inline">\(q(\boldsymbol{x}) = \mathrm{Expit}\left(\hat\beta_0 + \boldsymbol{x}^\intercal\hat{\boldsymbol{\beta}}\right)\)</span> and perturb it in two ways, recording the training zero-one loss and the training log loss:</p>
+<ul>
+<li><strong>Left:</strong> shift the intercept, <span class="math inline">\(\hat\beta_0 + \delta\)</span>, which slides the boundary.</li>
+<li><strong>Right:</strong> scale all coefficients, <span class="math inline">\(s \cdot (\hat\beta_0, \hat{\boldsymbol{\beta}})\)</span>, which keeps the boundary fixed but makes the probabilities more (<span class="math inline">\(s &gt; 1\)</span>) or less (<span class="math inline">\(s &lt; 1\)</span>) confident.</li>
+</ul>
+<div id="87edf818" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-26T02:55:45.921348Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-26T02:55:45.921121Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-26T02:55:46.079687Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-26T02:55:46.079260Z&quot;}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>logistic <span class="op">=</span> LogisticRegression(C<span class="op">=</span>np.inf).fit(X, y)    <span class="co"># C=np.inf: no regularization</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>b0, b <span class="op">=</span> logistic.intercept_[<span class="dv">0</span>], logistic.coef_[<span class="dv">0</span>]</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_losses(q):</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Training zero-one loss (predicting q &gt; 0.5) and log loss of probabilities q."""</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    q <span class="op">=</span> np.clip(q, <span class="fl">1e-12</span>, <span class="dv">1</span> <span class="op">-</span> <span class="fl">1e-12</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np.mean((q <span class="op">&gt;</span> <span class="fl">0.5</span>) <span class="op">!=</span> y), <span class="op">-</span>np.mean(y <span class="op">*</span> np.log(q) <span class="op">+</span> (<span class="dv">1</span> <span class="op">-</span> y) <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> q))</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>shifts <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">601</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>scales <span class="op">=</span> np.linspace(<span class="fl">0.1</span>, <span class="dv">4</span>, <span class="dv">400</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>by_shift <span class="op">=</span> np.array([train_losses(expit(b0 <span class="op">+</span> d <span class="op">+</span> X <span class="op">@</span> b)) <span class="cf">for</span> d <span class="kw">in</span> shifts])</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>by_scale <span class="op">=</span> np.array([train_losses(expit(s <span class="op">*</span> (b0 <span class="op">+</span> X <span class="op">@</span> b))) <span class="cf">for</span> s <span class="kw">in</span> scales])</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">3.8</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, grid, res, xlabel, fitted <span class="kw">in</span> [(axes[<span class="dv">0</span>], shifts, by_shift, <span class="vs">r"intercept shift </span><span class="dv">$\d</span><span class="vs">elta</span><span class="dv">$</span><span class="vs">"</span>, <span class="dv">0</span>),</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                                      (axes[<span class="dv">1</span>], scales, by_scale, <span class="vs">r"scale </span><span class="dv">$</span><span class="vs">s</span><span class="dv">$</span><span class="vs">"</span>, <span class="dv">1</span>)]:</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    ax.plot(grid, res[:, <span class="dv">0</span>], label<span class="op">=</span><span class="st">"zero-one loss"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    ax.plot(grid, res[:, <span class="dv">1</span>], label<span class="op">=</span><span class="st">"log loss"</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    ax.axvline(fitted, color<span class="op">=</span><span class="st">"gray"</span>, ls<span class="op">=</span><span class="st">":"</span>, label<span class="op">=</span><span class="st">"logistic regression fit"</span>)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(xlabel)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"training loss"</span>)<span class="op">;</span> axes[<span class="dv">0</span>].legend()</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab7_presentation_2026_files/figure-html/cell-3-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>On the left, the zero-one loss is a jagged step function, while the log loss is smooth with a single minimum. On the right, the zero-one loss does not change at all, because the boundary never moves, while the log loss clearly prefers one level of confidence.</p>
+</section>
+<section id="proxy-losses" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Proxy losses</h1>
+<p>Instead, we fit a probability <span class="math inline">\(q(\boldsymbol{x})\)</span> with a smooth <strong>proxy loss</strong>, then threshold it. The two standard choices are <span class="math display">\[
+\mathscr{L}_{\text{log}}(q, y) = -y \log q- (1 - y) \log(1 - q), \qquad \mathscr{L}_{\text{sq}}(q, y) = (q- y)^2.
+\]</span> What makes them good proxies is what they are minize. Fix <span class="math inline">\(\boldsymbol{x}\)</span>, write <span class="math inline">\(p = p(\boldsymbol{x})\)</span>, and average over the random label <span class="math inline">\(y \sim \text{Bernoulli}(p)\)</span>: <span class="math display">\[
+\mathbb{E}_{\vphantom{}}\left[\mathscr{L}_{\text{log}}(q, y) \mid \boldsymbol{x}\right] = -p \log q- (1 - p) \log(1 - q), \qquad \mathbb{E}_{\vphantom{}}\left[\mathscr{L}_{\text{sq}}(q, y) \mid \boldsymbol{x}\right] = (q- p)^2 + p(1 - p).
+\]</span> Both are minimized at <span class="math inline">\(q= p\)</span>: <strong>the risk minimizer of either proxy loss is the true probability <span class="math inline">\(p(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y \mid \boldsymbol{x}\right]\)</span>.</strong> For the squared loss this is exactly the regression result from Unit 1. Losses with this property are called <em>proper scoring rules</em> (<a href="../../lectures/unit2/unit2_classification_loss.html#second-version-the-ml-procedure-returns-a-probability">Unit 2 lecture</a>, and the “Proper scoring rules” problem in <a href="../../assignments/hw2.html">Homework 2</a>).</p>
+<p><strong>Compare this with the zero-one loss.</strong> If we predict <span class="math inline">\(\hat y = \mathrm{I}\left(q&gt; 0.5\right)\)</span>, the expected zero-one loss at <span class="math inline">\(\boldsymbol{x}\)</span> is <span class="math inline">\(1 - p\)</span> when <span class="math inline">\(q&gt; 0.5\)</span> and <span class="math inline">\(p\)</span> when <span class="math inline">\(q\le 0.5\)</span>: it only depends on which side of <span class="math inline">\(0.5\)</span> the prediction <span class="math inline">\(q\)</span> falls, not on <span class="math inline">\(q\)</span> itself. With <span class="math inline">\(p = 0.3\)</span>, the predictions <span class="math inline">\(q= 0.01\)</span>, <span class="math inline">\(q= 0.3\)</span> and <span class="math inline">\(q= 0.49\)</span> all have the same expected zero-one loss, so minimizing the zero-one loss gives us no reason to prefer the correct value <span class="math inline">\(q= 0.3\)</span>. That is a problem as soon as the costs change: with <span class="math inline">\(c_{\text{FN}} = 9 \, c_{\text{FP}}\)</span>, the Bayes rule needs to know whether <span class="math inline">\(p(\boldsymbol{x}) &gt; 0.1\)</span>, and a model trained on the zero-one loss cannot tell us that, while one trained on a proxy loss can. The plot below shows the three expected losses for <span class="math inline">\(p = 0.3\)</span>.</p>
+<div id="00cfd510" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-26T02:55:46.081231Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-26T02:55:46.081116Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-26T02:55:46.160612Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-26T02:55:46.159982Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>p <span class="op">=</span> <span class="fl">0.3</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>q <span class="op">=</span> np.linspace(<span class="fl">0.005</span>, <span class="fl">0.995</span>, <span class="dv">500</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>ax.plot(q, <span class="op">-</span>p <span class="op">*</span> np.log(q) <span class="op">-</span> (<span class="dv">1</span> <span class="op">-</span> p) <span class="op">*</span> np.log(<span class="dv">1</span> <span class="op">-</span> q), label<span class="op">=</span><span class="st">"log loss"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>ax.plot(q, (q <span class="op">-</span> p) <span class="op">**</span> <span class="dv">2</span> <span class="op">+</span> p <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> p), label<span class="op">=</span><span class="st">"squared loss"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>ax.plot(q, np.where(q <span class="op">&gt;</span> <span class="fl">0.5</span>, <span class="dv">1</span> <span class="op">-</span> p, p), label<span class="op">=</span><span class="st">"zero-one loss (predict $q &gt; 0.5$)"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>ax.axvline(p, color<span class="op">=</span><span class="st">"gray"</span>, ls<span class="op">=</span><span class="st">":"</span>, label<span class="op">=</span><span class="ss">f"true probability $p = </span><span class="sc">{</span>p<span class="sc">}</span><span class="ss">$"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>ax.set_ylim(<span class="dv">0</span>, <span class="fl">1.5</span>)<span class="op">;</span> ax.set_xlabel(<span class="st">"predicted probability $q$"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"expected loss at a fixed $x$"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ax.legend()<span class="op">;</span> plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab7_presentation_2026_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="logistic-regression-is-erm-with-the-log-loss" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="logistic-regression-is-erm-with-the-log-loss"><span class="header-section-number">3.1</span> Logistic regression is ERM with the log loss</h2>
+<p>Logistic regression models <span class="math inline">\(q(\boldsymbol{x}) = \mathrm{Expit}\left(\beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}\right)\)</span> and chooses <span class="math inline">\(\beta_0, \boldsymbol{\beta}\)</span> to minimize the average training log loss. Writing <span class="math inline">\(f = \beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}\)</span>, the loss becomes <span class="math inline">\(-y f + \log(1 + e^{f})\)</span>, which is smooth and convex in <span class="math inline">\((\beta_0, \boldsymbol{\beta})\)</span>, so it can be minimized reliably. This gives the <strong>plug-in recipe</strong> we use for the rest of the lab:</p>
+<ol type="1">
+<li>estimate <span class="math inline">\(p(\boldsymbol{x})\)</span> by minimizing a proxy loss,</li>
+<li>predict <span class="math inline">\(\hat y = 1\)</span> when <span class="math inline">\(q(\boldsymbol{x})\)</span> exceeds the threshold that the costs call for.</li>
+</ol>
+<p>In scikit-learn, <code>LogisticRegression</code> adds a ridge penalty by default, with strength <span class="math inline">\(1/C\)</span>. We use <code>C=np.inf</code> to turn it off.</p>
+</section>
+</section>
+<section id="lda-a-generative-route-to-pboldsymbolx" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> LDA: a generative route to <span class="math inline">\(p(\boldsymbol{x})\)</span></h1>
+<p>Logistic regression models <span class="math inline">\(\mathbb{P}_{\,}\left(y \mid \boldsymbol{x}\right)\)</span> directly (<em>discriminative</em>). Linear discriminant analysis (LDA) is <em>generative</em>: it models how <span class="math inline">\(\boldsymbol{x}\)</span> is distributed within each class, <span class="math inline">\(f_k(\boldsymbol{x})\)</span> (the density of <span class="math inline">\(\boldsymbol{x}\)</span> given <span class="math inline">\(y = k\)</span>), and how common each class is, <span class="math inline">\(\pi_k = \mathbb{P}_{\,}\left(y = k\right)\)</span>, then flips the conditioning with Bayes’ rule.</p>
+<p><strong>The trick: flipping the conditioning.</strong> The joint density of <span class="math inline">\(\boldsymbol{x}\)</span> and <span class="math inline">\(y = k\)</span> can be factored in two ways, conditioning on either variable: <span class="math display">\[
+\mathbb{P}_{\,}\left(y = k \mid \boldsymbol{x}\right) \, f(\boldsymbol{x}) = f_k(\boldsymbol{x}) \, \pi_k,
+\]</span> where <span class="math inline">\(f(\boldsymbol{x})\)</span> is the marginal density of <span class="math inline">\(\boldsymbol{x}\)</span>, ignoring the label. By the law of total probability, the marginal is a mixture of the two class densities, weighted by how common each class is: <span class="math inline">\(f(\boldsymbol{x}) = \pi_0 f_0(\boldsymbol{x}) + \pi_1 f_1(\boldsymbol{x})\)</span>. Dividing by <span class="math inline">\(f(\boldsymbol{x})\)</span> and taking <span class="math inline">\(k = 1\)</span>, <span class="math display">\[
+p(\boldsymbol{x}) = \mathbb{P}_{\,}\left(y = 1 \mid \boldsymbol{x}\right) = \frac{\pi_1 f_1(\boldsymbol{x})}{f(\boldsymbol{x})} = \frac{\pi_1 f_1(\boldsymbol{x})}{\pi_0 f_0(\boldsymbol{x}) + \pi_1 f_1(\boldsymbol{x})}.
+\]</span></p>
+<p>LDA assumes that each class is Gaussian with a <strong>common</strong> covariance, <span class="math inline">\(\boldsymbol{x}\mid y = k \sim N(\boldsymbol{\mu}_k, \boldsymbol{\Sigma})\)</span>, and estimates <span class="math inline">\(\pi_k\)</span>, <span class="math inline">\(\boldsymbol{\mu}_k\)</span> and <span class="math inline">\(\boldsymbol{\Sigma}\)</span> by the class proportions, the class means and the pooled within-class covariance (ESL Section 4.3). Plugging Gaussians into Bayes’ rule, the quadratic terms <span class="math inline">\(-\frac12 \boldsymbol{x}^\intercal\boldsymbol{\Sigma}^{-1}\boldsymbol{x}\)</span> cancel because both classes share <span class="math inline">\(\boldsymbol{\Sigma}\)</span>, and the log odds are linear in <span class="math inline">\(\boldsymbol{x}\)</span> (ESL eq. 4.9): <span class="math display">\[
+\log \frac{p(\boldsymbol{x})}{1 - p(\boldsymbol{x})} = \underbrace{\log\frac{\pi_1}{\pi_0} - \frac{1}{2}(\boldsymbol{\mu}_1 + \boldsymbol{\mu}_0)^\intercal\boldsymbol{\Sigma}^{-1} (\boldsymbol{\mu}_1 - \boldsymbol{\mu}_0)}_{\beta_0} + \boldsymbol{x}^\intercal\underbrace{\boldsymbol{\Sigma}^{-1}(\boldsymbol{\mu}_1 - \boldsymbol{\mu}_0)}_{\boldsymbol{\beta}}.
+\]</span> So LDA ends up with exactly the logistic regression form, <span class="math inline">\(p(\boldsymbol{x}) = \mathrm{Expit}\left(\beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}\right)\)</span>; you worked through this connection in the “Logistic regression as Gaussian generative modeling” problem of <a href="../../assignments/hw2.html#logistic-regression-as-gaussian-generative-modeling">Homework 2</a>.</p>
+<p><strong>Same form, different estimates</strong> (ESL Section 4.4.5). Logistic regression maximizes the likelihood of the labels given the features, and makes no assumption about how <span class="math inline">\(\boldsymbol{x}\)</span> is distributed. LDA fits the full joint distribution of <span class="math inline">\((\boldsymbol{x}, y)\)</span>, so every observation, including ones far from the boundary, affects its estimate. When the Gaussian assumption holds, this makes LDA more efficient; when it fails, it can pull the LDA boundary away. ESL: “It is generally felt that logistic regression is a safer, more robust bet than the LDA model, relying on fewer assumptions.”</p>
+<p>Here LDA’s assumptions hold exactly, and the two fits nearly coincide:</p>
+<div id="5023e454" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-26T02:55:46.162044Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-26T02:55:46.161925Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-26T02:55:46.253823Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-26T02:55:46.253185Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lda <span class="op">=</span> LinearDiscriminantAnalysis().fit(X, y)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="fl">4.5</span>))</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ax.scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, s<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>world.plot_true_boundary(ax)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>add_boundary(lda, X, ax, <span class="st">"C2"</span>, <span class="st">"LDA"</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>add_boundary(logistic, X, ax, <span class="st">"C1"</span>, <span class="st">"logistic regression"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>ax.plot([], [], <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"true boundary"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"$x_1$"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"$x_2$"</span>)<span class="op">;</span> ax.legend()</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, model <span class="kw">in</span> [(<span class="st">"LDA"</span>, lda), (<span class="st">"logistic"</span>, logistic)]:</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:8s}</span><span class="ss">  intercept </span><span class="sc">{</span>model<span class="sc">.</span>intercept_[<span class="dv">0</span>]<span class="sc">:6.2f}</span><span class="ss">   coefficients </span><span class="sc">{</span>np<span class="sc">.</span><span class="bu">round</span>(model.coef_[<span class="dv">0</span>], <span class="dv">2</span>)<span class="sc">}</span><span class="ss">   "</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>          <span class="ss">f"true risk (log loss) </span><span class="sc">{</span>world<span class="sc">.</span>true_risk(model)<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Bayes risk: </span><span class="sc">{</span>world<span class="sc">.</span>bayes_risk()<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab7_presentation_2026_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>LDA       intercept  -2.80   coefficients [ 2.99 -2.35]   true risk (log loss) 0.293
+logistic  intercept  -2.97   coefficients [ 3.41 -2.55]   true risk (log loss) 0.299
+Bayes risk: 0.292</code></pre>
+</div>
+</div>
+<p>In the exercise you will find a world where the difference matters.</p>
+</section>
+<section id="from-probabilities-to-decisions-thresholds-and-roc-curves" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> From probabilities to decisions: thresholds and ROC curves</h1>
+<p>For any threshold <span class="math inline">\(t\)</span>, the classifier <span class="math inline">\(\hat y = \mathrm{I}\left(q(\boldsymbol{x}) &gt; t\right)\)</span> makes two kinds of mistakes. Counting on some set of observations (usually a test set) with <span class="math inline">\(P\)</span> positives (<span class="math inline">\(y = 1\)</span>) and <span class="math inline">\(N\)</span> negatives (<span class="math inline">\(y = 0\)</span>):</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th><span class="math inline">\(y = 1\)</span></th>
+<th><span class="math inline">\(y = 0\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math inline">\(\hat y = 1\)</span></td>
+<td>true positive (TP)</td>
+<td>false positive (FP)</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\hat y = 0\)</span></td>
+<td>false negative (FN)</td>
+<td>true negative (TN)</td>
+</tr>
+</tbody>
+</table>
+<p>This matrix is also known as a <a href="https://en.wikipedia.org/wiki/Confusion_matrix">confusion matrix</a></p>
+<p>The two rates we track (<a href="../../lectures/unit2/unit2_false_positives_negatives.html#some-key-terminology">Unit 2 lecture on false positives and negatives</a>) are each computed <strong>within one class</strong>: <span class="math display">\[
+\text{TPR} = \frac{\text{TP}}{P} \;\;(\text{fraction of positives we catch}), \qquad \text{FPR} = \frac{\text{FP}}{N} \;\;(\text{fraction of negatives we wrongly flag}).
+\]</span> In the medical language that ESL uses (Section 9.2.5), the TPR is the <em>sensitivity</em> and <span class="math inline">\(1 - \text{FPR}\)</span> is the <em>specificity</em>. Note that since the columns add up to 1, these two numbers suffice to describe the full performance of the model. This contains strictly more information than the acuracy why is a sum of the diagonal and in being a single number misses some information from the matrix.</p>
+<p><strong>Rejection regions.</strong> The set where we predict 1, <span class="math inline">\(R_t = \{\boldsymbol{x}: q(\boldsymbol{x}) &gt; t\}\)</span>, plays the role of a rejection region in a hypothesis test of “<span class="math inline">\(y = 0\)</span>” against “<span class="math inline">\(y = 1\)</span>”: the FPR is the probability of rejecting when <span class="math inline">\(y = 0\)</span> (the size, or type I error rate), and the TPR is the probability of rejecting when <span class="math inline">\(y = 1\)</span> (the power). For logistic regression, <span class="math inline">\(R_t\)</span> has a simple shape. Since <span class="math inline">\(q(\boldsymbol{x}) = \mathrm{Expit}\left(\beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}\right)\)</span> and the expit function is increasing, we can apply its inverse, <span class="math inline">\(\mathrm{Logit}\left(t\right) = \log\frac{t}{1 - t}\)</span>, to both sides of <span class="math inline">\(q(\boldsymbol{x}) &gt; t\)</span>: <span class="math display">\[
+q(\boldsymbol{x}) &gt; t \iff \beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}&gt; \mathrm{Logit}\left(t\right) \iff \boldsymbol{x}^\intercal\boldsymbol{\beta}&gt; \mathrm{Logit}\left(t\right) - \beta_0.
+\]</span> So <span class="math inline">\(R_t\)</span> is a half-plane, and its boundary is the line <span class="math inline">\(\{\boldsymbol{x}: \boldsymbol{x}^\intercal\boldsymbol{\beta}= \mathrm{Logit}\left(t\right) - \beta_0\}\)</span>. Changing <span class="math inline">\(t\)</span> only changes the constant <span class="math inline">\(\mathrm{Logit}\left(t\right) - \beta_0\)</span> on the right-hand side, not <span class="math inline">\(\boldsymbol{\beta}\)</span>, and <span class="math inline">\(\boldsymbol{\beta}\)</span> is what sets the direction of the line (it is perpendicular to it). So all these boundaries are parallel lines, just like <span class="math inline">\(\{x_2 = c\}\)</span> for different values of <span class="math inline">\(c\)</span>: lowering <span class="math inline">\(t\)</span> slides the line towards class 0 and makes <span class="math inline">\(R_t\)</span> bigger, and <span class="math inline">\(t = 0.5\)</span> gives <span class="math inline">\(\mathrm{Logit}\left(0.5\right) = 0\)</span>, the usual decision boundary.</p>
+<p><strong>The ROC curve</strong> plots <span class="math inline">\((\text{FPR}(t), \text{TPR}(t))\)</span> for every threshold <span class="math inline">\(t\)</span> at once. Lowering <span class="math inline">\(t\)</span> moves up and to the right: we catch more positives, but incorrectly flag as positive more negatives. By the Bayes rule, each threshold corresponds to a choice of costs, <span class="math inline">\(t = c_{\text{FP}} / (c_{\text{FP}} + c_{\text{FN}})\)</span>, so the ROC curve is the menu of classifiers we would pick for every possible ratio of costs. This is exactly how ESL draws the ROC curve of its spam classifier (Section 9.2.5, Figure 9.6): it varies the relative loss of the two kinds of errors, applies the Bayes rule, and records the sensitivity and specificity. The <a href="../../lectures/unit2/unit2_false_positives_negatives.html#the-roc-curve-and-trading-off-errors">Unit 2 lecture</a> makes the link precise: the point that minimizes the expected cost <span class="math inline">\(c_{\text{FP}} \cdot \text{FP} + c_{\text{FN}} \cdot \text{FN}\)</span> is where the slope of the ROC curve equals <span class="math inline">\(\frac{N}{P} \cdot \frac{c_{\text{FP}}}{c_{\text{FN}}}\)</span>.</p>
+<p>A useless classifier, whose prediction ignores <span class="math inline">\(\boldsymbol{x}\)</span>, lies on the diagonal, and a curve below the diagonal can be flipped into one above it (<a href="../../assignments/hw2.html#roc-curves-of-bad-classifiers">Homework 2, “ROC curves of bad classifiers”</a>). A perfect classifier goes through the top-left corner. The area under the curve (AUC) summarizes how well <span class="math inline">\(q\)</span> <em>ranks</em> the two classes, regardless of the threshold: it equals the probability that a randomly chosen positive gets a higher <span class="math inline">\(q\)</span> than a randomly chosen negative (the Mann-Whitney statistic, ESL Section 9.2.5).</p>
+<p><strong>Choosing the threshold in practice.</strong> The threshold is a hyperparameter of the classifier. When the costs are known and <span class="math inline">\(q\)</span> is a good estimate of <span class="math inline">\(p\)</span>, the Bayes rule tells us which threshold to use; otherwise, we choose it like any other hyperparameter, with cross validation on the training data (Labs 4 and 5), and use the test set only to evaluate the final choice. You will do this in the exercise.</p>
+<div id="0aa701bd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-26T02:55:46.255191Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-26T02:55:46.255073Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-26T02:55:46.423227Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-26T02:55:46.422739Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> world.simulate(<span class="dv">20_000</span>, seed<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>q_test <span class="op">=</span> logistic.predict_proba(X_test)[:, <span class="dv">1</span>]</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>fpr, tpr, _ <span class="op">=</span> roc_curve(y_test, q_test)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>thresholds <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">0.9</span>]</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [<span class="st">"C2"</span>, <span class="st">"C1"</span>, <span class="st">"C4"</span>]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">4.5</span>))</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].scatter(X[:, <span class="dv">0</span>], X[:, <span class="dv">1</span>], c<span class="op">=</span>y, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, s<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t, color <span class="kw">in</span> <span class="bu">zip</span>(thresholds, colors):</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    add_boundary(logistic, X, axes[<span class="dv">0</span>], color, <span class="ss">f"$q(x) = </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">$"</span>, level<span class="op">=</span>t)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"$x_1$"</span>)<span class="op">;</span> axes[<span class="dv">0</span>].set_ylabel(<span class="st">"$x_2$"</span>)<span class="op">;</span> axes[<span class="dv">0</span>].legend(title<span class="op">=</span><span class="st">"boundary of $R_t$"</span>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(fpr, tpr, color<span class="op">=</span><span class="st">"k"</span>, label<span class="op">=</span><span class="ss">f"logistic regression (AUC </span><span class="sc">{</span>roc_auc_score(y_test, q_test)<span class="sc">:.3f}</span><span class="ss">)"</span>)</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">"gray"</span>, ls<span class="op">=</span><span class="st">":"</span>, label<span class="op">=</span><span class="st">"useless classifier"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t, color <span class="kw">in</span> <span class="bu">zip</span>(thresholds, colors):</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> q_test <span class="op">&gt;</span> t</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].plot(pred[y_test <span class="op">==</span> <span class="dv">0</span>].mean(), pred[y_test <span class="op">==</span> <span class="dv">1</span>].mean(), <span class="st">"o"</span>, color<span class="op">=</span>color, ms<span class="op">=</span><span class="dv">9</span>, label<span class="op">=</span><span class="ss">f"threshold </span><span class="sc">{</span>t<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"false positive rate"</span>)<span class="op">;</span> axes[<span class="dv">1</span>].set_ylabel(<span class="st">"true positive rate"</span>)<span class="op">;</span> axes[<span class="dv">1</span>].legend()</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab7_presentation_2026_files/figure-html/cell-6-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="when-one-class-is-rare" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> When one class is rare</h1>
+<p>Now keep the two class distributions exactly as before, but make class 1 rare: <span class="math inline">\(\mathbb{P}_{\,}\left(y = 1\right) = 0.05\)</span>. We fit logistic regression on 2,000 observations and look at a large test set.</p>
+<div id="fedd51bf" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-26T02:55:46.424462Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-10-26T02:55:46.424376Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-10-26T02:55:46.535316Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-26T02:55:46.534810Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> {}</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="dv">6</span>, <span class="fl">4.5</span>))</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> prior, color <span class="kw">in</span> [(<span class="fl">0.5</span>, <span class="st">"C0"</span>), (<span class="fl">0.05</span>, <span class="st">"C3"</span>)]:</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    w <span class="op">=</span> PracticeWorld(<span class="st">"shared"</span>, prior<span class="op">=</span>prior)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    X_tr, y_tr <span class="op">=</span> w.simulate(<span class="dv">2000</span>, seed<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    X_te, y_te <span class="op">=</span> w.simulate(<span class="dv">20_000</span>, seed<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    q_te <span class="op">=</span> LogisticRegression(C<span class="op">=</span>np.inf).fit(X_tr, y_tr).predict_proba(X_te)[:, <span class="dv">1</span>]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> q_te <span class="op">&gt;</span> <span class="fl">0.5</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    rows[prior] <span class="op">=</span> (np.mean(pred <span class="op">==</span> y_te), np.mean(y_te <span class="op">==</span> <span class="dv">0</span>), pred[y_te <span class="op">==</span> <span class="dv">1</span>].mean(), roc_auc_score(y_te, q_te))</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    fpr, tpr, _ <span class="op">=</span> roc_curve(y_te, q_te)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    ax.plot(fpr, tpr, color<span class="op">=</span>color, label<span class="op">=</span><span class="ss">f"P(y = 1) = </span><span class="sc">{</span>prior<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    ax.plot(pred[y_te <span class="op">==</span> <span class="dv">0</span>].mean(), pred[y_te <span class="op">==</span> <span class="dv">1</span>].mean(), <span class="st">"o"</span>, color<span class="op">=</span>color, ms<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>ax.plot([<span class="dv">0</span>, <span class="dv">1</span>], [<span class="dv">0</span>, <span class="dv">1</span>], color<span class="op">=</span><span class="st">"gray"</span>, ls<span class="op">=</span><span class="st">":"</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"false positive rate"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"true positive rate"</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">"ROC curves; dots: threshold 0.5"</span>)<span class="op">;</span> ax.legend()</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"P(y=1)   accuracy at 0.5   accuracy of 'always 0'   TPR at 0.5   AUC"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> prior, (acc, acc0, tpr05, auc) <span class="kw">in</span> rows.items():</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>prior<span class="sc">:6}</span><span class="ss">   </span><span class="sc">{</span>acc<span class="sc">:15.3f}</span><span class="ss">   </span><span class="sc">{</span>acc0<span class="sc">:22.3f}</span><span class="ss">   </span><span class="sc">{</span>tpr05<span class="sc">:10.2f}</span><span class="ss">   </span><span class="sc">{</span>auc<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab7_presentation_2026_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>P(y=1)   accuracy at 0.5   accuracy of 'always 0'   TPR at 0.5   AUC
+   0.5             0.880                    0.502         0.88   0.951
+  0.05             0.966                    0.950         0.48   0.951</code></pre>
+</div>
+</div>
+<p>Three things to notice:</p>
+<ul>
+<li><strong>Accuracy hides the problem.</strong> With a rare class, accuracy is dominated by the majority class: “always predict 0” is already 95% accurate, and our model barely beats it.</li>
+<li><strong>The ROC curve does not change.</strong> TPR and FPR are each computed within one class, so they do not depend on how common the classes are. In the LDA formula (ESL eq. 4.9), making class 1 rarer only lowers <span class="math inline">\(\log(\pi_1 / \pi_0)\)</span> in the intercept <span class="math inline">\(\beta_0\)</span>: as in the previous section, the boundary slides without rotating, so the model ranks observations exactly as before.</li>
+<li><strong>The operating point does.</strong> At threshold 0.5 the model now flags very few observations, and the dot slides towards the bottom-left corner: it misses about half of the rare class. In the extreme, a classifier that predicts 0 for everyone sits at <span class="math inline">\((0, 0)\)</span>, with excellent accuracy and no use at all.</li>
+</ul>
+<p><strong>Why does the 0.5 threshold land there? It is doing what the zero-one loss asks.</strong> With equal costs, the slope result from the lecture says that the point on the ROC curve with the fewest mistakes is where the slope equals <span class="math inline">\(N / P\)</span>, the ratio of negatives to positives. With <span class="math inline">\(\mathbb{P}_{\,}\left(y = 1\right) = 0.05\)</span> that slope is 19, which the curve only reaches on its steep part, near the bottom-left. So flagging very little of the rare class is the <em>right</em> answer for accuracy, and the model is not broken. The problem is that accuracy is rarely what we care about when one class is rare: missing a rare disease case or a fraudulent transaction usually costs much more than a false alarm.</p>
+<p><strong>Test-set estimates are noisy for the rare class.</strong> As in Lab 4, TPR and FPR are estimates from a finite test set. The TPR is estimated from the <span class="math inline">\(P\)</span> positives only, with binomial standard error <span class="math inline">\(\sqrt{\text{TPR}(1 - \text{TPR}) / P}\)</span> (ESL Section 9.2.5 does a similar calculation for its spam ROC curve). With <span class="math inline">\(\mathbb{P}_{\,}\left(y = 1\right) = 0.05\)</span>, our 20,000 test observations contain only about 1,000 positives, and with <span class="math inline">\(\mathbb{P}_{\,}\left(y = 1\right) = 0.02\)</span> only about 400.</p>
+<p>So: when one class is rare, do not judge a classifier by its accuracy. Look at where it sits on the ROC curve (equivalently, its TPR and FPR) and ask whether that matches what you need. If you know the costs, the Bayes rule above tells you which threshold to use. If you do not, you need a metric that cares about the rare class, such as the <span class="math inline">\(F_1\)</span> score, which is the topic of the next lab.</p>
+</section>
+<section id="summary" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Summary</h1>
+<ul>
+<li>The optimal decision only depends on <span class="math inline">\(p(\boldsymbol{x}) = \mathbb{E}_{\vphantom{}}\left[y \mid \boldsymbol{x}\right]\)</span>, thresholded at <span class="math inline">\(c_{\text{FP}} / (c_{\text{FP}} + c_{\text{FN}})\)</span>.</li>
+<li>We cannot minimize the zero-one loss directly: it is a step function of the parameters and ignores probabilities. Proper proxy losses (log loss, squared loss) are smooth and are minimized by <span class="math inline">\(p(\boldsymbol{x})\)</span>.</li>
+<li>Logistic regression is ERM with the log loss over <span class="math inline">\(\mathrm{Expit}\left(\beta_0 + \boldsymbol{x}^\intercal\boldsymbol{\beta}\right)\)</span>. LDA reaches the same linear form generatively, by modeling each class as a Gaussian and applying Bayes’ rule.</li>
+<li>A threshold turns <span class="math inline">\(q(\boldsymbol{x})\)</span> into a classifier; the ROC curve shows the TPR/FPR tradeoff over all thresholds.</li>
+<li>With a rare class, accuracy can look great while the classifier ignores that class. Check the operating point on the ROC curve.</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
