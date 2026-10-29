@@ -62,7 +62,7 @@ div.csl-indent {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-3867eb42f8fdd605ac4466d47c53ceea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-850368ad0818e8b34f51a4e3509ee5f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -330,7 +330,7 @@ N_{t} ={}&amp; \textrm{\# of data points in $t$} \\
 \bar{y}_t={}&amp; \textrm{average of $y_n$ for all $n \in t$}. \\
 \end{aligned}
 \]</span></p>
-<p>(How we break ties doesn’t matter much.) Then by splitting the node usign <span class="math inline">\(x_{nk}\)</span> at <span class="math inline">\(c\)</span> we decrease the total loss by</p>
+<p>(How we break ties doesn’t matter much.) Then by splitting the node using <span class="math inline">\(x_{nk}\)</span> at <span class="math inline">\(c\)</span> the total loss changes by</p>
 <p><span class="math display">\[
 \underbrace{
   \sum_{n \in t,x_{nk} &lt; c} (y_n - \bar{y}_c^-)^2 +
@@ -343,7 +343,7 @@ N_{t} ={}&amp; \textrm{\# of data points in $t$} \\
 <p>For each variable, the variable <span class="math inline">\(c\)</span> can be chosen by brute force by sorting <span class="math inline">\(x_{nk}\)</span> for <span class="math inline">\(n \in t\)</span>, which is computationally tractable because it’s only a one–dimensional problem. The CART algorithm chooses splits by finding a <span class="math inline">\(c\)</span> and <span class="math inline">\(k\)</span> optimally over all possible choices.</p>
 <p>We can rewrite this as</p>
 <p><span class="math display">\[
-N_c^{-} R_c^{-} + N_c^{-} R_C^{+} - N_tR_t,
+N_c^{-} R_c^{-} + N_c^{+} R_c^{+} - N_tR_t,
 \]</span></p>
 <p>where <span class="math inline">\(R\)</span> measures the “impurity” of the node — in this case by using the sample variance. (Note that splitting can never decrease the purity of the node as long as the fit within the node is chosen to minimize the measure of purity.)</p>
 <p>Suppose we are considering the node purity with <span class="math inline">\(K\)</span> classes, each of which is estimated within the node to occur with probability <span class="math inline">\(\hat{\pi}_k\)</span>. As with loss functions there are different common choices for classification node impurity. Three common choices are</p>
@@ -352,10 +352,10 @@ N_c^{-} R_c^{-} + N_c^{-} R_C^{+} - N_tR_t,
 <li>Entropy loss</li>
 <li>Gini index</li>
 </ul>
-<p>The misclassification rate is simply the number of observations that do not match the majority class.</p>
+<p>The misclassification rate is simply the proportion of observations that do not match the majority class: <span class="math inline">\(1 - \max_k \hat{\pi}_k\)</span>.</p>
 <p>The entropy is given by</p>
 <p><span class="math display">\[
-\textrm{Entropy} = \sum_{k} \hat{\pi}_{k} \log \hat{\pi}_{k}.
+\textrm{Entropy} = - \sum_{k} \hat{\pi}_{k} \log \hat{\pi}_{k}.
 \]</span></p>
 <p>The Gini index is the implied probability of making a classification error if the predicted class is chosen with probability proportional to its marginal probability within the class. The Gini loss is</p>
 <p><span class="math display">\[

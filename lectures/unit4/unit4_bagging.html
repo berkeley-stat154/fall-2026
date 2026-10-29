@@ -97,7 +97,7 @@ div.csl-indent {
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-3867eb42f8fdd605ac4466d47c53ceea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-850368ad0818e8b34f51a4e3509ee5f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -234,7 +234,8 @@ window.Quarto = {
   <ul>
   <li><a href="#goals" id="toc-goals" class="nav-link active" data-scroll-target="#goals">Goals</a></li>
   <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
-  <li><a href="#randomized-estimators" id="toc-randomized-estimators" class="nav-link" data-scroll-target="#randomized-estimators">Randomized estimators</a>
+  <li><a href="#the-biasvariance-decomposition-for-squared-error-loss" id="toc-the-biasvariance-decomposition-for-squared-error-loss" class="nav-link" data-scroll-target="#the-biasvariance-decomposition-for-squared-error-loss">The bias–variance decomposition for squared error loss</a></li>
+  <li><a href="#ensembling-for-unbiased-but-highly-variable-estimators" id="toc-ensembling-for-unbiased-but-highly-variable-estimators" class="nav-link" data-scroll-target="#ensembling-for-unbiased-but-highly-variable-estimators">Ensembling for unbiased but highly variable estimators</a>
   <ul class="collapse">
   <li><a href="#bagging" id="toc-bagging" class="nav-link" data-scroll-target="#bagging">Bagging</a>
   <ul class="collapse">
@@ -275,69 +276,141 @@ window.Quarto = {
 
 <section id="goals" class="level1">
 <h1>Goals</h1>
-<p>Introduce the first of black–box modifications of a “weak learner”: - Introduce bagging - Intuitively for high–variance, low bias procedures - Bootstrap - Averaging the bootstrap - Decorrelating the trees (random forests)</p>
+<p>Introduce the first of black–box modifications of a “weak learner”:</p>
+<ul>
+<li>Introduce bagging
+<ul>
+<li>Intuitively for high–variance, low bias procedures</li>
+<li>Bootstrap</li>
+<li>Averaging the bootstrap</li>
+<li>Decorrelating the trees (random forests)</li>
+</ul></li>
+</ul>
 </section>
 <section id="reading" class="level1">
 <h1>Reading</h1>
 <p>The primary reading is <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.2. The reading in <span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> section 8.7 may also be useful. These notes are intended only as a supplement to the primary reading.</p>
 </section>
-<section id="randomized-estimators" class="level1">
-<h1>Randomized estimators</h1>
-<p>Suppose we’re using squared error loss, and we have a <em>random learner</em> that is approximately unbiased but high variance. Some examples of randomness could be:</p>
+<section id="the-biasvariance-decomposition-for-squared-error-loss" class="level1">
+<h1>The bias–variance decomposition for squared error loss</h1>
+<p>Suppose we think of our estimator <span class="math inline">\(\hat{f}(\cdot)\)</span> as random. This randomness could come from many different places.</p>
 <ul>
-<li>A random ordering of splits in the tree (i.e.&nbsp;a random tree topology)</li>
-<li>A random subset of the data</li>
-<li>A randomly selected set of features</li>
-<li>A random bootstrap sample of the data.</li>
+<li>The randomness could come from the training data itself if we want to ask how our estimator changes under new draws of the training data from the same distribution,</li>
+<li>It could come from the statistical procedure itself, as in stochastic gradient descent or randomized folds in cross validation, or</li>
+<li>We could deliberatly <em>add</em> randomness to the estimator to achieve a desired effect.</li>
 </ul>
-<p>We’ll talk about some of these more below. For now, let’s represent the randomness with a random variable <span class="math inline">\(u\)</span>, so we have a random estimator <span class="math inline">\(\hat{f}(\cdot; u)\)</span>.</p>
-<p>Suppoose that we think that the random estimator is approximately ubiased — over the randomness in both <span class="math inline">\(u\)</span> and the new point <span class="math inline">\(\boldsymbol{x}, y\)</span> — but that it may have high variance. Letting <span class="math inline">\(\epsilon(u) = y- \hat{f}(\cdot; u)\)</span>, this just means that</p>
+<p>You might wonder why you’d add randomness, but that’s the fundamental idea of today’s lecture.</p>
+<p>In any case, let’s just suppose that, whatever is random in our estimation procedure can be captured in a random variable <span class="math inline">\(u\)</span>, writing <span class="math inline">\(\hat{f}_u(\cdot)\)</span>. That is, <span class="math inline">\(u\)</span> has a probability distribution <span class="math inline">\(p(u)\)</span>, and for each random draw of <span class="math inline">\(u\)</span> we get a single estimate <span class="math inline">\(\hat{f}_u(\cdot)\)</span>.</p>
+<p>Squared loss for random estimators has a convenient decomposition known as the <em>bias-variance tradeoff</em>. Recall that <span class="math inline">\(f^{\star}(x) = \mathbb{E}_{p(y\vert x)}\left[y\right]\)</span>, and note that, for any <span class="math inline">\(u\)</span>,</p>
 <p><span class="math display">\[
 \begin{aligned}
-\mathbb{E}_{u}\left[\mathscr{R}(\hat{f}(\cdot; \mathcal{D}, u))\right] ={}&amp;
-\mathbb{E}_{u}\left[\mathbb{E}_{\boldsymbol{x},y}\left[\epsilon(u)\right]\right] \\={}&amp;
-\mathbb{E}_{u}\left[
-  \mathbb{E}_{\boldsymbol{x},y}\left[\left(\epsilon(u)  - \mathbb{E}_{u}\left[\epsilon(u)\right] + \mathbb{E}_{u}\left[\epsilon(u)\right]\right)^2\right]
-\right] \\={}&amp;
-\mathbb{E}_{\boldsymbol{x},y}\left[
-  \mathbb{E}_{u}\left[\left(\epsilon(u)  - \mathbb{E}_{u}\left[\epsilon(u)\right]\right)^2\right] + \mathbb{E}_{u}\left[\epsilon(u)\right]^2
-\right] \\={}&amp;
-\mathbb{E}_{\boldsymbol{x},y}\left[
-  \underbrace{\textrm{Variance}(\epsilon(u))}_{\textrm{Large}} +
-  \underbrace{\textrm{Bias}(\epsilon(u))^2}_{\textrm{Hopefully small}}
-\right].
+\mathscr{R}(\hat{f}_u) ={}&amp;
+\mathbb{E}_{p(\boldsymbol{x},y)}\left[\left(\hat{f}_u(x) - y\right)^2\right]
+\\={}&amp;
+\mathbb{E}_{p(\boldsymbol{x},y)}\left[\left(\hat{f}_u(x) - f^{\star}(x) + f^{\star}(x) - y\right)^2\right]
+\\={}&amp;
+\mathbb{E}_{p(\boldsymbol{x},y)}\left[\left(\hat{f}_u(x) - f^{\star}(x)\right)^2\right] +
+\mathbb{E}_{p(\boldsymbol{x},y)}\left[\left(y- f^{\star}(x)\right)^2\right] +
+\\&amp;\quad
+2 \mathbb{E}_{p(\boldsymbol{x})}\left[
+  \left( \hat{f}_u(x) - f^{\star}(x) \right)
+  \underbrace{
+    \mathbb{E}_{p(y\vert x)}\left[
+      \left(y- f^{\star}(x) \right)
+    \right]
+    }_{\textrm{Zero}}
+  \right]
+\\={}&amp;
+\mathbb{E}_{p(\boldsymbol{x},y)}\left[\left(\hat{f}_u(x) - f^{\star}(x)\right)^2\right] +
+\underbrace{
+  \mathbb{E}_{p(\boldsymbol{x},y)}\left[\left(y- f^{\star}(x)\right)^2\right]
+}_{\textrm{Irreducible risk $\mathscr{R}(f^{\star})$}}
 \end{aligned}
 \]</span></p>
-<p>These might be called “weak learners,” in the sense that they are not very good in terms of squared error since their variance is high, but they have a special property of having low bias. What kinds of estimators look like this? This setup is motivated by the empirical fact that random regression trees tend to look somewhat like this, as we will see below.</p>
-<p>The nice thing about this setup is that by <em>averaging noisy estimators</em> we can reduce their variance while keeping their bias unchanged. Specfically, imagine taking the agverage estimator</p>
-<p><span class="math display">\[
-\hat{f}(\cdot; \boldsymbol{U}) = \frac{1}{B} \sum_{b=1}^B \hat{f}(\cdot; u_b)
-\textrm{ for IID }u_1,\ldots,u_B.
-\]</span></p>
-<p>Then</p>
+<p>Then, applying the same trick, for any <span class="math inline">\(x,y\)</span>, the first term decomposes as</p>
 <p><span class="math display">\[
 \begin{aligned}
-\epsilon(\boldsymbol{U}) ={}&amp; y- \hat{f}(\cdot; \boldsymbol{U}) = \frac{1}{B} \sum_{b=1}^B \epsilon(u_b) \Rightarrow\\
-\mathbb{E}_{\boldsymbol{U}}\left[\epsilon(\boldsymbol{U})\right] ={}&amp; \mathbb{E}_{u}\left[\epsilon(u)\right]
-\quad\textrm{ and }\\
-\mathrm{Var}_{\boldsymbol{U}}\left(\epsilon(\boldsymbol{U})\right) ={}&amp;
-\frac{1}{B} \left(\frac{1}{B} \sum_{b=1}^B \mathrm{Var}_{u}\left(\epsilon(u_b)\right) \right) +
-\frac{1}{B^2} \sum_{b \ne b'} \mathrm{Cov}_{u,u'}\left(\epsilon(u_b), \epsilon(u_{b'})\right).
+\mathbb{E}_{p(u)}\left[\left(\hat{f}_u(x) - f^{\star}(x)\right)^2\right] ={}&amp;
+\mathbb{E}_{p(u)}\left[\left(\hat{f}_u(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{} + \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{} - f^{\star}(x) \right)^2\right]
+\\={}&amp;
+\mathbb{E}_{p(u)}\left[\left(\hat{f}_u(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\right)^2\right] +
+\mathbb{E}_{p(u)}\left[\left(f^{\star}(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\right)^2\right] +
+\\&amp;\quad
+2 \left( y- \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{} \right)
+  \underbrace{
+    \mathbb{E}_{p(u)}\left[
+      \left(\hat{f}_u(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{} \right)
+    \right]
+  }_{\textrm{Zero}}
+\\={}&amp;
+  \underbrace{\mathbb{E}_{p(u)}\left[\left(\hat{f}_u(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\right)^2\right]}_{\textrm{Variance of $\hat{f}_u(x)$}} +
+  \underbrace{\mathbb{E}_{p(u)}\left[\left(f^{\star}(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\right)^2\right] }_{\textrm{Squared bias of $\hat{f}_u(x)$}}.
 \end{aligned}
 \]</span></p>
-<p>Note that the covariance term contributes to the squared loss in average over <span class="math inline">\(x\)</span>. So intuitively, two estimators are correlated if <span class="math inline">\(\mathrm{Cov}_{u,u'}\left(\epsilon(u_b), \epsilon(u_{b'})\right)\)</span> tends to take the same value for all <span class="math inline">\(x\)</span>. The deleterious effect of covariance can be reduced by having positive covariance in some area of the space but negative covariance in another — that is, erring relative to the mean in different ways for different <span class="math inline">\(x\)</span>.</p>
-<p>It follows that, as long as the random estimators are “not too correlated on average”, then by averaging them we keep their low bias the same, but reduce their variance. Of course, if there’s no randomness at all, you can see that the covarainces are all variances, and no reduction happens.</p>
+<p>Letting <span class="math display">\[
+\begin{aligned}
+V\left(x; \hat{f}_u\right) :={}&amp; \mathbb{E}_{p(u)}\left[\left(\hat{f}_u(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\right)^2\right] \\
+B\left(x; \hat{f}_u\right) :={}&amp; \mathbb{E}_{p(u)}\left[\left(f^{\star}(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\right)^2\right],
+\end{aligned}
+\]</span> we have shown that <span class="math display">\[
+\mathbb{E}_{p(u)}\left[\mathscr{R}(\hat{f}_u)\right] =
+\underbrace{\mathbb{E}_{p(x,y)}\left[V\left(x; \hat{f}_u\right)\right]}_{\textrm{"Variance"}} +
+\underbrace{\mathbb{E}_{p(x,y)}\left[B\left(x; \hat{f}_u\right)\right]}_{\textrm{"Bias"}} +
+\underbrace{\mathscr{R}(f^{\star})}_{\textrm{Irreducible risk}}.
+\]</span> Note that the variance term looks a lot like our “estimation error,” and the bias term looks a lot like our “approximation error.” There are a few key differences:</p>
+<ul>
+<li>This decomposition only holds for squared error (though there exist generalizations for some other losses)</li>
+<li>We have used <span class="math inline">\(\mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\)</span> instead of <span class="math inline">\(\overline{f}:= \underset{f\in \mathcal{F}}{\mathrm{argmin}}\, \mathscr{R}(f)\)</span></li>
+<li>We have explicitly taken an expectation over the randomness <span class="math inline">\(u\)</span> that is not in our original definition of risk.</li>
+</ul>
+<p>Nevertheless, there are some similarities, in that only the variance term depends on the actual data, and so is the sole consequence of “overfitting,” and one might expect that more expressive function classes have lower bias, in the sense that limitations of the function class don’t pull <span class="math inline">\(\mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\)</span> away from <span class="math inline">\(f^{\star}(x)\)</span> much on average.</p>
+<p>When it’s the data that is random, then <span class="math inline">\(f^{\star}(x) - \mathbb{E}_{p(u)}\left[\hat{f}_u(x)\right]{}\)</span> is precisely the ordinary notion of “bias,” and <span class="math inline">\(V\left((\right)x)\)</span> the ordinary notion of variance, both evaluated at a particular <span class="math inline">\(x\)</span>. This decomposition is often used to study linear regression. But it’s worth noting that, when <span class="math inline">\(x\)</span> is random and the linear model is misspecified, that <span class="math inline">\(\mathbb{E}_{p(x,y)}\left[\hat{\boldsymbol{\beta}}^\intercal\boldsymbol{x}\right]\)</span> is not even an unbiased estimate of <span class="math inline">\(\overline{f}(x)\)</span>, much less <span class="math inline">\(f^{\star}(x)\)</span>, and in fact its expectation is difficult to characterize explicitly. In this class, I emphasize the more general decomposition into estimation and approximation error because it applies much more generally, and is easier to characterize.</p>
+</section>
+<section id="ensembling-for-unbiased-but-highly-variable-estimators" class="level1">
+<h1>Ensembling for unbiased but highly variable estimators</h1>
+<p>Now, suppose we have an estimator <span class="math inline">\(\hat{f}_{u}\)</span> that is relatively unbiased but highly variable. Intuitivley such estimators are easy to construct — you just overfit a very expressive family. A key example in the present unit is trees.</p>
+<div class="callout callout-style-default callout-note callout-titled" title="Question">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Question
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you want to grow a tree with CART that has low bias and high variance, should you use a very deep tree or a shallow tree?</p>
+</div>
+</div>
+<p>Now suppose that we have a way to <em>generate</em> many draws from <span class="math inline">\(\hat{f}_{u}\)</span>, which we’ll call <span class="math inline">\(\hat{f}_{u_1}, \ldots, \hat{f}_{u_M}\)</span>, and consider an <em>ensemble estimator</em> that’s the average of the individual estimators:</p>
+<p><span class="math display">\[
+\hat{f}_{\overline{u}}(x) := \frac{1}{M} \sum_{m=1}^M \hat{f}_{u_m}(x)
+\]</span> Note that <span class="math display">\[
+\mathbb{E}_{p(u_1,\ldots,u_M)}\left[\hat{f}_{\overline{u}}(x)\right] =
+  \frac{1}{M} \sum_{m=1}^M \mathbb{E}_{p(u_m)}\left[\hat{f}_{u_m}(x)\right] =
+  \mathbb{E}_{p(u)}\left[\hat{f}_{u}(x)\right].
+\]</span> So the bias of the ensembled estimator doesn’t change. But <span class="math display">\[
+\begin{aligned}
+\mathrm{Var}_{p(u_1,\ldots,u_M)}\left(
+  \hat{f}_{\overline{u}}(x)
+\right) ={}&amp;
+\frac{1}{M^2} \sum_{m=1}^M \mathrm{Var}_{p(u_m)}\left(\hat{f}_{u_m}(x)\right) +
+\frac{1}{M(M-1)} \sum_{m=1}^M \sum_{m' \ne m} \mathrm{Cov}_{p(u_m)p(u_{m'})}\left(\hat{f}_{u_m}(x), \hat{f}_{u_{m'}}(x)\right)
+\\={}&amp;
+\frac{1}{M} \mathrm{Var}_{p(u)}\left(\hat{f}_{u}(x)\right) +
+\frac{1}{M(M-1)} \sum_{m=1}^M \sum_{m' \ne m} \mathrm{Cov}_{p(u_m)p(u_{m'})}\left(\hat{f}_{u_m}(x), \hat{f}_{u_{m'}}(x)\right).
+\end{aligned}
+\]</span> If the estimates <span class="math inline">\(\hat{f}_{u_m}(x)\)</span> and <span class="math inline">\(\hat{f}_{u_{m'}}(x)\)</span> are not too correlated on average over <span class="math inline">\(x\)</span>, we can thus <em>reduce</em> the variance, but leave the bias unchanged, by ensembling.</p>
+<p>Note that, when <span class="math inline">\(u\)</span> is the original data, it would be great to do ensembling, but that would amount to getting <span class="math inline">\(M\)</span> new datasets. Of course that’s not typically possible! The question is, then, how can we generate a large number of variable but approximately unbiased and uncorrelated estimators?</p>
 <section id="bagging" class="level2">
 <h2 class="anchored" data-anchor-id="bagging">Bagging</h2>
-<p>A classic way to generate randomized estimators is to use bootstrap samples. Let <span class="math inline">\(\mathcal{D}_b^*\)</span> denote a <em>bootstrap</em> sample from the original dataset, where the bootstrap distribution is a random distribution <em>conditional on the original dataset <span class="math inline">\(\mathcal{D}\)</span></em>, with probability distribution</p>
-<p><span class="math display">\[
+<p>A classic way to generate randomized estimators is to use bootstrap samples. Let <span class="math inline">\(\mathcal{D}_b^*\)</span> denote a <em>bootstrap</em> sample from the original dataset, where the bootstrap distribution is a random distribution <em>conditional on the original dataset <span class="math inline">\(\mathcal{D}\)</span></em>, with probability distribution <span class="math display">\[
 \mathbb{P}_{\,}\left((\boldsymbol{x}^*_n, y^*_n) = (\boldsymbol{x}_n, y_n)\right) = \frac{1}{N}
 \quad\textrm{ independently for }\quad n=1,\ldots,N.
-\]</span></p>
-<p>Letting <span class="math inline">\(u_b\)</span> denote the random selection with replacement of bootstrap samples, we can with no ambiguity write <span class="math inline">\(\hat{f}(\cdot, u_b) = \hat{f}(\cdot; \mathcal{D}_b^*)\)</span>, and let</p>
-<p><span class="math display">\[
-\hat{f}_{Bagging}(\boldsymbol{x}) = \frac{1}{B} \sum_{b=1}^B \hat{f}(\boldsymbol{x}; \mathcal{D}_b^*),
-\]</span></p>
+\]</span> Let our estimator formed from <span class="math inline">\(\mathcal{D}\)</span> be written <span class="math inline">\(\hat{f}_{\mathcal{D}}\)</span>. Then <span class="math display">\[
+\hat{f}_{\textrm{bagging}}(x) :=
+\frac{1}{B} \sum_{b=1}^B \hat{f}_{\mathcal{D}^*_b}(x)
+\]</span> is called the “bagging” estimator for “bootstrap aggregation.”</p>
 <section id="linear-estimators-are-unaffected-by-bagging" class="level3">
 <h3 class="anchored" data-anchor-id="linear-estimators-are-unaffected-by-bagging">Linear estimators are unaffected by bagging</h3>
 <p>To concretize the fact that boosting does not necessarily produce an improvement, we can consider the sample mean <span class="math inline">\(\hat{\mu}= \frac{1}{N} \sum_{n=1}^Ny_n\)</span> as an estimator of <span class="math inline">\(\mathbb{E}_{\vphantom{}}\left[y\right]\)</span>. For a particular bootstrap sample,</p>
@@ -367,7 +440,11 @@ window.Quarto = {
 </section>
 <section id="random-forests" class="level2">
 <h2 class="anchored" data-anchor-id="random-forests">Random forests</h2>
-<p>Note that the goal of our randomized procedure is to generate a diversity of samples. Suppose there’s one very powerful predictor that gets selected as the root of every classification tree, irrespective of what bootstrap sample you get. Then <span class="math inline">\(\hat{f}(\cdot; \mathcal{D}_b^*)\)</span> ends up looking very similar to <span class="math inline">\(\hat{f}(\cdot; \mathcal{D})\)</span>. The bootstrap just doesn’t introduce enough variability.</p>
+<!--
+The figures here are generated in the notebook
+_code/lecture_examples/random_forests.ipynb
+ -->
+<p>Note that the goal of our randomized procedure is to generate a diversity of samples. Suppose there’s one very powerful predictor that gets selected as the root of every classification tree, irrespective of what bootstrap sample you get. Then <span class="math inline">\(\hat{f}_{\mathcal{D}_b^*}\)</span> ends up looking very similar to <span class="math inline">\(\hat{f}_{\mathcal{D}}\)</span>. The bootstrap just doesn’t introduce enough variability.</p>
 <p>Random forests add more variability by additionally restricting each tree to use some random subset of the features. The subset size can be fixed or allowed to grow as <span class="math inline">\(N\)</span> grows, typically at rate <span class="math inline">\(\sqrt{N}\)</span>. But in practice, this additional variability does not increase the bias too much, and allows a meaningful decrease in the variance.</p>
 <p>Here’s a very simple example on simulated data.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
@@ -383,14 +460,7 @@ window.Quarto = {
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>clf_deep <span class="op">=</span> RandomForestRegressor(</span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    n_estimators<span class="op">=</span><span class="dv">100</span>, max_depth<span class="op">=</span><span class="dv">6</span>, random_state<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>clf_deep.fit(X_train, y_train)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>As you can see, the learner learns a variety of depth–6 trees.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../../assets/unit4_rfs/tree_diversity.png" class="img-fluid figure-img"></p>
-<figcaption>The first three trees</figcaption>
-</figure>
-</div>
-<p>We can show the histogram of <span class="math inline">\(\mathbb{E}_{u}\left[\epsilon(u)\right] / \sqrt{\mathrm{Var}_{y}\left(y\right)}\)</span>. This is not great, but it’s not made any worse by averaging.</p>
+<p>We can show the histogram of <span class="math inline">\(\mathbb{E}_{p(u)}\left[\epsilon(u)\right] / \sqrt{\mathrm{Var}_{y}\left(y\right)}\)</span>. This is not great, but it’s not made any worse by averaging.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../../assets/unit4_rfs/mean_err.png" class="img-fluid figure-img"></p>
@@ -409,11 +479,11 @@ window.Quarto = {
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>tree_deep_res <span class="op">=</span> np.array(</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  [ y_test <span class="op">-</span> tree.predict(X_test) <span class="cf">for</span> tree <span class="kw">in</span> clf_deep.estimators_ ])</span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.mean(res_deep<span class="op">**</span><span class="dv">2</span>))</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(np.mean(tree_deep_res<span class="op">**</span><span class="dv">2</span>))</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Random forest:</span><span class="ch">\t\t</span><span class="st">'</span>, np.mean(res_deep<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> y_var)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Individual trees:</span><span class="ch">\t\t</span><span class="st">'</span>, np.mean(tree_deep_res<span class="op">**</span><span class="dv">2</span>) <span class="op">/</span> y_var)</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> <span class="fl">7205.225833530296</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> <span class="fl">11706.362428723869</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Deep random forest:      <span class="fl">0.16844600984415964</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Deep individual trees: <span class="fl">0.4552300298897962</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 
 
 
