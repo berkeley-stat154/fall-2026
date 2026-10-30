@@ -288,7 +288,7 @@ window.Quarto = {
 </section>
 <section id="when-to-stop" class="level2">
 <h2 class="anchored" data-anchor-id="when-to-stop">When to stop?</h2>
-<p>Note that you can get exponentially many regions in the number of splits, and that (by default) all the splits are generated — with <span class="math inline">\(8\)</span> splits there are <span class="math inline">\(2^8\)</span> terminal or “leaf” nodes. As the number of splits increases, the expressivity of the tree function increases.</p>
+<p>Note that you can get exponentially many regions in the number of splits, and that (by default) all the splits are generated — with a depth <span class="math inline">\(8\)</span> tree there are <span class="math inline">\(2^8\)</span> terminal or “leaf” nodes. As the number of splits increases, the expressivity of the tree function increases.</p>
 <p>The rules for when to stop splitting are flexible. A common choice is to stop splitting when a leaf node falls beneath some number of observations. Another reasonable choice is to stop splitting when the split is not able to achieve a particular increase in the loss function (or, equivalently, a sufficient decrease in “node impurity” as defined below).</p>
 </section>
 <section id="tree-trimming" class="level2">

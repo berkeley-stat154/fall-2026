@@ -231,10 +231,10 @@ f^{\star}:= \underset{f}{\mathrm{argmin}}\, \mathscr{R}(f).
 \textrm{Regret}(\hat{f}) =
 \mathscr{R}(\hat{f}) - \mathscr{R}(f^{\star}) =
 \underbrace{\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})}_{\textrm{Estimation error}} +
-\underbrace{\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star})}_{\textrm{Representation error}}.
+\underbrace{\mathscr{R}(\overline{f}) - \mathscr{R}(f^{\star})}_{\textrm{Approximation error}}.
 \]</span></p>
-<p>Intuitively, as our model class <span class="math inline">\(\mathcal{F}\)</span> gets more complex (e.g. as we reduce the regularization penalty, or add more basis functions to the regression space), we make the representation error lower, but may increase the estimation error.</p>
-<p>In an oversimplification, estimation error loosely corresponds to “variance” and representation error to “bias” in correctly specified linear regeression, though this analogy is misleading, since estimation error can be cause both by statistical bias and variance.</p>
+<p>Intuitively, as our model class <span class="math inline">\(\mathcal{F}\)</span> gets more complex (e.g. as we reduce the regularization penalty, or add more basis functions to the regression space), we make the approximation error lower, but may increase the estimation error.</p>
+<p>In an oversimplification, estimation error loosely corresponds to “variance” and approximation error to “bias” in correctly specified linear regression, though this analogy is misleading, since estimation error can be cause both by statistical bias and variance.</p>
 <p>However, it is clear that, if there is a cost to expressive <span class="math inline">\(\mathcal{F}\)</span>, it <strong>must</strong> come from estimation error, and if it were not necessary to fit <span class="math inline">\(f\)</span> from the data, we would simply make <span class="math inline">\(\mathcal{F}\)</span> as expressive as possible. Therefore, for this unit, we will focus on understanding the relationship between <span class="math inline">\(\mathscr{R}(\hat{f}) - \mathscr{R}(\overline{f})\)</span> and complexity of <span class="math inline">\(\mathcal{F}\)</span>.</p>
 </section>
 <section id="regret-decomposition-for-linear-regression-and-least-squares-loss" class="level1">

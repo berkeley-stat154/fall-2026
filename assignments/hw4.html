@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Homework 4</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-a757496ae6d91ceb7b1b004ab42c8302.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../assets/stat_bear.png" alt="" class="navbar-logo light-content">
+    <img src="../assets/stat_bear.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">Fall 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../schedule.html"> 
+<span class="menu-text">Course Schedule</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#draw-your-own-partitions-based-on-isl2021gareth-8.4.1" id="toc-draw-your-own-partitions-based-on-isl2021gareth-8.4.1" class="nav-link active" data-scroll-target="#draw-your-own-partitions-based-on-isl2021gareth-8.4.1"><span class="header-section-number">1</span> Draw your own partitions (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (2021)</span> 8.4.1)</a></li>
+  <li><a href="#aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" id="toc-aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" class="nav-link" data-scroll-target="#aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5"><span class="header-section-number">2</span> Aggregating bagged classifiers (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (2021)</span> 8.4.5)</a></li>
+  <li><a href="#trees-as-regression-on-partition-indicators" id="toc-trees-as-regression-on-partition-indicators" class="nav-link" data-scroll-target="#trees-as-regression-on-partition-indicators"><span class="header-section-number">3</span> Trees as regression on partition indicators</a></li>
+  <li><a href="#interpretability-of-regression-trees" id="toc-interpretability-of-regression-trees" class="nav-link" data-scroll-target="#interpretability-of-regression-trees"><span class="header-section-number">4</span> Interpretability of regression trees</a></li>
+  <li><a href="#monotonic-transformations-based-on-a-problem-from-erez-buchweitz" id="toc-monotonic-transformations-based-on-a-problem-from-erez-buchweitz" class="nav-link" data-scroll-target="#monotonic-transformations-based-on-a-problem-from-erez-buchweitz"><span class="header-section-number">5</span> Monotonic transformations (based on a problem from Erez Buchweitz)</a></li>
+  <li><a href="#the-accuracy-of-bagging-based-on-buhlmann2002analyzingbagging-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-the-accuracy-of-bagging-based-on-buhlmann2002analyzingbagging-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#the-accuracy-of-bagging-based-on-buhlmann2002analyzingbagging-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">6</span> The accuracy of bagging (based on <span class="citation" data-cites="buhlmann:2002:analyzingbagging">Bühlmann and Yu (2002)</span>) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
+  <li><a href="#trees-as-approximations-to-linear-functions-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" id="toc-trees-as-approximations-to-linear-functions-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="nav-link" data-scroll-target="#trees-as-approximations-to-linear-functions-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d"><span class="header-section-number">7</span> Trees as approximations to linear functions (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</a></li>
+  <li><a href="#bibliography" id="toc-bibliography" class="nav-link" data-scroll-target="#bibliography"><span class="header-section-number">8</span> Bibliography</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Homework 4</h1>
+<p class="subtitle lead">Stat 154/254: Statistical Machine Learning</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="draw-your-own-partitions-based-on-isl2021gareth-8.4.1" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Draw your own partitions (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.4.1)</h1>
+<section id="a" class="level4">
+<h4 class="anchored" data-anchor-id="a">(a)</h4>
+<p>Draw an example of your own invention of a partition of a two–dimensional feature space that could result from a recurive binary splitting. Your example should contain at least six regions. Draw a decision tree corresponding to this partition. Be sure to label all aspects of your figures, including the regions, the cutpoints, and which region corresponds to which leaf of the tree.</p>
+</section>
+<section id="b" class="level4">
+<h4 class="anchored" data-anchor-id="b">(b)</h4>
+<p>Draw an example of your own invention of a partition of a two–dimensional feature space that could <em>not</em> result from a recurive binary splitting.</p>
+<!------------------------------------------------>
+<!------------------------------------------------>
+<!------------------------------------------------>
+</section>
+</section>
+<section id="aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Aggregating bagged classifiers (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.4.5)</h1>
+<p>Suppose we fit classification trees to each of ten bootstrapped datasets containing regressors <span class="math inline">\(\boldsymbol{x}\)</span> and red and green classes. For a particular observation <span class="math inline">\(\boldsymbol{x}_n\)</span>, each tree gives an estimate of <span class="math inline">\(p(\textrm{Red} \vert \boldsymbol{x}_n)\)</span>, which are:</p>
+<p>0.1, 0.15, 0.2, 0.2, 0.55, 0.6, 0.6, 0.65, 0.7, and 0.75.</p>
+<p>There are two way to combine these scores to make a single score:</p>
+<ul>
+<li>The majority vote</li>
+<li>Averaging the probabilities, and predicting red if and only if the average probability of red is <span class="math inline">\(&gt;0.5\)</span>.</li>
+</ul>
+<p>In this example, what is the final classification under these two approaches? Explain any discrepancy in intuitive terms; a single sentence is enough.</p>
+<!------------------------------------------------>
+<!------------------------------------------------>
+<!------------------------------------------------>
+</section>
+<section id="trees-as-regression-on-partition-indicators" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Trees as regression on partition indicators</h1>
+<p>Suppose <span class="math inline">\(\{A_1, \ldots, A_K\}\)</span> is a partition of <span class="math inline">\(\mathbb{R}^{P}\)</span>, meaning <span class="math inline">\(A_k \bigcap A_j = \emptyset\)</span> for <span class="math inline">\(k \ne j\)</span>. Let <span class="math inline">\(\boldsymbol{x}_n \in \mathbb{R}^{P}\)</span>, and let <span class="math inline">\(\boldsymbol{z}_{nk} = \mathrm{I}\left(\boldsymbol{x}_n \in A_k\right)\)</span> denote the indicators of the sets <span class="math inline">\(A_k\)</span>, and <span class="math inline">\(\boldsymbol{z}_n = (\boldsymbol{z}_{n1}, \ldots, \boldsymbol{z}_{nK})^\intercal\)</span>. Finally, let <span class="math inline">\(\boldsymbol{Z}\)</span> denote the <span class="math inline">\(N \times K\)</span> matrix with <span class="math inline">\(\boldsymbol{z}_n^\intercal\)</span> in row <span class="math inline">\(n\)</span>, and let <span class="math inline">\(\boldsymbol{Y}= (y_1, \ldots, y_N)\)</span> denote a vector of real–valued responses.</p>
+<p>Let <span class="math inline">\(N_k\)</span> denote the number of <span class="math inline">\(\boldsymbol{x}_n\)</span> in partition <span class="math inline">\(A_k\)</span>, and let <span class="math inline">\(\bar{y}_k\)</span> denote the average of the responses <span class="math inline">\(y_n\)</span> in <span class="math inline">\(A_k\)</span>: <span class="math inline">\(\bar{y}_k = \frac{1}{N_k} \sum_{n:\boldsymbol{x}_n \in A_k} y_n\)</span>.</p>
+<section id="a-1" class="level4">
+<h4 class="anchored" data-anchor-id="a-1">(a)</h4>
+<p>Show that <span class="math inline">\(\boldsymbol{Z}^\intercal\boldsymbol{Z}\)</span> is diagonal, with <span class="math inline">\(k\)</span>–th diagonal entry equal to <span class="math inline">\(N_k\)</span>.</p>
+</section>
+<section id="b-1" class="level4">
+<h4 class="anchored" data-anchor-id="b-1">(b)</h4>
+<p>Let <span class="math inline">\(\hat{\boldsymbol{\beta}}\in \mathbb{R}^{K}\)</span> denote the OLS coefficient from regressing <span class="math inline">\(\boldsymbol{Y}\sim \boldsymbol{Z}\boldsymbol{\beta}\)</span>. Show that <span class="math inline">\(\hat{\boldsymbol{\beta}}= (\bar{y}_1, \ldots, \bar{y}_K)^\intercal\)</span>.</p>
+</section>
+<section id="c" class="level4">
+<h4 class="anchored" data-anchor-id="c">(c)</h4>
+<p>Consider a regression tree topology <span class="math inline">\(T\)</span> with leaves <span class="math inline">\(t\)</span>; write <span class="math inline">\(t\in T\)</span> for the set of leaves, and write <span class="math inline">\(n \in t\)</span> for the set of observations <span class="math inline">\(\boldsymbol{x}_n\)</span> that end up in leaf <span class="math inline">\(t\)</span>. Given the tree <span class="math inline">\(T\)</span>, suppose we predict a constant <span class="math inline">\(c_t\)</span> for observations <span class="math inline">\(\boldsymbol{x}\)</span> that end up in leaf <span class="math inline">\(t\)</span>. Consider the problem of finding the optimal leaf predictions,</p>
+<p><span class="math display">\[
+(\hat{c}_1, \ldots, \hat{c}_{|T|}) =
+\underset{c_t \textrm{ for } t\in T}{\mathrm{argmin}}\,
+    \sum_{t\in T} \sum_{n \in t} \left(y_n - c_t\right)^2.
+\]</span></p>
+<p>Show directly that the optima are <span class="math inline">\(\hat{c}_k = \bar{y}_k\)</span>.</p>
+</section>
+<section id="d" class="level4">
+<h4 class="anchored" data-anchor-id="d">(d)</h4>
+<p>Show that your result in (c) also follows from (a) and (b). That is, show that the problem of finding the optimal predictions at the leaves of a regression tree is the same as the regression problem in part (b).</p>
+</section>
+<section id="e" class="level4">
+<h4 class="anchored" data-anchor-id="e">(e)</h4>
+<p>Consider the setting of (c), but for logistic loss. Suppose now that <span class="math inline">\(y_n \in \{0, 1\}\)</span>, and consider</p>
+<p><span class="math display">\[
+(\hat{c}_1, \ldots, \hat{c}_{|T|}) =
+\underset{c_t \textrm{ for } t\in T}{\mathrm{argmin}}\,
+    \sum_{t\in T} \sum_{n \in t}
+    \left(- y_n \log c_t- (1 - y_n) \log(1 - c_t) \right).
+\]</span></p>
+<p>Show directly that the optima are <span class="math inline">\(\hat{c}_k = \hat{\pi}_k\)</span>, where now <span class="math inline">\(\hat{\pi}_k\)</span> is the proportion of observations with <span class="math inline">\(y_n = 1\)</span> in the leaf.</p>
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+</section>
+<section id="interpretability-of-regression-trees" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> Interpretability of regression trees</h1>
+<p>A commonly claimed advantage of regression trees is their interpretability. That means it can be relatively easy to inspect why a regression tree made the prediction it did. But that does not mean that you can safely use trees to do variable selection for causal inference.</p>
+<p>Suppose that you have data that’s generated according to the following process:</p>
+<p><span class="math display">\[
+\begin{aligned}
+z\sim{}&amp; \mathcal{N}\left(0, 10\right)\\
+x_1 \vert z\sim{}&amp; \mathcal{N}\left(z, 0.1\right)\\
+x_2 \vert z\sim{}&amp; \mathcal{N}\left(z, 0.1\right)\\
+y\vert z={}&amp; \mathrm{I}\left(z&gt; 0\right)\\
+\end{aligned}
+\]</span></p>
+<p>Suppose we don’t observe <span class="math inline">\(z\)</span>, but only observe a random set of <span class="math inline">\(N\)</span> draws <span class="math inline">\((x_{n1}, x_{n2}, y_n)\)</span> from this process.</p>
+<section id="a-3" class="level4">
+<h4 class="anchored" data-anchor-id="a-3">(a)</h4>
+<p>Suppose we train a regression tree on this data using <span class="math inline">\(x_{n1}\)</span> and <span class="math inline">\(x_{n2}\)</span> as predictors. What is the probability that the variable <span class="math inline">\(x_1\)</span> will be selected for the first split? (<strong>Hint</strong>: you can argue by symmetry without doing any calculations.)</p>
+</section>
+<section id="b-3" class="level4">
+<h4 class="anchored" data-anchor-id="b-3">(b)</h4>
+<p>Suppose you make the first split on <span class="math inline">\(x_{n1}\)</span>. Do you expect subsequent splits on <span class="math inline">\(x_{n2}\)</span> to make large improvements in the fit? (You may argue intuitively, there is no need to do calculations.)</p>
+</section>
+<section id="c-2" class="level4">
+<h4 class="anchored" data-anchor-id="c-2">(c)</h4>
+<p>Suppose you have trained a tree in which <span class="math inline">\(x_{n1}\)</span> is the most important variable, as measured by the average increase in fit within nodes that split on <span class="math inline">\(x_1\)</span>. Does this mean that <span class="math inline">\(x_{n2}\)</span>, taken alone, is a poor predictor of <span class="math inline">\(y\)</span>? Does this mean that <span class="math inline">\(x_{n1}\)</span> is causally related to <span class="math inline">\(y\)</span>?</p>
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+</section>
+<section id="monotonic-transformations-based-on-a-problem-from-erez-buchweitz" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Monotonic transformations (based on a problem from Erez Buchweitz)</h1>
+<p>Suppose we are finding the optimal split point for a node <span class="math inline">\(t\)</span> using variable <span class="math inline">\(r_n\)</span>. For a split point <span class="math inline">\(\rho\)</span>, define</p>
+<p><span class="math display">\[
+\begin{aligned}
+\bar{y}_\rho^{-} :={}&amp;
+    \frac{\sum_{n \in t} \mathrm{I}\left(r_n &lt; \rho\right) y_n}{\sum_{n \in t} \mathrm{I}\left(r_n &lt; \rho\right)}
+    \\
+\bar{y}_\rho^{+} :={}&amp;
+    \frac{\sum_{n \in t} \mathrm{I}\left(r_n &gt; \rho\right) y_n}{\sum_{n \in t} \mathrm{I}\left(r_n &gt; \rho\right)} \\
+R(\rho) ={}&amp; \sum_{n \in t} \left(
+    (y_n - \bar{y}_\rho^{-})^2 \mathrm{I}\left(r_n &lt; \rho\right) +
+    (y_n - \bar{y}_\rho^{+})^2 \mathrm{I}\left(r_n &gt; \rho\right)
+\right).
+\end{aligned}
+\]</span></p>
+<p>Typically there are a set of <span class="math inline">\(\rho\)</span> that all produce the same value of <span class="math inline">\(R(\rho)\)</span> lying between two datapoints <span class="math inline">\(r_{-}\)</span> and <span class="math inline">\(r_{+}\)</span>. Suppose that, when this happens, we always take our split point to be the average, <span class="math inline">\(\hat\rho = \frac{1}{2}(r_{+} + r_{-})\)</span></p>
+<p>Consider applying CART with the above splitting procedure to regression observations of <span class="math inline">\((\boldsymbol{x}_n, y_n)\)</span>, and on <span class="math inline">\((\boldsymbol{z}_n, y_n)\)</span>, where each component of <span class="math inline">\(\boldsymbol{z}_n\)</span> is a monotonic transformation of the corresponding component of <span class="math inline">\(\boldsymbol{x}_n\)</span>. That is, <span class="math inline">\(\boldsymbol{z}_{np} = \phi_p(\boldsymbol{x}_{np})\)</span>, for each <span class="math inline">\(p\)</span>, where <span class="math inline">\(\phi_p\)</span> is either strictly increasing or strictly decreasing.</p>
+<section id="a-5" class="level4">
+<h4 class="anchored" data-anchor-id="a-5">(a)</h4>
+<p>In general, will the training error be different for the two datasets? Why or why not?</p>
+</section>
+<section id="b-5" class="level4">
+<h4 class="anchored" data-anchor-id="b-5">(b)</h4>
+<p>In general, will the test error be different for the two datasets? Why or why not?</p>
+</section>
+<section id="c-4" class="level4">
+<h4 class="anchored" data-anchor-id="c-4">(c)</h4>
+<p>Construct a simple one–dimensional example in which one transformation gives a good test set error and the other does not.</p>
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+</section>
+<section id="the-accuracy-of-bagging-based-on-buhlmann2002analyzingbagging-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> The accuracy of bagging (based on <span class="citation" data-cites="buhlmann:2002:analyzingbagging">Bühlmann and Yu (<a href="#ref-buhlmann:2002:analyzingbagging" role="doc-biblioref">2002</a>)</span>) (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
+<p>In this problem we explore some simple settings in which bagging does and does not work.</p>
+<section id="a-7" class="level4">
+<h4 class="anchored" data-anchor-id="a-7">(a)</h4>
+<p>Suppose we observe <span class="math inline">\(\boldsymbol{Y}= (y_1,\ldots,y_N)^\intercal\)</span>, which we use to fit the constant model, <span class="math inline">\(f= \beta_0\)</span>. We use least squares regression, so <span class="math inline">\(\hat{\beta}_0 = \frac{1}{N} \sum_{n=1}^Ny_n\)</span>, and so <span class="math inline">\(\hat{f}= \frac{1}{N} \sum_{n=1}^Ny_n\)</span>.</p>
+<p>Let <span class="math inline">\(\boldsymbol{Y}^* = (y_1^*, \ldots, y_N^*)^\intercal\)</span> denote a bootstrap sample from <span class="math inline">\(\boldsymbol{Y}\)</span>, and write the ideal bagging estimator as</p>
+<p><span class="math display">\[
+\hat{f}^* = \mathbb{E}_{\boldsymbol{Y}^*}\left[\frac{1}{N} \sum_{n=1}^Ny_n^*\right].
+\]</span></p>
+<p>Show that <span class="math inline">\(\hat{f}^* = \hat{f}\)</span>. That is, bagging does not improve the estimator in this case. In fact, it makes it worse if <span class="math inline">\(\hat{f}^*\)</span> is estimated using a finite number of bootstrap samples, since it <em>increases</em> the variance due to the bootstrap Monte Carlo sampling.</p>
+</section>
+<section id="b-7" class="level4">
+<h4 class="anchored" data-anchor-id="b-7">(b)</h4>
+<p>Next, suppose that we observe pairs <span class="math inline">\((x_n, y_n)\)</span>, where <span class="math inline">\(x_n \sim \mathcal{N}\left(\mu, 1\right)\)</span> and <span class="math inline">\(y_n \in \{0,1\}\)</span>. Writing <span class="math inline">\(\boldsymbol{X}\)</span> for the vectors of observations, suppose that we wish to predict <span class="math inline">\(y_n\)</span> from <span class="math inline">\(x_n\)</span> using the following classifier:</p>
+<p><span class="math display">\[
+\hat{f}(x; \boldsymbol{X}) = \mathrm{I}\left(x\ge \frac{1}{N} \sum_{n=1}^Nx_n\right).
+\]</span></p>
+<p>Let <span class="math inline">\(\Phi(\cdot)\)</span> denote the CDF of the standard normal distribution. Show that, for a fixed <span class="math inline">\(x\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{\boldsymbol{X}}\left[\hat{f}(x; \boldsymbol{X})\right] ={}&amp; \Phi(\sqrt{N}(x- \mu)) \\
+\mathrm{Var}_{\boldsymbol{X}}\left(\hat{f}(x; \boldsymbol{X})\right) ={}&amp; \Phi(\sqrt{N}(x- \mu))(1 - \Phi(\sqrt{N}(x- \mu))).
+\end{aligned}
+\]</span></p>
+</section>
+<section id="c-6" class="level4">
+<h4 class="anchored" data-anchor-id="c-6">(c)</h4>
+<p>In the setting of (b), let <span class="math inline">\(\boldsymbol{X}^*\)</span> denote a bootstrap sample from <span class="math inline">\(\boldsymbol{X}\)</span>.<br>
+Let <span class="math inline">\(\bar{x}= \frac{1}{N} \sum_{n=1}^Nx_n\)</span>. Using this, show that the bagged estimator for a fixed <span class="math inline">\(x\)</span> and large <span class="math inline">\(N\)</span> is</p>
+<p><span class="math display">\[
+\begin{aligned}
+\hat{f}^*(x; \boldsymbol{X}) \approx{}&amp; \Phi(\sqrt{N}(x- \bar{x})).
+\end{aligned}
+\]</span></p>
+<p>Note that the bagged estimator replaced a sharp threshold <span class="math inline">\(\hat{f}(x; \boldsymbol{X}) = \mathrm{I}\left(x\ge \bar{x}\right)\)</span> with a soft threshold <span class="math inline">\(\hat{f}^*(x; \boldsymbol{X}) \approx \Phi(\sqrt{N}(x- \bar{x}))\)</span>.</p>
+<p><strong>Hint:</strong> Under the bootstrap distribution, you may use without proof the fact that, for large <span class="math inline">\(N\)</span>, <span class="math inline">\(\sqrt{N}(\frac{1}{N} \sum_{n=1}^Nx_n^* - \bar{x}) \approx \mathcal{N}\left(0,1\right)\)</span> under the bootstrap randomness. (Note that in the bootstrap sampling distribution, <span class="math inline">\(\bar{x}\)</span> is fixed.)</p>
+</section>
+<section id="d-2" class="level4">
+<h4 class="anchored" data-anchor-id="d-2">(d)</h4>
+<p>Evaluating the result for (b) and (c) at <span class="math inline">\(x= \mu\)</span>, show that, for large <span class="math inline">\(N\)</span>,</p>
+<p><span class="math display">\[
+\begin{aligned}
+\mathbb{E}_{\boldsymbol{X}}\left[\hat{f}^*(x; \boldsymbol{X})\right] \approx{}&amp; \frac{1}{2} &amp;
+\mathbb{E}_{\boldsymbol{X}}\left[\hat{f}(x; \boldsymbol{X})\right] ={}&amp; \frac{1}{2} \\
+\mathrm{Var}_{\boldsymbol{X}}\left(\hat{f}^*(x; \boldsymbol{X})\right) \approx{}&amp; \frac{1}{12} &amp;
+\mathrm{Var}_{\boldsymbol{X}}\left(\hat{f}(x; \boldsymbol{X})\right) ={}&amp; \frac{1}{4}.
+\end{aligned}
+\]</span></p>
+<p>Conclude that, for <span class="math inline">\(x= \mu\)</span>, the bagged estimator maintains the same expected prediction function, but reduces the variance by a factor of <span class="math inline">\(3\)</span>.</p>
+<p><strong>Hint:</strong> use the fact that <span class="math inline">\(\sqrt{N}(\mu - \bar{x})\)</span> is a standard normal, and that <span class="math inline">\(\Phi(Z)\)</span> is uniform if <span class="math inline">\(Z\sim\mathcal{N}\left(0,1\right)\)</span>.</p>
+<!----------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+</section>
+<section id="trees-as-approximations-to-linear-functions-b58fc729-690b-4000-b19f-365a4093b2ff7b7b3c20766172206d7370726f626c656d203e7d7d" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Trees as approximations to linear functions (254 only <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span> <span class="math inline">\(\star\)</span>)</h1>
+<p>Suppose you are trying to use a regression tree to represent the function <span class="math inline">\(y= \mathbb{E}_{\vphantom{}}\left[y\vert x\right] := f(x) = x\)</span> for <span class="math inline">\(x\in \mathbb{R}^{}\)</span>. That is, <span class="math inline">\(y\)</span> is observed without noise and the regression function is linear, but we’re approximating the linear function with a decision tree. Assume that <span class="math inline">\(x\)</span> is uniformly distributed on <span class="math inline">\([0,1]\)</span>.</p>
+<section id="a-9" class="level4">
+<h4 class="anchored" data-anchor-id="a-9">(a)</h4>
+<p>Consider a connected set <span class="math inline">\(A\)</span> with endpoints <span class="math inline">\(A_{L}\)</span> and <span class="math inline">\(A_{R}\)</span> (i.e.&nbsp;<span class="math inline">\(A = \{ x: A_{L} \le \boldsymbol{X}&lt; A_{R} \}\)</span>), and let <span class="math inline">\(\Delta = A_{R} - A_{L}\)</span> denote the width of <span class="math inline">\(A\)</span>.</p>
+<p>Suppose we predict <span class="math inline">\(y^{*}_A\)</span> for <span class="math inline">\(x\in A\)</span>, where <span class="math inline">\(y^{*}_A = \underset{c}{\mathrm{argmin}}\, \int_{A} (f(x) - c)^2 dx\)</span> is the ideal least squares estimator in the set <span class="math inline">\(A\)</span>. Show that <span class="math inline">\(y^{*}_A = \frac{1}{2} (A_{L} + A_{R})\)</span>, and that the integrated error is</p>
+<p><span class="math display">\[
+\int_{A} (f(x) - y^{*}_A)^2 dx = \frac{\Delta^3}{12}.
+\]</span></p>
+</section>
+<section id="b-9" class="level4">
+<h4 class="anchored" data-anchor-id="b-9">(b)</h4>
+<p>Suppose we partition the unit interval into <span class="math inline">\(K\)</span> equally spaced intervals, each with width <span class="math inline">\(1/K\)</span>, with indicator functions <span class="math inline">\(A_k\)</span>. Suppose we find the optimal least–squares prediction <span class="math inline">\(y^{*}(x)\)</span> for the regression of <span class="math inline">\(y\)</span> on these indicators. Using (a), find an expression for the expected squared error <span class="math inline">\(\mathbb{E}_{x,y}\left[(y- y^{*}(x))^2\right]\)</span> as a function of <span class="math inline">\(K\)</span>.</p>
+</section>
+<section id="c-8" class="level4">
+<h4 class="anchored" data-anchor-id="c-8">(c)</h4>
+<p>In the setting of (b), for a fixed <span class="math inline">\(\varepsilon &gt; 0\)</span>, how large do we need to make <span class="math inline">\(K\)</span> in order to acheive <span class="math inline">\(\mathbb{E}_{x,y}\left[(y- y^{*}(x))^2\right] \le \varepsilon\)</span>?</p>
+</section>
+<section id="d-4" class="level4">
+<h4 class="anchored" data-anchor-id="d-4">(d)</h4>
+<p>Suppose we grow a regression tree with depth <span class="math inline">\(D\)</span>, where each branch is split at the optimal point in the middle of the parent’s interval. For a fixed <span class="math inline">\(\varepsilon &gt; 0\)</span>, how large do we need to make <span class="math inline">\(D\)</span> in order to acheive <span class="math inline">\(\mathbb{E}_{x,y}\left[(y- y^{*}(x))^2\right] \le \varepsilon\)</span>?</p>
+<p><strong>Note:</strong> It seems to me that computer scientists love to do accuracy order calculations like this!</p>
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+<!---------------------------------------------------------->
+</section>
+</section>
+<section id="bibliography" class="level1" data-number="8">
+
+
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">8 Bibliography</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-buhlmann:2002:analyzingbagging" class="csl-entry" role="listitem">
+Bühlmann, Peter, and Bin Yu. 2002. <span>“<span class="nocase">Analyzing bagging</span>.”</span> <em>The Annals of Statistics</em> 30 (4): 927–61. <a href="https://doi.org/10.1214/aos/1031689014">https://doi.org/10.1214/aos/1031689014</a>.
+</div>
+<div id="ref-isl:2021:gareth" class="csl-entry" role="listitem">
+Gareth, J., W. Daniela, H. Trevor, and T. Robert. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
