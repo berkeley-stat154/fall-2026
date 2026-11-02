@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -268,7 +287,14 @@ window.Quarto = {
 </section>
 <section id="unit-5-neural-networks-and-optimization" class="level1">
 <h1>Unit 5: Neural networks and optimization</h1>
-<p>TBD!</p>
+<p>This unit will mostly not have its own notes, and will instead be based on readings from <span class="citation" data-cites="prince:2023:understanding">Prince (<a href="#ref-prince:2023:understanding" role="doc-biblioref">2023</a>)</span>, which is freely available online.</p>
+<ul>
+<li><a href="../lectures/unit5/optimization.html">Black-box optimization</a>)</li>
+<li>Shallow and deep neural networks (<span class="citation" data-cites="prince:2023:understanding">Prince (<a href="#ref-prince:2023:understanding" role="doc-biblioref">2023</a>)</span> chapters 3 and 4)</li>
+<li>Optimization and generalization in neural networks (<span class="citation" data-cites="prince:2023:understanding">Prince (<a href="#ref-prince:2023:understanding" role="doc-biblioref">2023</a>)</span> chapter 6)</li>
+<li>Architecture as structure (<span class="citation" data-cites="prince:2023:understanding">Prince (<a href="#ref-prince:2023:understanding" role="doc-biblioref">2023</a>)</span> chapters 10 and 12)</li>
+<li>Simulation-based inference and TabPFN</li>
+</ul>
 <section id="prerequisites" class="level3">
 <h3 class="anchored" data-anchor-id="prerequisites">Prerequisites</h3>
 <p>Mathematical statistics, probability, linear algebra, multivariate calculus, and Python are all prerequisites.</p>
@@ -276,10 +302,15 @@ window.Quarto = {
 <p>A summary of the required linear algebra skills can be found <a href="../lectures/linalg_review.html">here</a>.</p>
 
 
+
 </section>
 </section>
 
-</main> <!-- /main -->
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-prince:2023:understanding" class="csl-entry" role="listitem">
+Prince, Simon J. D. 2023. <em>Understanding Deep Learning</em>. The MIT Press. <a href="http://udlbook.com">http://udlbook.com</a>.
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
