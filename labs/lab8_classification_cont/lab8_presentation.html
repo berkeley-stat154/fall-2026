@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Lucas Schwengber/Josh Davis">
+
+<title>Lab 8 Presentation - Tree-based methods and the F_1 Score</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-850368ad0818e8b34f51a4e3509ee5f0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-NGGRC8BY4V"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-NGGRC8BY4V', { 'anonymize_ip': true});
+</script>
+<script async="" src="https://siteimproveanalytics.com/js/siteanalyze_6294756.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a href="../../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo light-content">
+    <img src="../../assets/stat_bear.png" alt="" class="navbar-logo dark-content">
+    </a>
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">Fall 2026 STAT151A</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../lectures/lectures.html"> 
+<span class="menu-text">Lectures</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../labs/labs.html"> 
+<span class="menu-text">Labs</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../assignments/assignments.html"> 
+<span class="menu-text">Assignments</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../course_policies.html"> 
+<span class="menu-text">Course Policies</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../schedule.html"> 
+<span class="menu-text">Course Schedule</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-goals-presentation" id="toc-learning-goals-presentation" class="nav-link active" data-scroll-target="#learning-goals-presentation">Learning goals presentation</a></li>
+  <li><a href="#trees-bagging-and-boosting" id="toc-trees-bagging-and-boosting" class="nav-link" data-scroll-target="#trees-bagging-and-boosting"><span class="header-section-number">1</span> Trees, bagging and boosting</a>
+  <ul class="collapse">
+  <li><a href="#a-toy-problem-with-a-non-linear-boundary" id="toc-a-toy-problem-with-a-non-linear-boundary" class="nav-link" data-scroll-target="#a-toy-problem-with-a-non-linear-boundary"><span class="header-section-number">1.1</span> A toy problem with a non-linear boundary</a></li>
+  <li><a href="#comparing-tree-based-methods" id="toc-comparing-tree-based-methods" class="nav-link" data-scroll-target="#comparing-tree-based-methods"><span class="header-section-number">1.2</span> Comparing tree-based methods</a>
+  <ul class="collapse">
+  <li><a href="#expressivity-of-the-boundary-bias" id="toc-expressivity-of-the-boundary-bias" class="nav-link" data-scroll-target="#expressivity-of-the-boundary-bias"><span class="header-section-number">1.2.1</span> Expressivity of the boundary (bias)</a></li>
+  <li><a href="#variability-of-the-boundary-across-repetitions-variance" id="toc-variability-of-the-boundary-across-repetitions-variance" class="nav-link" data-scroll-target="#variability-of-the-boundary-across-repetitions-variance"><span class="header-section-number">1.2.2</span> Variability of the boundary across repetitions (variance)</a></li>
+  <li><a href="#bias-and-variance" id="toc-bias-and-variance" class="nav-link" data-scroll-target="#bias-and-variance"><span class="header-section-number">1.2.3</span> Bias and variance</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#the-f_1-score" id="toc-the-f_1-score" class="nav-link" data-scroll-target="#the-f_1-score"><span class="header-section-number">2</span> The <span class="math inline">\(F_1\)</span> score</a>
+  <ul class="collapse">
+  <li><a href="#tuning-for-the-f_1-score" id="toc-tuning-for-the-f_1-score" class="nav-link" data-scroll-target="#tuning-for-the-f_1-score"><span class="header-section-number">2.1</span> Tuning for the <span class="math inline">\(F_1\)</span> score</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="lab8_presentation.out.ipynb" download="lab8_presentation.out.ipynb"><i class="bi bi-journal-code"></i>Jupyter</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 8 Presentation - Tree-based methods and the <span class="math inline">\(F_1\)</span> Score</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Lucas Schwengber/Josh Davis </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><em>(TODO: today’s goals, see the <a href="../../labs/lab8_classification_cont/lab8_exercise.html">exercise</a>.)</em></p>
+<section id="learning-goals-presentation" class="level1 unnumbered">
+<h1 class="unnumbered">Learning goals presentation</h1>
+<ol type="1">
+<li>Trees, bagging and boosting on a toy problem with a non-linear boundary.</li>
+<li>Comparing tree-based methods: bias, variance, over/underfitting.</li>
+<li>The <span class="math inline">\(F_1\)</span> score.</li>
+<li>How to make the <span class="math inline">\(F_1\)</span> non-trivial for unbalanced data.</li>
+</ol>
+<p>LLM assistance was used during the elaboration of this presentation and the exercise.</p>
+</section>
+<section id="trees-bagging-and-boosting" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Trees, bagging and boosting</h1>
+<section id="a-toy-problem-with-a-non-linear-boundary" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="a-toy-problem-with-a-non-linear-boundary"><span class="header-section-number">1.1</span> A toy problem with a non-linear boundary</h2>
+<p>We first consider a non-linear decision boundary which requires some expressivity to be fit well.</p>
+<div id="8c0b9a60" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:20.415061Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:20.414901Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:21.865864Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:21.865364Z&quot;}}" data-execution_count="1">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.special <span class="im">import</span> expit</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.tree <span class="im">import</span> DecisionTreeClassifier</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier, GradientBoostingClassifier</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> DividingCellWorld:</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Two features, uniform on a square; p(x) = P(y = 1 | x) is high inside the union of two slightly</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co">    overlapping circles (a cell undergoing division), low outside."""</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, radius<span class="op">=</span><span class="fl">1.2</span>, separation<span class="op">=</span><span class="fl">1.0</span>, angle<span class="op">=</span>np.pi <span class="op">/</span> <span class="dv">6</span>, sharpness<span class="op">=</span><span class="fl">4.0</span>, box<span class="op">=</span><span class="fl">3.0</span>):</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.radius, <span class="va">self</span>.sharpness, <span class="va">self</span>.box <span class="op">=</span> radius, sharpness, box</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>        direction <span class="op">=</span> np.array([np.cos(angle), np.sin(angle)])</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.centers <span class="op">=</span> np.array([<span class="op">-</span>separation <span class="op">*</span> direction, separation <span class="op">*</span> direction])    <span class="co"># 2 * separation apart</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _scaled_distance(<span class="va">self</span>, X):</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Distance to the nearest center, divided by the radius; equals 1 on the boundary."""</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>        dists <span class="op">=</span> np.linalg.norm(X[:, <span class="va">None</span>, :] <span class="op">-</span> <span class="va">self</span>.centers[<span class="va">None</span>, :, :], axis<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> dists.<span class="bu">min</span>(axis<span class="op">=</span><span class="dv">1</span>) <span class="op">/</span> <span class="va">self</span>.radius</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> true_prob(<span class="va">self</span>, X):</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> expit(<span class="va">self</span>.sharpness <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> <span class="va">self</span>._scaled_distance(X)))</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> simulate(<span class="va">self</span>, n, seed<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>        rng <span class="op">=</span> np.random.default_rng(seed)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>        X <span class="op">=</span> rng.uniform(<span class="op">-</span><span class="va">self</span>.box, <span class="va">self</span>.box, size<span class="op">=</span>(n, <span class="dv">2</span>))</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        y <span class="op">=</span> rng.binomial(<span class="dv">1</span>, <span class="va">self</span>.true_prob(X))</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> X, y</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> grid(<span class="va">self</span>, resolution<span class="op">=</span><span class="dv">150</span>):</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""A grid of feature vectors covering the square, for drawing boundaries."""</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>        g <span class="op">=</span> np.linspace(<span class="op">-</span><span class="va">self</span>.box, <span class="va">self</span>.box, resolution)</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>        x0, x1 <span class="op">=</span> np.meshgrid(g, g)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> x0, x1, np.column_stack([x0.ravel(), x1.ravel()])</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> plot_true_boundary(<span class="va">self</span>, ax, <span class="op">**</span>kwargs):</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>        x0, x1, G <span class="op">=</span> <span class="va">self</span>.grid()</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>        kwargs <span class="op">=</span> {<span class="st">"colors"</span>: <span class="st">"k"</span>, <span class="st">"linestyles"</span>: <span class="st">"--"</span>, <span class="op">**</span>kwargs}</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>        ax.contour(x0, x1, <span class="va">self</span>.true_prob(G).reshape(x0.shape), levels<span class="op">=</span>[<span class="fl">0.5</span>], <span class="op">**</span>kwargs)</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_boundary(model, world, ax, color<span class="op">=</span><span class="st">"C1"</span>, label<span class="op">=</span><span class="va">None</span>, resolution<span class="op">=</span><span class="dv">150</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Draw the decision boundary of any fitted classifier (the curve where model.predict changes)."""</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>    x0, x1, G <span class="op">=</span> world.grid(resolution)</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> model.predict(G).reshape(x0.shape)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    ax.contour(x0, x1, pred, levels<span class="op">=</span>[<span class="fl">0.5</span>], colors<span class="op">=</span>color, <span class="op">**</span>kwargs)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> label <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>        ax.plot([], [], color<span class="op">=</span>color, label<span class="op">=</span>label)</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>world <span class="op">=</span> DividingCellWorld()</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>X_train, y_train <span class="op">=</span> world.simulate(<span class="dv">1000</span>, seed<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>X_test, y_test <span class="op">=</span> world.simulate(<span class="dv">5000</span>, seed<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">5.5</span>, <span class="dv">5</span>))</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>ax.scatter(X_train[:, <span class="dv">0</span>], X_train[:, <span class="dv">1</span>], c<span class="op">=</span>y_train, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, s<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>world.plot_true_boundary(ax)</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>ax.plot([], [], <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"true boundary $p(x) = 0.5$"</span>)</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"$x_1$"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"$x_2$"</span>)<span class="op">;</span> ax.set_aspect(<span class="st">"equal"</span>)<span class="op">;</span> ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab8_presentation_files/figure-html/cell-2-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-tree-based-methods" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="comparing-tree-based-methods"><span class="header-section-number">1.2</span> Comparing tree-based methods</h2>
+<p>Our goal is to compare how different tree-based methods behave depending on method type and hyperparameters.</p>
+<p>We use the sklearn implementation of three variants of tree-based methods to compare what their learned decision boundaries look like.</p>
+<p>At a high-level, both random forests and gradient boosting are ways of trying to achieve a favorable bias/variance trade-off when using trees. However, they do so from opposite ends:</p>
+<ul>
+<li><p>random forests average expressive trees (which are low bias) to obtain a classifier with lower variance.</p></li>
+<li><p>gradient boosting combines simple trees (which are low variance) to obtain a classifier with lower bias.</p></li>
+</ul>
+<p>The cell below defines a function that returns six tree-based classifiers: a single decision tree, a random forest and gradient boosting, each in a “regularized” (less expressive) and an “expressive” version. For the decision tree, expressivity is controlled by <code>min_samples_leaf</code>, the minimum number of training points each leaf must contain: a split is only made if both resulting leaves keep at least that many points, so a larger value gives a coarser, more regularized tree. For random forests and gradient boosting, we instead vary the number of trees, <code>n_estimators</code>, which plays opposite roles in the two methods. A random forest averages expressive trees, so a large number of trees regularizes it: it lowers the variance without making the forest underfit. Gradient boosting adds up regularized trees, each fitting what the previous ones missed, so a large number of trees makes it more expressive.</p>
+<div id="32fbd01a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:21.867459Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:21.867206Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:21.870697Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:21.870244Z&quot;}}">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_methods(seed<span class="op">=</span><span class="dv">0</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""The six classifiers we compare: three tree-based methods, each in a more regularized (reg) and a more</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">    expressive (exp) version. What "regularized" means differs by method: a larger min_samples_leaf for the tree,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">    more trees for the forest, fewer rounds for boosting."""</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"decision tree reg"</span>: DecisionTreeClassifier(random_state<span class="op">=</span>seed, min_samples_leaf<span class="op">=</span><span class="dv">25</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"random forest reg"</span>: RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">200</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span>seed),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gradient boosting reg"</span>: GradientBoostingClassifier(n_estimators<span class="op">=</span><span class="dv">5</span>, random_state<span class="op">=</span>seed, min_samples_leaf<span class="op">=</span><span class="dv">25</span>, learning_rate<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"decision tree exp"</span>: DecisionTreeClassifier(random_state<span class="op">=</span>seed, min_samples_leaf<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"random forest exp"</span>: RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">5</span>, min_samples_leaf<span class="op">=</span><span class="dv">1</span>, random_state<span class="op">=</span>seed),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"gradient boosting exp"</span>: GradientBoostingClassifier(n_estimators<span class="op">=</span><span class="dv">200</span>, random_state<span class="op">=</span>seed, min_samples_leaf<span class="op">=</span><span class="dv">25</span>, learning_rate<span class="op">=</span><span class="dv">1</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="expressivity-of-the-boundary-bias" class="level3" data-number="1.2.1">
+<h3 data-number="1.2.1" class="anchored" data-anchor-id="expressivity-of-the-boundary-bias"><span class="header-section-number">1.2.1</span> Expressivity of the boundary (bias)</h3>
+<div id="da6cd0b9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:21.871870Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:21.871743Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:33.972968Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:33.972424Z&quot;}}" data-execution_count="3">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>N_REPS, N_TRAIN <span class="op">=</span> <span class="dv">30</span>, <span class="dv">300</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>x0, x1, G <span class="op">=</span> world.grid(<span class="dv">100</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># predictions on the grid, for every repetition and method: shape (n_methods, N_REPS, grid points)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>grid_preds <span class="op">=</span> {name: np.empty((N_REPS, <span class="bu">len</span>(G)), dtype<span class="op">=</span><span class="bu">int</span>) <span class="cf">for</span> name <span class="kw">in</span> make_methods()}</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>fitted <span class="op">=</span> {name: [] <span class="cf">for</span> name <span class="kw">in</span> make_methods()}    <span class="co"># keep the fitted models for the next plot</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(N_REPS):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    X_r, y_r <span class="op">=</span> world.simulate(N_TRAIN, seed<span class="op">=</span><span class="dv">100</span> <span class="op">+</span> r)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> name, model <span class="kw">in</span> make_methods(seed<span class="op">=</span>r).items():</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        model.fit(X_r, y_r)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        grid_preds[name][r] <span class="op">=</span> model.predict(G)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        fitted[name].append(model)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 2 x 3 grid: rows are the more regularized (reg) and more expressive (exp) versions, columns the three methods</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="dv">8</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>, constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (name, preds) <span class="kw">in</span> <span class="bu">zip</span>(axes.ravel(), grid_preds.items()):</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> preds.mean(axis<span class="op">=</span><span class="dv">0</span>).reshape(x0.shape)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    im <span class="op">=</span> ax.pcolormesh(x0, x1, avg, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, vmin<span class="op">=</span><span class="dv">0</span>, vmax<span class="op">=</span><span class="dv">1</span>, shading<span class="op">=</span><span class="st">"auto"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    ax.contour(x0, x1, avg, levels<span class="op">=</span>[<span class="fl">0.5</span>], colors<span class="op">=</span><span class="st">"C1"</span>)    <span class="co"># majority-vote boundary: half of the repetitions predict y = 1</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    world.plot_true_boundary(ax)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    ax.set_title(name)<span class="op">;</span> ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes[<span class="op">-</span><span class="dv">1</span>]:</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"$x_1$"</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes[:, <span class="dv">0</span>]:</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"$x_2$"</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>fig.colorbar(im, ax<span class="op">=</span>axes, label<span class="op">=</span><span class="st">"fraction of repetitions predicting $y = 1$"</span>, shrink<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab8_presentation_files/figure-html/cell-4-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="variability-of-the-boundary-across-repetitions-variance" class="level3" data-number="1.2.2">
+<h3 data-number="1.2.2" class="anchored" data-anchor-id="variability-of-the-boundary-across-repetitions-variance"><span class="header-section-number">1.2.2</span> Variability of the boundary across repetitions (variance)</h3>
+<div id="62bb4259" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:33.975420Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:33.975186Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:34.793848Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:34.793377Z&quot;}}" data-execution_count="4">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>N_SHOW <span class="op">=</span> <span class="dv">6</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">8.5</span>), sharex<span class="op">=</span><span class="va">True</span>, sharey<span class="op">=</span><span class="va">True</span>, constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, name <span class="kw">in</span> <span class="bu">zip</span>(axes.ravel(), fitted):</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(N_SHOW):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        plot_boundary(fitted[name][r], world, ax, color<span class="op">=</span><span class="ss">f"C</span><span class="sc">{</span>r<span class="sc">}</span><span class="ss">"</span>, resolution<span class="op">=</span><span class="dv">100</span>, linewidths<span class="op">=</span><span class="fl">0.8</span>)</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    world.plot_true_boundary(ax, linewidths<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    ax.set_title(name)<span class="op">;</span> ax.set_aspect(<span class="st">"equal"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes[<span class="op">-</span><span class="dv">1</span>]:</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    ax.set_xlabel(<span class="st">"$x_1$"</span>)</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes[:, <span class="dv">0</span>]:</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    ax.set_ylabel(<span class="st">"$x_2$"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab8_presentation_files/figure-html/cell-5-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Each colored line is the boundary learned from one training set (6 of the 30 repetitions), and the dashed line is the true boundary. The more the colored lines disagree with each other, the higher the variance.</p>
+<ul>
+<li>The <strong>regularized decision tree</strong> has low variance: its boundaries are a few large rectangles that move little from one training set to the next. But they all miss the shape of the cell, which is the bias we saw in the previous plot.</li>
+<li>The <strong>expressive decision tree</strong> is the opposite: its average boundary was close to the truth, but the individual boundaries are very different from each other, with lines running across the whole square.</li>
+<li><strong>Random forest:</strong> with 200 trees (top) the boundaries are more tightly grouped around the true one than with 5 trees (bottom). Averaging more trees lowers the variance.</li>
+<li><strong>Gradient boosting:</strong> with 200 rounds (bottom) the boundaries are much noisier than with 5 rounds (top), with small islands where a model has fit the noise in its own training set.</li>
+</ul>
+</section>
+<section id="bias-and-variance" class="level3" data-number="1.2.3">
+<h3 data-number="1.2.3" class="anchored" data-anchor-id="bias-and-variance"><span class="header-section-number">1.2.3</span> Bias and variance</h3>
+<p>This can be more concretly seen in the bias variance decomposition shown below.</p>
+<div id="ee1b5210" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:34.796467Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:34.796331Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:54.417019Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:54.416414Z&quot;}}" data-execution_count="5">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> tqdm <span class="im">import</span> tqdm</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>N_TREES <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">400</span>]</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>N_REPS_SWEEP <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>p_grid <span class="op">=</span> world.true_prob(G)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sweep_forest(X, y, seed):</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Test and grid predictions of a random forest after each number of trees in N_TREES (trees are added</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">    incrementally with warm_start)."""</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    out <span class="op">=</span> []</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> RandomForestClassifier(n_estimators<span class="op">=</span><span class="dv">0</span>, warm_start<span class="op">=</span><span class="va">True</span>, random_state<span class="op">=</span>seed)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> n <span class="kw">in</span> N_TREES:</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        m.set_params(n_estimators<span class="op">=</span>n).fit(X, y)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        out.append((m.predict(X_test), m.predict(G)))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> out</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sweep_boosting(X, y, seed):</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Same for gradient boosting; staged_predict gives the predictions after each round from a single fit."""</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    m <span class="op">=</span> GradientBoostingClassifier(n_estimators<span class="op">=</span><span class="bu">max</span>(N_TREES), random_state<span class="op">=</span>seed).fit(X, y)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    staged <span class="op">=</span> [<span class="bu">list</span>(m.staged_predict(Z)) <span class="cf">for</span> Z <span class="kw">in</span> (X_test, G)]</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">tuple</span>(s[n <span class="op">-</span> <span class="dv">1</span>] <span class="cf">for</span> s <span class="kw">in</span> staged) <span class="cf">for</span> n <span class="kw">in</span> N_TREES]</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># results[name] holds test_err of shape (N_REPS_SWEEP, n_settings) and grid predictions of shape</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># (N_REPS_SWEEP, n_settings, grid points)</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>results <span class="op">=</span> {}</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, sweep <span class="kw">in</span> tqdm({<span class="st">"random forest"</span>: sweep_forest, <span class="st">"gradient boosting"</span>: sweep_boosting}.items()):</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>    test_err <span class="op">=</span> np.empty((N_REPS_SWEEP, <span class="bu">len</span>(N_TREES)))</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    gpred <span class="op">=</span> np.empty((N_REPS_SWEEP, <span class="bu">len</span>(N_TREES), <span class="bu">len</span>(G)), dtype<span class="op">=</span>np.int8)</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(N_REPS_SWEEP):</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>        X_r, y_r <span class="op">=</span> world.simulate(N_TRAIN, seed<span class="op">=</span><span class="dv">200</span> <span class="op">+</span> r)</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j, (te, g) <span class="kw">in</span> <span class="bu">enumerate</span>(sweep(X_r, y_r, r)):</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>            test_err[r, j] <span class="op">=</span> np.mean(te <span class="op">!=</span> y_test)</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>            gpred[r, j] <span class="op">=</span> g</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    results[name] <span class="op">=</span> (test_err, gpred)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+  0%|          | 0/2 [00:00&lt;?, ?it/s]
+ 50%|█████     | 1/2 [00:13&lt;00:13, 13.48s/it]
+100%|██████████| 2/2 [00:19&lt;00:00,  9.16s/it]
+100%|██████████| 2/2 [00:19&lt;00:00,  9.80s/it]</code></pre>
+</div>
+</div>
+<div id="a74b1eb7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:54.418729Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:54.418572Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:55.020271Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:55.019677Z&quot;}}" data-execution_count="6">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>y_star <span class="op">=</span> (p_grid <span class="op">&gt;</span> <span class="fl">0.5</span>).astype(<span class="bu">float</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>LEAVES <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">12</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">50</span>, <span class="dv">100</span>]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> bias_variance(gpred):</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""bias^2 and variance of the predicted label over the plane; gpred has shape (reps, settings, grid points)."""</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    qbar <span class="op">=</span> gpred.mean(axis<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> ((qbar <span class="op">-</span> y_star) <span class="op">**</span> <span class="dv">2</span>).mean(axis<span class="op">=</span><span class="dv">1</span>), (qbar <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> qbar)).mean(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Fully grown trees (no depth limit), sweeping min_samples_leaf instead</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>tree_test_err <span class="op">=</span> np.empty((N_REPS_SWEEP, <span class="bu">len</span>(LEAVES)))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>tree_gpred <span class="op">=</span> np.empty((N_REPS_SWEEP, <span class="bu">len</span>(LEAVES), <span class="bu">len</span>(G)), dtype<span class="op">=</span>np.int8)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> r <span class="kw">in</span> <span class="bu">range</span>(N_REPS_SWEEP):</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    X_r, y_r <span class="op">=</span> world.simulate(N_TRAIN, seed<span class="op">=</span><span class="dv">200</span> <span class="op">+</span> r)</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j, leaf <span class="kw">in</span> <span class="bu">enumerate</span>(LEAVES):</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        m <span class="op">=</span> DecisionTreeClassifier(min_samples_leaf<span class="op">=</span>leaf, random_state<span class="op">=</span>r).fit(X_r, y_r)</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        tree_test_err[r, j] <span class="op">=</span> np.mean(m.predict(X_test) <span class="op">!=</span> y_test)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        tree_gpred[r, j] <span class="op">=</span> m.predict(G)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Random forest and gradient boosting against the number of trees, from the sweep above</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>panels <span class="op">=</span> [(<span class="st">"decision tree"</span>, LEAVES, <span class="st">"min_samples_leaf"</span>, tree_test_err, tree_gpred)]</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, (test_err, gpred) <span class="kw">in</span> results.items():</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    panels.append((name, N_TREES, <span class="st">"number of trees"</span>, test_err, gpred))</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">3</span>, figsize<span class="op">=</span>(<span class="dv">13</span>, <span class="fl">3.8</span>), sharey<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, (name, grid_param, xlabel, test_err, gpred) <span class="kw">in</span> <span class="bu">zip</span>(axes, panels):</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    bias2, variance <span class="op">=</span> bias_variance(gpred)</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    ax.plot(grid_param, bias2, <span class="st">"o-"</span>, ms<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"bias$^2$"</span>)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    ax.plot(grid_param, variance, <span class="st">"s-"</span>, ms<span class="op">=</span><span class="dv">4</span>, label<span class="op">=</span><span class="st">"variance"</span>)</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    ax.plot(grid_param, test_err.mean(<span class="dv">0</span>), <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"test error"</span>)</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    ax.set_xscale(<span class="st">"log"</span>)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    ax.set_title(name)<span class="op">;</span> ax.set_xlabel(xlabel)</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].legend()</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab8_presentation_files/figure-html/cell-7-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>From this last plot we see that, for forests, variance decreases and bias stays roughly flat as the number of trees grows: averaging more trees can only reduce variance, and a forest does not overfit in the number of trees <span class="citation" data-cites="breiman:2001:randomforests">(<a href="#ref-breiman:2001:randomforests" role="doc-biblioref">Breiman 2001</a>)</span>. For boosting the picture is different: bias keeps decreasing while variance increases with the number of rounds, so the number of rounds is a genuine complexity parameter that has to be tuned.</p>
+<p>More striking than this trade-off is the discrepancy on how extreme the behaviours are: random forests are relatively stable with respect to the number of trees, whereas gradient boosting can change quite dramatically.</p>
+<p>This is overall another asymmetry between them and something one should take into account: random forests tend to be less sensitive to the hyperparameter choices, whereas gradient boosting’s performance can change quite dramatically. This is specially true regarding avoiding extremes on the bias-variance trade-off. One implication from this is that random forests tend to be “safer” but can get more quickly saturated under hyperparameter optimization. Gradient boosting on the other hand, requires more careful hyperparameter selection, but may pay off more <span class="citation" data-cites="probst:2019:tunability">(<a href="#ref-probst:2019:tunability" role="doc-biblioref">Probst et al. 2019</a>)</span>. Overall, given a reasonable amount of observed data points and enough computational resources to do hyperparameter optimization, gradient boosting tends to perform better. But random forests do not fare that far below in performance <span class="citation" data-cites="grinsztajn:2022:tabular">(<a href="#ref-grinsztajn:2022:tabular" role="doc-biblioref">Grinsztajn et al. 2022</a>)</span>.</p>
+</section>
+</section>
+</section>
+<section id="the-f_1-score" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> The <span class="math inline">\(F_1\)</span> score</h1>
+<p>In a classification problem, the simplest metric is <strong>accuracy</strong> (the fraction of predictions that are correct). As we have seen in the last lab, however, accuracy can be misleading when classes are imbalanced. For example, if only 10% of patients in the dataset are diabetic, a model that predicts “not diabetic” for everyone achieves 90% accuracy while being completely trivial (some might say useless). Last time we saw that the confusion matrix is one way of getting more precise information about performance of the classifier. However we need to summarize its information by some means.</p>
+<p>The <span class="math inline">\(F_1\)</span> score is another way of addressing this summarization by focusing specifically on the positive class. It combines two measures of accuracy for the positive class:</p>
+<ul>
+<li><strong>Precision</strong> answers: <em>of all the patients I flagged as diabetic, how many actually were?</em> A model with low precision produces many false alarms.</li>
+<li><strong>Recall</strong> answers: <em>of all the patients who are truly diabetic, how many did I catch?</em> A model with low recall misses many true cases.</li>
+</ul>
+<p>The <span class="math inline">\(F_1\)</span> tries to control both types of error uniformly well. One classical example where this may be needed is detecting severe but rare diseases with expensive treatments. In a case like this, we want both of these types of errors to be simultaneously small: we want most of the people we assign the treatment to be people who really need it (precision), but we also do not want to miss out treating people who do have it (recall). We may be less concerned with the amount of individuals which we do correctly claim do not have the disease, as they have no cost and no risk associated, and also it may be fine to provide treatment to some individuals without the disease, as long as that does not represent a large fraction of the people we treat.</p>
+<p>The <span class="math inline">\(F_1\)</span> score is computed as: <span class="math display">\[
+F_1 = \frac{2 \cdot \text{precision} \cdot \text{recall}}{\text{precision} + \text{recall}}.
+\]</span></p>
+<p>Instead of trying to maximize a weighted average of precision and recall, it instead optimizes their <em>harmonic</em> average. The idea here is that, more importantly than the trade-off between handling both types of error, we are interested in making sure neither of them is too small. Equivalently, we want both to be relatively high at the same time. The <span class="math inline">\(F_1\)</span>-score is a classical way of achieving this balance.</p>
+<p>By being a harmonic mean, it penalizes imbalance between precision and recall more harshly than the arithmetic mean would. For instance, precision <span class="math inline">\(= 1.0\)</span> and recall <span class="math inline">\(= 0.1\)</span> gives <span class="math inline">\(F_1 = 0.18\)</span>, whereas the arithmetic mean would give <span class="math inline">\(0.55\)</span>.</p>
+<p>This metric is common in tasks for which detecting the positive event is the key aspect. It originated in information retrieval, where a search engine should return the relevant documents (recall) without burying them in irrelevant ones (precision) <span class="citation" data-cites="vanrijsbergen:1979:informationretrieval">(<a href="#ref-vanrijsbergen:1979:informationretrieval" role="doc-biblioref">Rijsbergen 1979</a>)</span>. Besides medical applications, other examples include image retrieval <span class="citation" data-cites="muller:2001:cbirevaluation">(<a href="#ref-muller:2001:cbirevaluation" role="doc-biblioref">Müller et al. 2001</a>)</span>, named entity recognition in text <span class="citation" data-cites="tjongkimsang:2003:conll">(<a href="#ref-tjongkimsang:2003:conll" role="doc-biblioref">Tjong Kim Sang and De Meulder 2003</a>)</span>, fraud detection <span class="citation" data-cites="dalpozzolo:2015:calibrating">(<a href="#ref-dalpozzolo:2015:calibrating" role="doc-biblioref">Dal Pozzolo et al. 2015</a>)</span> and image segmentation, where the Dice coefficient used to compare a predicted region with the true one is exactly the <span class="math inline">\(F_1\)</span> score <span class="citation" data-cites="dice:1945:ecologic">(<a href="#ref-dice:1945:ecologic" role="doc-biblioref">Dice 1945</a>)</span>.</p>
+<section id="tuning-for-the-f_1-score" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="tuning-for-the-f_1-score"><span class="header-section-number">2.1</span> Tuning for the <span class="math inline">\(F_1\)</span> score</h2>
+<p>Whenever we have class imbalance, it will usually be the case that just optimizing over the default hyperparameters of the method will not be enough to make it perform well. This is because by default the model will treat errors on each class as the same, and hence it will tend to not devote additional effort toward getting the rare positive class right, leaving precision, recall or both, significantly small.</p>
+<p>Fixing this requires a targeted hyperparameter selection which we discuss now.</p>
+<p>Consider a training sample from the same simulation as before, but with the inside-the-circles class made about ten times rarer (the odds of <span class="math inline">\(y = 1\)</span> are divided by 10 at every <span class="math inline">\(\boldsymbol{x}\)</span>), with the true boundary <span class="math inline">\(p(\boldsymbol{x}) = 0.5\)</span>. Note that the boundary shrinks: at the former boundary <span class="math inline">\(p(\boldsymbol{x})\)</span> is now only about <span class="math inline">\(0.09\)</span>.</p>
+<div id="f74d2d5e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:55.021974Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:55.021819Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:55.161379Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:55.160825Z&quot;}}" data-execution_count="7">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> LogisticRegression</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.pipeline <span class="im">import</span> make_pipeline</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.preprocessing <span class="im">import</span> PolynomialFeatures, StandardScaler</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.metrics <span class="im">import</span> f1_score, precision_score, recall_score</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> RareCellWorld(DividingCellWorld):</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Same geometry, but the odds of y = 1 are multiplied by `positive_odds_factor` everywhere."""</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, positive_odds_factor<span class="op">=</span><span class="fl">0.1</span>, <span class="op">**</span>kwargs):</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(<span class="op">**</span>kwargs)</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.log_factor <span class="op">=</span> np.log(positive_odds_factor)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> true_prob(<span class="va">self</span>, X):</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> expit(<span class="va">self</span>.sharpness <span class="op">*</span> (<span class="dv">1</span> <span class="op">-</span> <span class="va">self</span>._scaled_distance(X)) <span class="op">+</span> <span class="va">self</span>.log_factor)</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>rare <span class="op">=</span> RareCellWorld(positive_odds_factor<span class="op">=</span><span class="fl">0.1</span>)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>Xr_train, yr_train <span class="op">=</span> rare.simulate(<span class="dv">3000</span>, seed<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>Xr_val, yr_val <span class="op">=</span> rare.simulate(<span class="dv">3000</span>, seed<span class="op">=</span><span class="dv">11</span>)        <span class="co"># hold-out set used for hyperparameter selection</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>Xr_test, yr_test <span class="op">=</span> rare.simulate(<span class="dv">20_000</span>, seed<span class="op">=</span><span class="dv">12</span>)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"fraction of y = 1: train </span><span class="sc">{</span>yr_train<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss">, validation </span><span class="sc">{</span>yr_val<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss">, test </span><span class="sc">{</span>yr_test<span class="sc">.</span>mean()<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots(figsize<span class="op">=</span>(<span class="fl">5.5</span>, <span class="dv">5</span>))</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>ax.scatter(Xr_train[:, <span class="dv">0</span>], Xr_train[:, <span class="dv">1</span>], c<span class="op">=</span>yr_train, cmap<span class="op">=</span><span class="st">"coolwarm"</span>, s<span class="op">=</span><span class="dv">8</span>, alpha<span class="op">=</span><span class="fl">0.7</span>)</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>rare.plot_true_boundary(ax)</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>world.plot_true_boundary(ax, colors<span class="op">=</span><span class="st">"gray"</span>)</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>ax.plot([], [], <span class="st">"k--"</span>, label<span class="op">=</span><span class="st">"true boundary, rare class"</span>)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>ax.plot([], [], color<span class="op">=</span><span class="st">"gray"</span>, ls<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="st">"true boundary, balanced world"</span>)</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="st">"$x_1$"</span>)<span class="op">;</span> ax.set_ylabel(<span class="st">"$x_2$"</span>)<span class="op">;</span> ax.set_aspect(<span class="st">"equal"</span>)<span class="op">;</span> ax.legend(loc<span class="op">=</span><span class="st">"upper left"</span>)</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>fraction of y = 1: train 0.077, validation 0.090, test 0.088</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab8_presentation_files/figure-html/cell-8-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We consider below two standard hyperparameters which can be selected to make the <span class="math inline">\(F_1\)</span> non-trivial:</p>
+<ul>
+<li><p><strong>Left:</strong> fit once with threshold <span class="math inline">\(0.5\)</span> and unweighted classes, then sweep the threshold <span class="math inline">\(t\)</span> on the hold-out probabilities and pick the one with the highest hold-out <span class="math inline">\(F_1\)</span>.</p></li>
+<li><p><strong>Right:</strong> keep the threshold at <span class="math inline">\(0.5\)</span>, but refit the model for each class weight <span class="math inline">\(w\)</span> on the positive class (<code>class_weight={0: 1, 1: w}</code>) and pick the <span class="math inline">\(w\)</span> with the highest hold-out <span class="math inline">\(F_1\)</span>.</p></li>
+</ul>
+<div id="0ac4ad0a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-11-02T05:04:55.163334Z&quot;,&quot;iopub.status.busy&quot;:&quot;2026-11-02T05:04:55.163170Z&quot;,&quot;iopub.status.idle&quot;:&quot;2026-11-02T05:04:56.138244Z&quot;,&quot;shell.execute_reply&quot;:&quot;2026-11-02T05:04:56.137770Z&quot;}}" data-execution_count="8">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> base_model(class_weight<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> make_pipeline(PolynomialFeatures(degree<span class="op">=</span><span class="dv">3</span>), StandardScaler(),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                         LogisticRegression(C<span class="op">=</span><span class="fl">1.0</span>, class_weight<span class="op">=</span>class_weight, max_iter<span class="op">=</span><span class="dv">5000</span>))</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scores(y, pred):</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> precision_score(y, pred, zero_division<span class="op">=</span><span class="dv">0</span>), recall_score(y, pred), f1_score(y, pred)</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Base model: default threshold, no class weights</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>base <span class="op">=</span> base_model().fit(Xr_train, yr_train)</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>q_val <span class="op">=</span> base.predict_proba(Xr_val)[:, <span class="dv">1</span>]</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># (1) threshold selection on the hold-out F1</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>thresholds <span class="op">=</span> np.linspace(<span class="fl">0.02</span>, <span class="fl">0.8</span>, <span class="dv">79</span>)</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>val_scores <span class="op">=</span> np.array([scores(yr_val, q_val <span class="op">&gt;</span> t) <span class="cf">for</span> t <span class="kw">in</span> thresholds])</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>best_t <span class="op">=</span> thresholds[np.argmax(val_scores[:, <span class="dv">2</span>])]</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a><span class="co"># (2) class weight selection on the hold-out F1, threshold fixed at 0.5</span></span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>weights <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>, <span class="dv">7</span>, <span class="dv">10</span>, <span class="dv">15</span>, <span class="dv">20</span>, <span class="dv">30</span>, <span class="dv">50</span>]</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>weighted_models <span class="op">=</span> {w: base_model(class_weight<span class="op">=</span>{<span class="dv">0</span>: <span class="dv">1</span>, <span class="dv">1</span>: w}).fit(Xr_train, yr_train) <span class="cf">for</span> w <span class="kw">in</span> weights}</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>val_f1_w <span class="op">=</span> [f1_score(yr_val, weighted_models[w].predict(Xr_val)) <span class="cf">for</span> w <span class="kw">in</span> weights]</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>best_w <span class="op">=</span> weights[<span class="bu">int</span>(np.argmax(val_f1_w))]</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">11</span>, <span class="fl">3.8</span>))</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> j, label <span class="kw">in</span> <span class="bu">enumerate</span>([<span class="st">"precision"</span>, <span class="st">"recall"</span>, <span class="st">"$F_1$"</span>]):</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].plot(thresholds, val_scores[:, j], label<span class="op">=</span>label, lw<span class="op">=</span><span class="dv">2</span> <span class="cf">if</span> j <span class="op">==</span> <span class="dv">2</span> <span class="cf">else</span> <span class="dv">1</span>)</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].axvline(<span class="fl">0.5</span>, color<span class="op">=</span><span class="st">"gray"</span>, ls<span class="op">=</span><span class="st">":"</span>, label<span class="op">=</span><span class="st">"default threshold 0.5"</span>)</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].axvline(best_t, color<span class="op">=</span><span class="st">"k"</span>, ls<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="ss">f"selected threshold </span><span class="sc">{</span>best_t<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"threshold $t$"</span>)<span class="op">;</span> axes[<span class="dv">0</span>].set_ylabel(<span class="st">"hold-out score"</span>)<span class="op">;</span> axes[<span class="dv">0</span>].legend()</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].plot(weights, val_f1_w, <span class="st">"o-"</span>)</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].axvline(best_w, color<span class="op">=</span><span class="st">"k"</span>, ls<span class="op">=</span><span class="st">"--"</span>, label<span class="op">=</span><span class="ss">f"selected weight </span><span class="sc">{</span>best_w<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xscale(<span class="st">"log"</span>)<span class="op">;</span> axes[<span class="dv">1</span>].set_xlabel(<span class="st">"weight $w$ of class 1"</span>)<span class="op">;</span> axes[<span class="dv">1</span>].set_ylabel(<span class="st">"hold-out $F_1$ at threshold 0.5"</span>)</span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].legend()</span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>plt.show()</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>q_test <span class="op">=</span> base.predict_proba(Xr_test)[:, <span class="dv">1</span>]</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>rows <span class="op">=</span> [(<span class="st">"base model, threshold 0.5"</span>, q_test <span class="op">&gt;</span> <span class="fl">0.5</span>),</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>        (<span class="ss">f"tuned threshold </span><span class="sc">{</span>best_t<span class="sc">:.2f}</span><span class="ss">"</span>, q_test <span class="op">&gt;</span> best_t),</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a>        (<span class="ss">f"class weight </span><span class="sc">{</span>best_w<span class="sc">}</span><span class="ss">, threshold 0.5"</span>, weighted_models[best_w].predict(Xr_test) <span class="op">==</span> <span class="dv">1</span>)]</span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span><span class="st">''</span><span class="sc">:36s}</span><span class="ss"> precision   recall   F1"</span>)</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> name, pred <span class="kw">in</span> rows:</span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a>    pr, rc, f1 <span class="op">=</span> scores(yr_test, pred)</span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>name<span class="sc">:36s}</span><span class="ss"> </span><span class="sc">{</span>pr<span class="sc">:9.3f}</span><span class="ss"> </span><span class="sc">{</span>rc<span class="sc">:8.3f}</span><span class="ss"> </span><span class="sc">{</span>f1<span class="sc">:6.3f}</span><span class="ss">"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="lab8_presentation_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                                     precision   recall   F1
+base model, threshold 0.5                0.000    0.000  0.000
+tuned threshold 0.20                     0.388    0.695  0.498
+class weight 5, threshold 0.5            0.368    0.753  0.495</code></pre>
+</div>
+</div>
+<p>Which one to pick depends on the problem. A key difference is that thresholding will not significantly change the shape of the decision boundary, it will only make it fatter or thinner. Whereas re-weighting may possibly change the shape of the decision boundary (unless the method is not expressive enough, such as linear ones).</p>
+<p>Thresholding has a significant computational advantage since it only requires fitting the model once, and after it is just several cheap operations. This makes it more feasible to run on top of other hyperparameter selections. It however lacks the flexibility of significantly changing the geometry of the decision boundary as discussed.</p>
+<p>In principle one could use try to optimize both at the same time if the computational resources are available.</p>
+<p>Thresholding is also more principled than it may look: the classifier with the highest <span class="math inline">\(F_1\)</span> predicts <span class="math inline">\(y = 1\)</span> when <span class="math inline">\(p(\boldsymbol{x})\)</span> is above some threshold, so a good estimate of <span class="math inline">\(p(\boldsymbol{x})\)</span> combined with a well-chosen threshold is a sound way to maximize the <span class="math inline">\(F_1\)</span>. In fact, if the estimated probabilities equal <span class="math inline">\(p(\boldsymbol{x})\)</span>, the best threshold is exactly half of the best achievable <span class="math inline">\(F_1\)</span> <span class="citation" data-cites="lipton:2014:f1threshold">(<a href="#ref-lipton:2014:f1threshold" role="doc-biblioref">Lipton et al. 2014</a>)</span>, so it is never above 0.5, and much lower when the positive class is hard to detect.</p>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-breiman:2001:randomforests" class="csl-entry" role="listitem">
+Breiman, Leo. 2001. <span>“Random Forests.”</span> <em>Machine Learning</em> 45 (1): 5–32. <a href="https://doi.org/10.1023/A:1010933404324">https://doi.org/10.1023/A:1010933404324</a>.
+</div>
+<div id="ref-dalpozzolo:2015:calibrating" class="csl-entry" role="listitem">
+Dal Pozzolo, Andrea, Olivier Caelen, Reid A. Johnson, and Gianluca Bontempi. 2015. <span>“Calibrating Probability with Undersampling for Unbalanced Classification.”</span> <em>2015 IEEE Symposium Series on Computational Intelligence</em>, 159–66. <a href="https://doi.org/10.1109/SSCI.2015.33">https://doi.org/10.1109/SSCI.2015.33</a>.
+</div>
+<div id="ref-dice:1945:ecologic" class="csl-entry" role="listitem">
+Dice, Lee R. 1945. <span>“Measures of the Amount of Ecologic Association Between Species.”</span> <em>Ecology</em> 26 (3): 297–302. <a href="https://doi.org/10.2307/1932409">https://doi.org/10.2307/1932409</a>.
+</div>
+<div id="ref-grinsztajn:2022:tabular" class="csl-entry" role="listitem">
+Grinsztajn, Léo, Edouard Oyallon, and Gaël Varoquaux. 2022. <span>“Why Do Tree-Based Models Still Outperform Deep Learning on Typical Tabular Data?”</span> <em>Advances in Neural Information Processing Systems 35, Datasets and Benchmarks Track</em>.
+</div>
+<div id="ref-lipton:2014:f1threshold" class="csl-entry" role="listitem">
+Lipton, Zachary C., Charles Elkan, and Balakrishnan Narayanaswamy. 2014. <span>“Optimal Thresholding of Classifiers to Maximize <span>F1</span> Measure.”</span> <em>Machine Learning and Knowledge Discovery in Databases (ECML PKDD 2014)</em>, Lecture notes in computer science, vol. 8725: 225–39. <a href="https://doi.org/10.1007/978-3-662-44851-9_15">https://doi.org/10.1007/978-3-662-44851-9_15</a>.
+</div>
+<div id="ref-muller:2001:cbirevaluation" class="csl-entry" role="listitem">
+Müller, Henning, Wolfgang Müller, David McG. Squire, Stéphane Marchand-Maillet, and Thierry Pun. 2001. <span>“Performance Evaluation in Content-Based Image Retrieval: Overview and Proposals.”</span> <em>Pattern Recognition Letters</em> 22 (5): 593–601. <a href="https://doi.org/10.1016/S0167-8655(00)00118-5">https://doi.org/10.1016/S0167-8655(00)00118-5</a>.
+</div>
+<div id="ref-probst:2019:tunability" class="csl-entry" role="listitem">
+Probst, Philipp, Anne-Laure Boulesteix, and Bernd Bischl. 2019. <span>“Tunability: Importance of Hyperparameters of Machine Learning Algorithms.”</span> <em>Journal of Machine Learning Research</em> 20 (53): 1–32.
+</div>
+<div id="ref-vanrijsbergen:1979:informationretrieval" class="csl-entry" role="listitem">
+Rijsbergen, C. J. van. 1979. <em>Information Retrieval</em>. 2nd ed. Butterworths.
+</div>
+<div id="ref-tjongkimsang:2003:conll" class="csl-entry" role="listitem">
+Tjong Kim Sang, Erik F., and Fien De Meulder. 2003. <span>“Introduction to the <span>CoNLL</span>-2003 Shared Task: Language-Independent Named Entity Recognition.”</span> <em>Proceedings of the Seventh Conference on Natural Language Learning at HLT-NAACL 2003</em>, 142–47.
+</div>
+</div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/stat154\.berkeley\.edu\/fall-2026\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
