@@ -278,9 +278,9 @@ window.Quarto = {
 </header>
 
 
-<p><em>(TODO: today’s goals, see the <a href="../../labs/lab8_classification_cont/lab8_exercise.html">exercise</a>.)</em></p>
 <section id="learning-goals-presentation" class="level1 unnumbered">
 <h1 class="unnumbered">Learning goals presentation</h1>
+<p><em>(see the <a href="../../labs/lab8_classification_cont/lab8_exercise.html">exercise</a> for the exercise’s goals.)</em></p>
 <ol type="1">
 <li>Trees, bagging and boosting on a toy problem with a non-linear boundary.</li>
 <li>Comparing tree-based methods: bias, variance, over/underfitting.</li>
@@ -561,7 +561,7 @@ window.Quarto = {
 </section>
 <section id="the-f_1-score" class="level1" data-number="2">
 <h1 data-number="2"><span class="header-section-number">2</span> The <span class="math inline">\(F_1\)</span> score</h1>
-<p>In a classification problem, the simplest metric is <strong>accuracy</strong> (the fraction of predictions that are correct). As we have seen in the last lab, however, accuracy can be misleading when classes are imbalanced. For example, if only 10% of patients in the dataset are diabetic, a model that predicts “not diabetic” for everyone achieves 90% accuracy while being completely trivial (some might say useless). Last time we saw that the confusion matrix is one way of getting more precise information about performance of the classifier. However we need to summarize its information by some means.</p>
+<p>In a classification problem, the simplest metric is <strong>accuracy</strong> (the fraction of predictions that are correct). As we have seen in the last lab, however, accuracy can be misleading when classes are imbalanced. For example for the <a href="../../labs/lab8_classification_cont/lab8_exercise.html">exercise’s</a> dataset, if only 10% of patients in the dataset are diabetic, a model that predicts “not diabetic” for everyone achieves 90% accuracy while being completely trivial (some might say useless). Last time we saw that the confusion matrix is one way of getting more precise information about performance of the classifier. However we need to summarize its information by some means.</p>
 <p>The <span class="math inline">\(F_1\)</span> score is another way of addressing this summarization by focusing specifically on the positive class. It combines two measures of accuracy for the positive class:</p>
 <ul>
 <li><strong>Precision</strong> answers: <em>of all the patients I flagged as diabetic, how many actually were?</em> A model with low precision produces many false alarms.</li>

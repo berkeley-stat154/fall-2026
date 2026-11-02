@@ -325,7 +325,7 @@ window.Quarto = {
 <h1 data-number="5"><span class="header-section-number">5</span> How your predictions will be scored</h1>
 <p>Your predictions will be compared against the real <code>y_test</code> using the <span class="math inline">\(F_1\)</span> score:</p>
 <p><span class="math display">\[
-F_1(\boldsymbol{y}, \yvhat) = \frac{2}{\frac{1}{\text{precision}}+\frac{1}{\text{recall}}}, \; \; \; \; \text{recall} = \frac{|\{n: \boldsymbol{y}_n=\yvhat_n=1\}|}{|\{n: \boldsymbol{y}_n=1\}|}, \; \; \; \; \text{precision} = \frac{|\{n: \boldsymbol{y}_n=\yvhat_n=1\}|}{|\{n: \yvhat_n=1\}|}
+F_1(\boldsymbol{y}, \hat{\boldsymbol{y}}) = \frac{2}{\frac{1}{\text{precision}}+\frac{1}{\text{recall}}}, \; \; \; \; \text{recall} = \frac{|\{n: \boldsymbol{y}_n=\hat{\boldsymbol{y}}_n=1\}|}{|\{n: \boldsymbol{y}_n=1\}|}, \; \; \; \; \text{precision} = \frac{|\{n: \boldsymbol{y}_n=\hat{\boldsymbol{y}}_n=1\}|}{|\{n: \hat{\boldsymbol{y}}_n=1\}|}
 \]</span></p>
 <p>A leaderboard will be published with every group’s codename alongside its <span class="math inline">\(F_1\)</span> score on the test set, ranked from high to low. No other identifying information will be shared, so no other student will be able to know your rank on the leaderboard. The leaderboard is for your own benefit! The group with the highest test <span class="math inline">\(F_1\)</span> score is the winner.</p>
 </section>
