@@ -1,10 +1,3 @@
-## 1:00 PM - 1:12 PM
-
-- Shahid, Asad
-- Lee, Renee
-- Wu, Sixian
-- Lee, Heejae
-
 ## 1:12 PM - 1:24 PM
 
 - Alam, Hibah
@@ -57,3 +50,10 @@
 ## 2:36 PM - 2:48 PM
 
 - Randhawa, Vismaad
+
+## 2:48 PM - 3:00 PM
+
+- Shahid, Asad
+- Lee, Renee
+- Wu, Sixian
+- Lee, Heejae
