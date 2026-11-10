@@ -242,6 +242,7 @@ window.Quarto = {
   <li><a href="#linear-estimators-are-unaffected-by-bagging" id="toc-linear-estimators-are-unaffected-by-bagging" class="nav-link" data-scroll-target="#linear-estimators-are-unaffected-by-bagging">Linear estimators are unaffected by bagging</a></li>
   </ul></li>
   <li><a href="#random-forests" id="toc-random-forests" class="nav-link" data-scroll-target="#random-forests">Random forests</a></li>
+  <li><a href="#classification-trees" id="toc-classification-trees" class="nav-link" data-scroll-target="#classification-trees">Classification trees</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -484,6 +485,22 @@ _code/lecture_examples/random_forests.ipynb
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>Deep random forest:      <span class="fl">0.16844600984415964</span></span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>Deep individual trees: <span class="fl">0.4552300298897962</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="classification-trees" class="level2">
+<h2 class="anchored" data-anchor-id="classification-trees">Classification trees</h2>
+<p>Some extra care needs to be taken when using forests for classification. If we have a model of the form</p>
+<p><span class="math display">\[
+\hat{\phi}(\boldsymbol{x}) = \sum_{m=1}^M \hat{\theta}_m \hat{\phi}_m(\boldsymbol{x}),
+\]</span></p>
+<p>there are several ways to turn this into a classifier. First of all, <span class="math inline">\(\hat{\phi}(\boldsymbol{x})\)</span> can be a classifier <span class="math inline">\(\hat{\phi}_m(\boldsymbol{x}) \in \{0,1\}\)</span> or a probability prediction <span class="math inline">\(\hat{\phi}_m(\boldsymbol{x}) \in [0,1]\)</span>. One option that makes sense in either case is to take the majority vote:</p>
+<p><span class="math display">\[
+\hat{f}(\boldsymbol{x}) = \mathrm{I}\left(\frac{1}{M} \sum_{m=1}^M \hat{\theta}_m \hat{\phi}_m(\boldsymbol{x}) &gt; 0.5\right).
+\]</span></p>
+<p>In the case that <span class="math inline">\(\hat{\phi}\)</span> estimates a probability, i.e.&nbsp;<span class="math inline">\(\hat{\phi}_m(\boldsymbol{x}) \in \{0,1\}\)</span> we could also take the majority vote after thresholding each node:</p>
+<p><span class="math display">\[
+\hat{f}(\boldsymbol{x}) = \mathrm{I}\left(\frac{1}{M} \sum_{m=1}^M \mathrm{I}\left(\hat{\theta}_m \hat{\phi}_m(\boldsymbol{x}) &gt; 0.5\right) &gt; 0.5\right).
+\]</span></p>
+<p>In general, these can give different answers.</p>
 
 
 

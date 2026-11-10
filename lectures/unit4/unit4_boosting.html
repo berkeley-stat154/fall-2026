@@ -201,13 +201,15 @@ window.Quarto = {
   <li><a href="#reading" id="toc-reading" class="nav-link" data-scroll-target="#reading">Reading</a></li>
   <li><a href="#additive-models" id="toc-additive-models" class="nav-link" data-scroll-target="#additive-models">Additive models</a>
   <ul class="collapse">
-  <li><a href="#classification-trees" id="toc-classification-trees" class="nav-link" data-scroll-target="#classification-trees">Classification trees</a></li>
+  <li><a href="#gams-with-marginals" id="toc-gams-with-marginals" class="nav-link" data-scroll-target="#gams-with-marginals">GAMs with marginals</a></li>
   </ul></li>
   <li><a href="#boosting-as-greedy-forward-stagewise-selection" id="toc-boosting-as-greedy-forward-stagewise-selection" class="nav-link" data-scroll-target="#boosting-as-greedy-forward-stagewise-selection">Boosting as greedy forward stagewise selection</a>
   <ul class="collapse">
-  <li><a href="#boosting-as-an-improvement-to-weak-learners" id="toc-boosting-as-an-improvement-to-weak-learners" class="nav-link" data-scroll-target="#boosting-as-an-improvement-to-weak-learners">Boosting as an improvement to weak learners</a></li>
-  <li><a href="#different-loss-functions-and-classification-trees" id="toc-different-loss-functions-and-classification-trees" class="nav-link" data-scroll-target="#different-loss-functions-and-classification-trees">Different loss functions and classification trees</a></li>
-  <li><a href="#gradient-boosting" id="toc-gradient-boosting" class="nav-link" data-scroll-target="#gradient-boosting">Gradient boosting</a></li>
+  <li><a href="#boosting-for-squared-error-loss" id="toc-boosting-for-squared-error-loss" class="nav-link" data-scroll-target="#boosting-for-squared-error-loss">Boosting for squared error loss</a></li>
+  </ul></li>
+  <li><a href="#gradient-boosting" id="toc-gradient-boosting" class="nav-link" data-scroll-target="#gradient-boosting">Gradient boosting</a>
+  <ul class="collapse">
+  <li><a href="#choosing-theta" id="toc-choosing-theta" class="nav-link" data-scroll-target="#choosing-theta">Choosing <span class="math inline">\(\theta\)</span></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -260,42 +262,35 @@ window.Quarto = {
 \hat{f}_{Lin}(\boldsymbol{x}) = \sum_{m=1}^M \beta_m x_m.
 \]</span></p>
 <p>Formally, we can think of the random forest as a linear model with (sub–optimal) coefficients <span class="math inline">\(\beta_m = 1/M\)</span>, and nonlinearly–transformed regressors given by the trees <span class="math inline">\(\hat{f}_m(\boldsymbol{x}; T_m)\)</span>, which are learned (greedily, sub–optimally) on the bootstrapped data.</p>
-<p>The similarity motivates a general class of models called “generalized additive models” (<span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> 9.1) which take the form</p>
+<p>The similarity motivates a general class of models called “additive models” (<span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> 9.1) which take the form</p>
 <p><span class="math display">\[
 \hat{f}_{GAM}(\boldsymbol{x}) = \sum_{m=1}^M \theta_m \phi_m(\boldsymbol{x}),
 \]</span></p>
-<p>which we might try to optimize by minimizing the empirical risk</p>
+<p>for some restricted class of functions <span class="math inline">\(\phi_m\)</span>. For an additive model, we might try to optimize by minimizing the empirical risk</p>
 <p><span class="math display">\[
 \hat{\theta}_1,\ldots,\hat{\theta}_M,\hat{\phi}_1,\ldots,\hat{\phi}_M :=
 \underset{}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{GAM}(\boldsymbol{x}_n), y_n),
 \]</span></p>
 <p>where <span class="math inline">\(\phi_m(\cdot)\)</span> is in some constrained class (otherwise this function class could drive training loss to zero, and might be expected to generalize poorly). For example, we might take <span class="math inline">\(\phi_m(\cdot) = \phi(\cdot; T_m)\)</span> to be a regression tree of fixed size, or which minimizes some loss that regularizes tree size, weights, or both.</p>
-<section id="classification-trees" class="level2">
-<h2 class="anchored" data-anchor-id="classification-trees">Classification trees</h2>
-<p>Some extra care needs to be taken when using GAMS for classification. If we have a GAM of the form</p>
-<p><span class="math display">\[
-\hat{f}_{GAM}(\boldsymbol{x}) = \sum_{m=1}^M \hat{\theta}_m \hat{\phi}_m(\boldsymbol{x}),
-\]</span></p>
-<p>there are several ways to turn this into a classifier. First of all, <span class="math inline">\(\hat{\phi}(\boldsymbol{x})\)</span> can be a classifier <span class="math inline">\(\hat{\phi}_m(\boldsymbol{x}) \in \{0,1\}\)</span> or a probability prediction <span class="math inline">\(\hat{\phi}_m(\boldsymbol{x}) \in [0,1]\)</span>. One option that makes sense in either case is to take the majority vote:</p>
-<p><span class="math display">\[
-\hat{y}_{GAM}(\boldsymbol{x}) = \mathrm{I}\left(\frac{1}{M} \sum_{m=1}^M \hat{\theta}_m \hat{\phi}_m(\boldsymbol{x}) &gt; 0.5\right).
-\]</span></p>
-<p>In the case that <span class="math inline">\(\hat{\phi}_m(\boldsymbol{x}) \in \{0,1\}\)</span>, we could also take the majority vote after thresholding each node:</p>
-<p><span class="math display">\[
-\hat{y}_{GAM}(\boldsymbol{x}) = \mathrm{I}\left(\frac{1}{M} \sum_{m=1}^M \mathrm{I}\left(\hat{\theta}_m \hat{\phi}_m(\boldsymbol{x}) &gt; 0.5\right) &gt; 0.5\right).
-\]</span></p>
-<p>In general, these can give different answers.</p>
+<section id="gams-with-marginals" class="level2">
+<h2 class="anchored" data-anchor-id="gams-with-marginals">GAMs with marginals</h2>
+<p>A simple version of a GAM is a variant of linear regression, in which we don’t include any cross terms, but allow for general functions of the individual components. In fact, it is to this class of models that the term “generalized additive models” generally applies.</p>
+<p>Suppose we wanted to fit a model of the form <span class="math display">\[
+\hat{f}_{MGAM}(\boldsymbol{x}) = \sum_{d=1}^D \theta_d \phi_d(x_d).
+\]</span> A standard linear model takes <span class="math inline">\(\phi_d(x_d) = x_d\)</span>. Note that there are no interaction terms — <span class="math inline">\(x_d\)</span> and <span class="math inline">\(x_{d'}\)</span> never occur together for <span class="math inline">\(d \ne d'\)</span>.</p>
+<p>How could we fit this model? One way is to <em>iteratively</em> update the individual <span class="math inline">\(\phi_d\)</span>. Suppose that all the <span class="math inline">\(\phi_d\)</span> except for <span class="math inline">\(d = i\)</span> are fixed; maybe they are fixed at an initial guess, or maybe at some intermediate point in the optimzation process. We want to choose <span class="math inline">\(\phi_{i}\)</span> to minimize <span class="math display">\[
+\hat{\mathscr{R}}(\phi_{i}) =
+\frac{1}{N} \sum_{n=1}^N(y_n - \sum_{d=1}^D \theta_d \phi_d(x_{nd}))^2 =
+\frac{1}{N} \sum_{n=1}^N(y_n - \sum_{d \ne i} \theta_d \phi_d(x_{nd}) - \theta_i \phi_i(x_{ni}))^2 =
+\frac{1}{N} \sum_{n=1}^N(\varepsilon_{n} + \theta_i \phi_i(x_{ni}))^2,
+\]</span> where we have defined <span class="math display">\[
+\varepsilon_{n} = y_n - \sum_{d \ne i} \theta_d \phi_d(x_{nd})
+\]</span> to be the residual from the fit using all the components <em>except</em> <span class="math inline">\(\phi_i\)</span>. Finding the optimal <span class="math inline">\(\phi_i\)</span> with all the others fixed is now a one-dimensional regression problem, where we try to fit the residuals rather than the raw response. Since the problem is one-dimensional, we can solve it with some very expressive regression technique such as nearest neighbors or smoothing splines. Then, we choose a new component to fit and repeat the process until the functions are no longer changing. This process of repeatedly fitting the residuals has a formal similarity to boosting, which we will describe below.</p>
 </section>
 </section>
 <section id="boosting-as-greedy-forward-stagewise-selection" class="level1">
 <h1>Boosting as greedy forward stagewise selection</h1>
-<p>Depending on the structure of the <span class="math inline">\(\phi_m\)</span>, the GAM optimization problem may be intractable <!--
---- in fact,  we have seen that even solving the optimization problem
-$$
-\argmin{T_m} \meann \loss(\phi(\xv_n; T_m), \y_n)
-$$
-
-for a single tree is computationally intractable. --> (<span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> 9.1 discusses some approaches that minimize the GAM model loss iteratively for non–tree structures on <span class="math inline">\(\phi\)</span>.) However, we can take a “leaf” from the CART playbook and peform <em>forward stagewise greedy minimization</em> of the GAM loss by fitting the <span class="math inline">\(\phi_m\)</span> incrementally, one at a time.</p>
+<p>Depending on the structure of the <span class="math inline">\(\phi_m\)</span>, the additive optimization problem may be intractable. However, we can take a “leaf” from the CART playbook and peform <em>forward stagewise greedy minimization</em> of the GAM loss by fitting the <span class="math inline">\(\phi_m\)</span> incrementally, one at a time.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="@esl:2009:hastie Algorithm 10.2:">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -317,13 +312,10 @@ for a single tree is computationally intractable. --> (<span class="citation" da
 </ol>
 </div>
 </div>
-<section id="boosting-as-an-improvement-to-weak-learners" class="level2">
-<h2 class="anchored" data-anchor-id="boosting-as-an-improvement-to-weak-learners">Boosting as an improvement to weak learners</h2>
 <p>For boosting, we first find the <span class="math inline">\(\hat{f}_{1}(\cdot)\)</span> that best predicts <span class="math inline">\(y_n\)</span>, then the one that makes the biggest improvement when added to <span class="math inline">\(\hat{f}_{1}(\cdot)\)</span>, and so one. Note that at each step all we need to be able to do is make a <em>small improvement</em>, since over <span class="math inline">\(M\)</span> steps these small improvments accumulate. For example, we might take <span class="math inline">\(\phi_m(\cdot)\)</span> to simply be a “stump:” a regression tree with a single split. In this sense, Boosting can improve on high–biased estimators by adding up a large number of them in an increasingly expressive way.</p>
-</section>
-<section id="different-loss-functions-and-classification-trees" class="level2">
-<h2 class="anchored" data-anchor-id="different-loss-functions-and-classification-trees">Different loss functions and classification trees</h2>
-<p>For squared error loss, this is the same as incrementally fitting the residuals, since</p>
+<section id="boosting-for-squared-error-loss" class="level2">
+<h2 class="anchored" data-anchor-id="boosting-for-squared-error-loss">Boosting for squared error loss</h2>
+<p>For squared error loss, boosting is the same as incrementally fitting the residuals, since</p>
 <p><span class="math display">\[
 \begin{aligned}
 \mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \theta \phi(\boldsymbol{x}_n), y_n) ={}&amp;
@@ -332,29 +324,23 @@ for a single tree is computationally intractable. --> (<span class="citation" da
 \mathscr{L}(\theta \phi(\boldsymbol{x}_n), y_n - \hat{f}_{m-1}(\boldsymbol{x}_n)).
 \end{aligned}
 \]</span></p>
-<p>However, with more complicated loss functions, the inner problem</p>
-<p><span class="math display">\[
-\hat{\theta}_m, \hat{\phi}_m := \underset{\theta, \phi}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \theta \phi(\boldsymbol{x}_n), y_n)
-\]</span></p>
-<p>may not be easy.</p>
-<p>For example, consider classification trees decided by majority vote. There is no obvious notion of “residual” that you can train the next classification tree on. It happens that, with a particular form of exponential loss <span class="math inline">\(\mathscr{L}(f(\boldsymbol{x}), y) = \exp((1 - 2y) f(\boldsymbol{x}))\)</span>, the inner problem can be solved directly using an early algorithm known as “AdaBoost” after “Adaptive Boosting” (<span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> 10.4). However, for more general losses, an alternative formulation is needed, and a solution is provided by gradient boosting.</p>
+<p>Note the similarity with GAMs above.</p>
 </section>
-<section id="gradient-boosting" class="level2">
-<h2 class="anchored" data-anchor-id="gradient-boosting">Gradient boosting</h2>
+</section>
+<section id="gradient-boosting" class="level1">
+<h1>Gradient boosting</h1>
+<p>Although squared error loss can be represented as simply fitting a residual, with more complicated loss functions, the inner problem <span class="math display">\[
+\hat{\theta}_m, \hat{\phi}_m := \underset{\theta, \phi}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \theta \phi(\boldsymbol{x}_n), y_n)
+\]</span> may not be easy.</p>
+<p>For example, consider classification trees decided by majority vote. There is no obvious notion of “residual” that you can train the next classification tree on. It happens that, with a particular form of exponential loss <span class="math inline">\(\mathscr{L}(f(\boldsymbol{x}), y) = \exp((1 - 2y) f(\boldsymbol{x}))\)</span>, the inner problem can be solved directly using an early algorithm known as “AdaBoost” after “Adaptive Boosting” (<span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> 10.4). However, for more general losses, an alternative formulation is needed, and a solution is provided by gradient boosting.</p>
+<p>Consider the slightly modified problem of finding <span class="math inline">\(\hat{\delta}= (\hat{\delta}_1, \ldots, \hat{\delta}_N)\)</span> that makes our loss better:</p>
 <p><span class="math display">\[
-\def\gv{\boldsymbol{g}}
-\def\deltahat{\hat{\delta}}
-\def\deltav{\boldsymbol{\delta}}
-\def\deltavhat{\hat{\deltav}}
-\]</span></p>
-<p>Consider the slightly modified problem of finding <span class="math inline">\(\deltahat = (\deltahat_1, \ldots, \deltahat_N)\)</span> that makes our loss better:</p>
-<p><span class="math display">\[
-\deltavhat :=
-  \underset{\deltav}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \deltahat_n, y_n)
+\hat{\boldsymbol{\delta}}:=
+  \underset{\boldsymbol{\delta}}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \hat{\delta}_n, y_n)
 \]</span></p>
 <p>A gradient descent step that improves the loss would take the form</p>
 <p><span class="math display">\[
-\deltahat_n := \varepsilon g_n
+\hat{\delta}_n := \varepsilon g_n
 \quad\textrm{where}\quad
 g_n =\frac{\partial \mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \delta_n, y_n)}{\partial \delta_n} =
   \left. \frac{\partial \mathscr{L}(f, y_n)}{\partial f} \right|_{f= \hat{f}_{m-1}(\boldsymbol{x}_n)}.
@@ -363,16 +349,28 @@ g_n =\frac{\partial \mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \delta_n, y_n)
 <p><span class="math display">\[
 \hat{\phi}_m := \underset{\phi}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\left(\phi(\boldsymbol{x}_n) - g_n\right)^2.
 \]</span></p>
-<p>We then take an optimal step in the direction <span class="math inline">\(\hat{\phi}_m\)</span>:</p>
-<p><span class="math display">\[
+<p>Such a <span class="math inline">\(\hat{\phi}_m\)</span> is a function that points roughly in the same direction as the functional gradient, and so one would expect that adding <span class="math inline">\(\hat{\phi}_m\)</span> to our existing function would make the empirical loss smaller.</p>
+<section id="choosing-theta" class="level2">
+<h2 class="anchored" data-anchor-id="choosing-theta">Choosing <span class="math inline">\(\theta\)</span></h2>
+<p>Once we have <span class="math inline">\(\hat{\phi}_m\)</span>, we have to choose the <span class="math inline">\(\theta_m\)</span> that goes with it. This is like choosing a “step size” for gradient descent. For example, we could just take <span class="math inline">\(\hat{\phi}_m\)</span> itself, giving the update <span class="math inline">\(\hat{\theta}_m = 1\)</span> and <span class="math inline">\(\hat{f}_m(\boldsymbol{x}) = \hat{f}_{m-1}(\boldsymbol{x}) - \hat{\phi}_m(\boldsymbol{x})\)</span>. This is not unreasonable, since remember that the leaf values of <span class="math inline">\(\hat{\phi}_m(\boldsymbol{x})\)</span> are the average of the gradients <span class="math inline">\(g_n\)</span> that lie in that region of the space.</p>
+<p>Alternatively, we could do a one-dimensional grid search and take an optimal step in the direction <span class="math inline">\(\hat{\phi}_m\)</span>: <span class="math display">\[
 \hat{\theta}_m :=
-  \underset{\theta}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \theta \hat{\phi}_m(\boldsymbol{x}_n), y_n),
-\]</span></p>
-<p>and set</p>
-<p><span class="math display">\[
+  \underset{\theta}{\mathrm{argmin}}\, \frac{1}{N} \sum_{n=1}^N\mathscr{L}(\hat{f}_{m-1}(\boldsymbol{x}_n) + \theta \hat{\phi}_m(\boldsymbol{x}_n), y_n).
+\]</span> and set <span class="math display">\[
 \hat{f}_m(\cdot) = \hat{f}_{m-1}(\cdot) + \hat{\theta}_m \hat{\phi}_m(\cdot).
 \]</span></p>
-<p>It can readily be seen that this is a forward stepwise greedy approach which applies to any differentiable loss function.</p>
+<p>A more modern approach does not choose a single <span class="math inline">\(\theta\)</span> for the entire tree, but instead chooses new leaf values based on the curvature of the function at the leaf notes. Write the second derviative of the loss as <span class="math display">\[
+h_n = \left. \frac{\partial^2 \mathscr{L}(f, y_n)}{\partial f^2} \right|_{f= \hat{f}_{m-1}(\boldsymbol{x}_n)}.
+\]</span> For each leaf <span class="math inline">\(t\)</span> in the tree given by <span class="math inline">\(\hat{\phi}_m\)</span>, the value returned by the CART algorithm is <span class="math inline">\(\overline{g}_t\)</span>, the average of <span class="math inline">\(g_n\)</span> over <span class="math inline">\(n \in t\)</span>. Let <span class="math inline">\(\bar{h}_t\)</span> denote the average of <span class="math inline">\(h_n\)</span> over <span class="math inline">\(n \in t\)</span> if this average is positive, and some small positive value if this average is negative.</p>
+<p>The following values for the leaves correspond to different kinds of optimization steps: <span class="math display">\[
+\begin{aligned}
+-\overline{g}_{t} {}&amp;&amp; \textrm{Unit gradient step}\\
+-\theta_m \overline{g}_t{}&amp;&amp; \textrm{Gradient step of size }\theta_m\\
+\frac{-\overline{g}_t}{\bar{h}_t} {}&amp;&amp; \textrm{Quasi-Newton step of size one}\\
+\frac{-\overline{g}_t}{\bar{h}_t+ \lambda} {}&amp;&amp; \textrm{Regularized Quasi-Newton step of size one}\\
+\theta_m \frac{-\overline{g}_t}{\bar{h}_t+ \lambda} {}&amp;&amp; \textrm{Regularized Quasi-Newton step of size }\theta_m.
+\end{aligned}
+\]</span> The Hessian gives a natural scale for the gradient steps, and it is constrained to be positive by the thresholding. A common contemporary approach is to take the last option with a small, fixed <span class="math inline">\(\theta_m\)</span>.</p>
 
 
 
