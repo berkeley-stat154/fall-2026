@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Composing two networks – UDL Fig. 4.1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+.layout{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:1000px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
+.wide{grid-column:1/-1}
+h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
+.subtitle{font-size:11px;color:#999;margin-bottom:8px}
+.canvas-wrap{position:relative;width:100%;height:230px}
+.y-labels{position:absolute;left:0;top:0;height:100%;width:36px;pointer-events:none}
+.canvas-inner{position:absolute;left:36px;right:0;top:0;bottom:0}
+canvas{display:block;width:100%;height:100%}
+canvas.drag{cursor:ew-resize;touch-action:none}
+svg.net{display:block;width:100%;height:auto}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
+button:hover{background:#f0f0ee}
+button.primary{background:#4a7cdc;color:#fff;border-color:#4a7cdc}
+button.primary:hover{background:#3a6cc0}
+.slider-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#666;flex:1;min-width:240px}
+.slider-row input{flex:1;accent-color:#4a7cdc}
+.slider-row span:last-child{min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
+.xlabel{font-size:11px;color:#aaa;text-align:center;margin-top:2px;padding-left:36px}
+.eqs{font-size:12px;color:#666;line-height:1.7;margin-top:8px;font-variant-numeric:tabular-nums;display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.eqs .off{color:#bbb}
+.legend{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#777}
+.leg-dot{width:9px;height:9px;border-radius:50%}
+.cite{font-size:11px;color:#999;line-height:1.5}
+.cite a{color:#4a7cdc;text-decoration:none}
+@media(max-width:860px){.layout{grid-template-columns:1fr}.eqs{grid-template-columns:1fr}}
+button,input{touch-action:manipulation}
+@media (pointer:coarse){button{padding:10px 16px;font-size:14px;min-height:44px}input[type=range]{height:30px}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel wide">
+    <h2>a) Two shallow networks, composed</h2>
+    <p class="subtitle">The output y of the first network is the input to the second · gray units are switched off (ReLU input below zero)</p>
+    <svg class="net" id="net" viewBox="0 0 900 250"></svg>
+    <div class="btn-row">
+      <div class="slider-row"><span>Input x</span><input type="range" id="x-slider" min="-1" max="1" step="0.002" value="-0.6" oninput="setX(+this.value)"><span id="x-val"></span></div>
+      <button class="primary" id="play-btn" onclick="togglePlay()">Sweep x</button>
+    </div>
+    <div class="eqs" id="eqs"></div>
+  </div>
+
+  <div class="panel">
+    <h2>b) First network: y = f₁[x]</h2>
+    <p class="subtitle">Three regions with alternating slope sign</p>
+    <div class="canvas-wrap"><svg class="y-labels" id="yl1"></svg><div class="canvas-inner"><canvas id="c1" class="drag"></canvas></div></div>
+    <div class="xlabel">input x (drag to move)</div>
+  </div>
+  <div class="panel">
+    <h2>c) Second network: y′ = f₂[y]</h2>
+    <p class="subtitle">Three regions over y ∈ [−1, 1]</p>
+    <div class="canvas-wrap"><svg class="y-labels" id="yl2"></svg><div class="canvas-inner"><canvas id="c2"></canvas></div></div>
+    <div class="xlabel">y (output of first network)</div>
+  </div>
+  <div class="panel">
+    <h2>d) Composition: y′ = f₂[f₁[x]]</h2>
+    <p class="subtitle">f₂ repeated three times: nine regions</p>
+    <div class="canvas-wrap"><svg class="y-labels" id="yl3"></svg><div class="canvas-inner"><canvas id="c3" class="drag"></canvas></div></div>
+    <div class="xlabel">input x (drag to move)</div>
+  </div>
+
+  <div class="panel wide">
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#4a7cdc"></span>chosen input x</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#7fc9c0"></span>y = f₁[x]</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#a9705a"></span>y′ = f₂[y]</span>
+      <span class="leg-item"><span class="leg-dot" style="background:#777"></span>other inputs x with the same y (so the same y′)</span>
+    </div>
+    <p class="cite" style="margin-top:8px">Adapted from Figure 4.1 of Simon J. D. Prince, <i>Understanding Deep Learning</i>, MIT Press, 2023.
+      <a href="https://udlbook.github.io/udlbook/" target="_blank" rel="noopener">udlbook.github.io/udlbook</a>. Original figure licensed CC BY-NC-ND 4.0.</p>
+  </div>
+</div>
+
+<script>
+// ---------- networks (same as the book's construction: f1 folds [-1,1] onto itself three times) ----------
+const NET1 = {th:[[1.0,1],[0.0,1],[-0.6,1]], phi0:-1, phi:[2,-16/3,25/3]};   // values read off the book's figure
+const NET2 = {th:[[1.2,1],[0.2,1],[-0.32,1]], phi0:0.95, phi:[-1.75,3.826923,-2.694570]};
+// colour by the value of y, from orange (y = -1) through grey to slate (y = 1), as in the book
+const GA = [205, 130, 95], GB = [70, 100, 120];
+const grad = y => { const t = Math.max(0, Math.min(1, (y + 1) / 2)); return `rgb(${GA.map((a, i) => Math.round(a + (GB[i] - a) * t)).join(',')})`; };
+const relu = z => Math.max(0, z);
+function run(net, x) {
+  const pre = net.th.map(([a, b]) => a + b * x), act = pre.map(relu);
+  return {pre, act, out: net.phi0 + act.reduce((s, h, i) => s + net.phi[i] * h, 0)};
+}
+const f1 = x => run(NET1, x).out, f2 = y => run(NET2, y).out, f12 = x => f2(f1(x));
+
+// exact preimages of y under f1 on [-1,1] (f1 is piecewise linear with joints at -th0/th1)
+function joints(net) { return net.th.map(([a, b]) => -a / b).filter(k => k > -1 && k < 1).sort((a, b) => a - b); }
+const J1 = [-1, ...joints(NET1), 1];
+function preimages(y) {
+  const out = [];
+  for (let i = 0; i < J1.length - 1; i++) {
+    const a = J1[i], b = J1[i + 1], ya = f1(a), yb = f1(b);
+    if (Math.abs(yb - ya) < 1e-12) continue;
+    const t = (y - ya) / (yb - ya);
+    if (t >= -1e-9 && t <= 1 + 1e-9) out.push(a + t * (b - a));
+  }
+  return out.filter((v, i, arr) => i === 0 || Math.abs(v - arr[i - 1]) > 1e-6);
+}
+
+// ---------- plotting helpers (house style) ----------
+const XMIN = -1, XMAX = 1, YMIN = -1.25, YMAX = 1.25;
+const C = {x:'#4a7cdc', y:'#7fc9c0', yp:'#a9705a', curve:'#7fc9c0', ghost:'#777'};
+function setupCanvas(id) {
+  const c = document.getElementById(id), dpr = window.devicePixelRatio || 1;
+  c.width = c.offsetWidth * dpr; c.height = c.offsetHeight * dpr;
+  const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+  return {ctx, w:c.offsetWidth, h:c.offsetHeight};
+}
+const toX = (x, w) => (x - XMIN) / (XMAX - XMIN) * w;
+const toY = (y, h) => h - (y - YMIN) / (YMAX - YMIN) * h;
+function grid(ctx, w, h) {
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = '#f0f0ee'; ctx.lineWidth = 0.5;
+  for (let v = -1; v <= 1.001; v += 0.5) {
+    ctx.beginPath(); ctx.moveTo(toX(v, w), 0); ctx.lineTo(toX(v, w), h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, toY(v, h)); ctx.lineTo(w, toY(v, h)); ctx.stroke();
+  }
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(toX(0, w), 0); ctx.lineTo(toX(0, w), h); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0, toY(0, h)); ctx.lineTo(w, toY(0, h)); ctx.stroke();
+}
+function yLabels(svgId, canvasId) {
+  const svg = document.getElementById(svgId), hh = document.getElementById(canvasId).offsetHeight;
+  svg.setAttribute('width', 36); svg.setAttribute('height', hh);
+  let s = '';
+  for (let v = -1; v <= 1.001; v += 0.5) s += `<text x="32" y="${toY(v, hh) + 3.5}" text-anchor="end" font-size="10" fill="#aaa">${v === 0 ? '0' : v.toFixed(1)}</text>`;
+  // x tick labels along the bottom edge are drawn in-canvas
+  svg.innerHTML = s;
+}
+function xTicks(ctx, w, h) {
+  ctx.fillStyle = '#bbb'; ctx.font = '10px system-ui'; ctx.textAlign = 'center';
+  for (const v of [-1, -0.5, 0.5, 1]) ctx.fillText(v.toFixed(1), Math.min(w - 10, Math.max(10, toX(v, w))), h - 3);
+}
+function curve(ctx, w, h, f, col, lw = 2.5) {
+  ctx.lineWidth = lw; ctx.lineCap = 'round';
+  if (typeof col === 'string') {
+    ctx.strokeStyle = col; ctx.beginPath();
+    for (let px = 0; px <= w; px++) { const x = XMIN + px / w * (XMAX - XMIN), cy = toY(f(x), h); px ? ctx.lineTo(px, cy) : ctx.moveTo(px, cy); }
+    ctx.stroke(); return;
+  }
+  for (let px = 0; px < w; px++) {   // colour function: draw pixel by pixel
+    const x0 = XMIN + px / w * (XMAX - XMIN), x1 = XMIN + (px + 1) / w * (XMAX - XMIN);
+    ctx.strokeStyle = col((x0 + x1) / 2); ctx.beginPath(); ctx.moveTo(px, toY(f(x0), h)); ctx.lineTo(px + 1, toY(f(x1), h)); ctx.stroke();
+  }
+}
+function dot(ctx, x, y, col, r = 5, hollow = false) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI);
+  if (hollow) { ctx.fillStyle = '#fff'; ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke(); }
+  else { ctx.fillStyle = col; ctx.fill(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke(); }
+}
+function dashed(ctx, x0, y0, x1, y1, col) {
+  ctx.strokeStyle = col; ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.setLineDash([]);
+}
+function shadeOutside(ctx, w, h) { // grey out y outside [-1,1] lightly
+  ctx.fillStyle = 'rgba(0,0,0,0.025)';
+  ctx.fillRect(0, 0, w, toY(1, h)); ctx.fillRect(0, toY(-1, h), w, h - toY(-1, h));
+}
+
+// ---------- state ----------
+let X = -0.6, playing = false, dir = 1, lastT = 0;
+
+function drawB() {
+  const {ctx, w, h} = setupCanvas('c1'); grid(ctx, w, h); yLabels('yl1', 'c1'); xTicks(ctx, w, h);
+  curve(ctx, w, h, f1, C.curve);
+  const y = f1(X), pre = preimages(y);
+  dashed(ctx, 0, toY(y, h), w, toY(y, h), C.y);
+  for (const p of pre) { dashed(ctx, toX(p, w), toY(y, h), toX(p, w), toY(YMIN, h), '#ccc'); }
+  for (const p of pre) if (Math.abs(p - X) > 1e-6) dot(ctx, toX(p, w), toY(y, h), C.ghost, 4.5);
+  dashed(ctx, toX(X, w), toY(YMIN, h), toX(X, w), toY(y, h), C.x);
+  dot(ctx, toX(X, w), toY(YMIN, h) - 16, C.x, 5);
+  dot(ctx, 5, toY(y, h), C.y, 5);
+  dot(ctx, toX(X, w), toY(y, h), C.y, 5.5);
+}
+function drawC() {
+  const {ctx, w, h} = setupCanvas('c2'); grid(ctx, w, h); yLabels('yl2', 'c2'); xTicks(ctx, w, h);
+  curve(ctx, w, h, f2, grad);
+  const y = f1(X), yp = f2(y);
+  dashed(ctx, toX(y, w), toY(YMIN, h), toX(y, w), toY(yp, h), C.y);
+  dashed(ctx, 0, toY(yp, h), toX(y, w), toY(yp, h), C.yp);
+  dot(ctx, toX(y, w), toY(YMIN, h) - 16, C.y, 5);
+  dot(ctx, 5, toY(yp, h), C.yp, 5);
+  dot(ctx, toX(y, w), toY(yp, h), C.yp, 5.5);
+}
+function drawD() {
+  const {ctx, w, h} = setupCanvas('c3'); grid(ctx, w, h); yLabels('yl3', 'c3'); xTicks(ctx, w, h);
+  // faint vertical lines at the first network's joints show the three copies
+  for (const j of J1.slice(1, -1)) dashed(ctx, toX(j, w), 0, toX(j, w), h, '#e3e3e0');
+  curve(ctx, w, h, f12, x => grad(f1(x)));
+  const y = f1(X), yp = f2(y), pre = preimages(y);
+  dashed(ctx, 0, toY(yp, h), w, toY(yp, h), C.yp);
+  for (const p of pre) if (Math.abs(p - X) > 1e-6) dot(ctx, toX(p, w), toY(yp, h), C.ghost, 4.5);
+  dashed(ctx, toX(X, w), toY(YMIN, h), toX(X, w), toY(yp, h), C.x);
+  dot(ctx, toX(X, w), toY(YMIN, h) - 16, C.x, 5);
+  dot(ctx, toX(X, w), toY(yp, h), C.yp, 5.5);
+}
+
+// ---------- network diagram with live values ----------
+const SUB = '₀₁₂₃₄₅₆₇₈₉', sub = n => String(n).split('').map(c => SUB[+c]).join('');
+const fmt = v => (v < 0 ? '−' : '') + Math.abs(v).toFixed(2);
+function drawNet() {
+  const r1 = run(NET1, X), r2 = run(NET2, r1.out);
+  const cols = [70, 250, 450, 650, 830], hy = [55, 125, 195], cy = 125, R = 24;
+  let s = `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,1 L9,5 L0,9 z" fill="#b4b4b0"/></marker></defs>`;
+  const edge = (x1, y1, x2, y2, on) => {
+    const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+    return `<line x1="${x1 + ux * R}" y1="${y1 + uy * R}" x2="${x2 - ux * (R + 2)}" y2="${y2 - uy * (R + 2)}" stroke="${on ? '#9a9a96' : '#e4e4e0'}" stroke-width="${on ? 1.6 : 1.2}" marker-end="url(#arr)"/>`;
+  };
+  // edges
+  hy.forEach((y, i) => { s += edge(cols[0], cy, cols[1], y, r1.act[i] > 0) + edge(cols[1], y, cols[2], cy, r1.act[i] > 0); });
+  hy.forEach((y, i) => { s += edge(cols[2], cy, cols[3], y, r2.act[i] > 0) + edge(cols[3], y, cols[4], cy, r2.act[i] > 0); });
+  const node = (x, y, fill, stroke, label, val, textCol = '#3a3a38') =>
+    `<circle cx="${x}" cy="${y}" r="${R}" fill="${fill}" stroke="${stroke}" stroke-width="1.6"/>
+     <text x="${x}" y="${y - 3}" text-anchor="middle" font-size="13" font-style="italic" fill="${textCol}">${label}</text>
+     <text x="${x}" y="${y + 12}" text-anchor="middle" font-size="10.5" fill="${textCol}">${val}</text>`;
+  s += node(cols[0], cy, '#eef3fc', C.x, 'x', fmt(X));
+  hy.forEach((y, i) => {
+    const on = r1.act[i] > 0;
+    s += node(cols[1], y, on ? '#4a7cdc' : '#f3f3f1', on ? '#4a7cdc' : '#d0d0cc', 'h' + sub(i + 1), fmt(r1.act[i]), on ? '#fff' : '#aaa');
+  });
+  s += node(cols[2], cy, '#eef8f6', C.y, 'y', fmt(r1.out));
+  hy.forEach((y, i) => {
+    const on = r2.act[i] > 0;
+    s += node(cols[3], y, on ? '#4a7cdc' : '#f3f3f1', on ? '#4a7cdc' : '#d0d0cc', 'h′' + sub(i + 1), fmt(r2.act[i]), on ? '#fff' : '#aaa');
+  });
+  s += node(cols[4], cy, '#f6ece7', C.yp, 'y′', fmt(r2.out));
+  s += `<text x="${(cols[0] + cols[2]) / 2}" y="242" text-anchor="middle" font-size="12" fill="#888">first network</text>`;
+  s += `<text x="${(cols[2] + cols[4]) / 2}" y="242" text-anchor="middle" font-size="12" fill="#888">second network</text>`;
+  s += `<line x1="${cols[0] - 20}" y1="226" x2="${cols[2] - 8}" y2="226" stroke="#ddd"/><line x1="${cols[2] + 8}" y1="226" x2="${cols[4] + 20}" y2="226" stroke="#ddd"/>`;
+  document.getElementById('net').innerHTML = s;
+
+  // equations with numbers
+  const line = (name, th, inName, inVal, z, a) =>
+    `<div class="${a > 0 ? '' : 'off'}">${name} = a[${fmt(th[0])} + ${fmt(th[1])}·${inName}] = a[${fmt(z)}] = ${fmt(a)}</div>`;
+  let e = '';
+  const L = [], Rr = [];
+  NET1.th.forEach((th, i) => L.push(line('h' + sub(i + 1), th, 'x', X, r1.pre[i], r1.act[i])));
+  NET2.th.forEach((th, i) => Rr.push(line('h′' + sub(i + 1), th, 'y', r1.out, r2.pre[i], r2.act[i])));
+  L.push(`<div>y = ${fmt(NET1.phi0)} + ${NET1.phi.map((p, i) => fmt(p) + '·h' + sub(i + 1)).join(' + ')} = <b style="color:${C.y}">${fmt(r1.out)}</b></div>`);
+  Rr.push(`<div>y′ = ${fmt(NET2.phi0)} + ${NET2.phi.map((p, i) => fmt(p) + '·h′' + sub(i + 1)).join(' + ')} = <b style="color:${C.yp}">${fmt(r2.out)}</b></div>`);
+  for (let i = 0; i < 4; i++) e += L[i] + Rr[i];
+  document.getElementById('eqs').innerHTML = e.replace(/\+ −/g, '− ');
+}
+
+function refresh() {
+  document.getElementById('x-val').textContent = fmt(X);
+  drawNet(); drawB(); drawC(); drawD();
+}
+function setX(v) { X = Math.max(-1, Math.min(1, v)); document.getElementById('x-slider').value = X; refresh(); }
+
+// drag on panels b and d
+['c1', 'c3'].forEach(id => {
+  const c = document.getElementById(id);
+  const go = e => { const r = c.getBoundingClientRect(); setX(XMIN + (e.clientX - r.left) / r.width * (XMAX - XMIN)); };
+  c.addEventListener('pointerdown', e => { c.setPointerCapture(e.pointerId); stop(); go(e); });
+  c.addEventListener('pointermove', e => { if (e.buttons) go(e); });
+});
+
+function togglePlay() { playing ? stop() : start(); }
+function start() { playing = true; document.getElementById('play-btn').textContent = 'Pause'; lastT = performance.now(); requestAnimationFrame(tick); }
+function stop() { playing = false; document.getElementById('play-btn').textContent = 'Sweep x'; }
+function tick(t) {
+  if (!playing) return;
+  const dt = Math.min(0.05, (t - lastT) / 1000); lastT = t;
+  let v = X + dir * dt * 0.25;
+  if (v > 1) { v = 1; dir = -1; } if (v < -1) { v = -1; dir = 1; }
+  setX(v); requestAnimationFrame(tick);
+}
+
+window.addEventListener('resize', refresh);
+refresh();
+if (window.parent !== window) {
+  const post = () => parent.postMessage({type:'udl-resize', height:document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(post).observe(document.body); post();
+}
+</script>
+</body>
+</html>

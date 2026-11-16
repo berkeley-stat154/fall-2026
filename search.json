@@ -1166,7 +1166,7 @@
     "href": "lectures/unit5/relu.html",
     "title": "RELU activiation and piecewise linear functions",
     "section": "",
-    "text": "References"
+    "text": "RELU activations, shallow and deep networks\n\nRELU linear combinations\nRELU Optimization\nShallow network terminology\nComposing two networks\nDeep networks as folding \nDeep network matrix notation\nLinear regions vs. parameters\n\n\n\nReferences"
   },
   {
     "objectID": "schedule.html",

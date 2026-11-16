@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shallow network terminology – UDL Fig. 3.12</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+.layout{max-width:900px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px}
+h2{font-size:15px;font-weight:500;margin-bottom:4px;color:#3a3a38}
+.subtitle{font-size:12px;color:#888;margin-bottom:8px}
+svg.fig{display:block;width:100%;height:auto}
+.note{font-size:12px;color:#777;margin-top:8px;line-height:1.5}
+.cite{font-size:11px;color:#999;margin-top:10px;line-height:1.5;border-top:0.5px solid #eee;padding-top:8px}
+.cite a{color:#4a7cdc;text-decoration:none}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h2>Shallow network terminology</h2>
+    <p class="subtitle">Fully connected, feed-forward network with one hidden layer of four hidden units</p>
+    <svg class="fig" id="fig" viewBox="0 0 760 480" role="img" aria-label="Diagram of a shallow neural network with an input layer, a hidden layer of four units and an output layer"></svg>
+    <p class="note">Each arrow is a <b>weight</b> (a slope parameter). The <b>biases</b> (offset parameters) are not drawn.
+      Each hidden unit computes a <b>pre-activation</b> (a weighted sum of its inputs plus a bias), then applies the ReLU to get its <b>activation</b> h<sub>d</sub>.</p>
+    <p class="cite">Adapted from Figure 3.12 of Simon J. D. Prince, <i>Understanding Deep Learning</i>, MIT Press, 2023.
+      <a href="https://udlbook.github.io/udlbook/" target="_blank" rel="noopener">udlbook.github.io/udlbook</a>. Original figure licensed CC BY-NC-ND 4.0.</p>
+  </div>
+</div>
+<script>
+// ---- network size: edit here ----
+const N_IN = 3, N_HID = 4, N_OUT = 2;
+const SUB = '₀₁₂₃₄₅₆₇₈₉';
+const sub = n => String(n).split('').map(c => SUB[+c]).join('');
+
+const C = {
+  inFill:'#eaf4ee', inStroke:'#4a9e6a',
+  hidFill:'#eef3fc', hidStroke:'#4a7cdc', act:'#4a7cdc',
+  outFill:'#fbecec', outStroke:'#e05c5c',
+  edge:'#b4b4b0', text:'#3a3a38', ann:'#888'
+};
+const W = 760, X_IN = 110, X_HID = 380, X_OUT = 650, CY = 280, GAP = 82, R = 21;
+const PRE_DX = -32, ACT_DX = 32, RS = 16;   // hidden-unit geometry
+const ys = n => Array.from({length:n}, (_, i) => CY + (i - (n - 1) / 2) * GAP);
+
+let s = `<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+  <path d="M0,1 L9,5 L0,9 z" fill="${C.edge}"/></marker>
+  <marker id="annArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+  <path d="M0,1 L9,5 L0,9 z" fill="${C.ann}"/></marker></defs>`;
+
+// edge clipped to circle borders
+function edge(x1, y1, r1, x2, y2, r2) {
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L;
+  return `<line x1="${x1 + ux * r1}" y1="${y1 + uy * r1}" x2="${x2 - ux * (r2 + 2)}" y2="${y2 - uy * (r2 + 2)}" stroke="${C.edge}" stroke-width="1.3" marker-end="url(#arr)"/>`;
+}
+const yi = ys(N_IN), yh = ys(N_HID), yo = ys(N_OUT);
+
+// column headers
+[['Input layer', X_IN], ['Hidden layer', X_HID], ['Output layer', X_OUT]].forEach(([t, x]) =>
+  s += `<text x="${x}" y="28" text-anchor="middle" font-size="15" font-weight="500" fill="${C.text}">${t}</text>`);
+
+// weights
+yi.forEach(a => yh.forEach(b => s += edge(X_IN, a, R, X_HID + PRE_DX, b, RS)));
+yh.forEach(a => yo.forEach(b => s += edge(X_HID + ACT_DX, a, RS, X_OUT, b, R)));
+
+// input & output nodes
+yi.forEach((y, i) => s += `<circle cx="${X_IN}" cy="${y}" r="${R}" fill="${C.inFill}" stroke="${C.inStroke}" stroke-width="1.5"/>
+  <text x="${X_IN}" y="${y + 5}" text-anchor="middle" font-size="15" font-style="italic" fill="${C.text}">x${sub(i + 1)}</text>`);
+yo.forEach((y, i) => s += `<circle cx="${X_OUT}" cy="${y}" r="${R}" fill="${C.outFill}" stroke="${C.outStroke}" stroke-width="1.5"/>
+  <text x="${X_OUT}" y="${y + 5}" text-anchor="middle" font-size="15" font-style="italic" fill="${C.text}">y${sub(i + 1)}</text>`);
+
+// hidden units: [pre-activation] -> ReLU -> [activation]
+yh.forEach((y, i) => {
+  const xp = X_HID + PRE_DX, xa = X_HID + ACT_DX;
+  s += `<rect x="${xp - RS - 6}" y="${y - RS - 6}" width="${xa - xp + 2 * RS + 12}" height="${2 * RS + 12}" rx="${RS + 6}" fill="${C.hidFill}" stroke="${C.hidStroke}" stroke-width="0.8" stroke-dasharray="3 3"/>`;
+  s += `<circle cx="${xp}" cy="${y}" r="${RS}" fill="#fff" stroke="${C.hidStroke}" stroke-width="1.5"/>`;
+  s += `<path d="M${X_HID - 9},${y + 5} L${X_HID},${y + 5} L${X_HID + 8},${y - 5}" fill="none" stroke="${C.hidStroke}" stroke-width="1.8" stroke-linejoin="round"/>`;
+  s += `<circle cx="${xa}" cy="${y}" r="${RS}" fill="${C.act}" stroke="${C.hidStroke}" stroke-width="1.5"/>
+    <text x="${xa}" y="${y + 5}" text-anchor="middle" font-size="14" font-style="italic" fill="#fff">h${sub(i + 1)}</text>`;
+});
+
+// annotations
+function ann(tx, ty, px, label, anchor = "middle") {
+  s += `<text x="${tx}" y="${ty}" text-anchor="${anchor}" font-size="13" fill="${C.ann}">${label}</text>`;
+  s += `<line x1="${px.x0}" y1="${px.y0}" x2="${px.x1}" y2="${px.y1}" stroke="${C.ann}" stroke-width="1" marker-end="url(#annArr)"/>`;
+}
+const yTop = yh[0];
+ann(X_HID + PRE_DX - 46, yTop - 62, {x0:X_HID + PRE_DX - 30, y0:yTop - 56, x1:X_HID + PRE_DX - 4, y1:yTop - RS - 4}, 'Pre-activations');
+ann(X_HID + ACT_DX + 46, yTop - 62, {x0:X_HID + ACT_DX + 30, y0:yTop - 56, x1:X_HID + ACT_DX + 4, y1:yTop - RS - 4}, 'Activations');
+ann(X_HID, yTop - 84, {x0:X_HID, y0:yTop - 78, x1:X_HID, y1:yTop - 12}, 'ReLU');
+// weight labels near a representative arrow on each side
+const mid = (a, b, t) => a + (b - a) * t;
+const wx1 = mid(X_IN, X_HID + PRE_DX, 0.42), wy1 = mid(yi[yi.length - 1], yh[yh.length - 1], 0.42);
+ann(wx1 - 10, yh[yh.length - 1] + 70, {x0:wx1 - 10, y0:yh[yh.length - 1] + 56, x1:wx1, y1:wy1}, 'Weights');
+const wx2 = mid(X_HID + ACT_DX, X_OUT, 0.5), wy2 = mid(yh[yh.length - 1], yo[yo.length - 1], 0.5);
+ann(wx2 + 10, yh[yh.length - 1] + 70, {x0:wx2 + 10, y0:yh[yh.length - 1] + 56, x1:wx2, y1:wy2}, 'Weights');
+
+document.getElementById('fig').innerHTML = s;
+
+if (window.parent !== window) {
+  const post = () => parent.postMessage({type:'udl-resize', height:document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(post).observe(document.body); post();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shallow network fit with gradient descent – UDL ch. 3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:960px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
+.wide{grid-column:1/-1}
+h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
+.subtitle{font-size:11px;color:#999;margin-bottom:10px}
+.canvas-wrap{position:relative;width:100%;height:200px}
+.y-labels{position:absolute;left:0;top:0;height:100%;width:36px;pointer-events:none}
+.canvas-inner{position:absolute;left:36px;right:0;top:0;bottom:0}
+canvas{display:block;width:100%;height:100%}
+.controls{margin-top:10px;display:flex;flex-direction:column;gap:5px}
+.unit-row{display:grid;grid-template-columns:12px repeat(3,1fr 44px);align-items:center;gap:4px;font-size:11px;color:#555}
+.offset-row{display:grid;grid-template-columns:12px 1fr 44px;align-items:center;gap:4px;font-size:11px;color:#555;margin-top:4px}
+.swatch{width:10px;height:10px;border-radius:2px}
+input[type=range]{width:100%;accent-color:#4a7cdc;height:3px;min-width:0}
+.lbl{font-size:10px;color:#999;text-align:right;font-variant-numeric:tabular-nums}
+.hdr{font-size:10px;color:#aaa;display:grid;grid-template-columns:12px repeat(3,1fr 44px);gap:4px}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
+button:hover{background:#f0f0ee}
+button.primary{background:#4a7cdc;color:#fff;border-color:#4a7cdc}
+button.primary:hover{background:#3a6cc0}
+.stat{font-size:11px;color:#888;margin-top:8px;font-variant-numeric:tabular-nums}
+.slider-row{display:flex;align-items:center;gap:8px;font-size:11px;color:#666;margin-top:6px}
+.slider-row span:first-child{min-width:64px}
+.slider-row input{flex:1}
+.slider-row span:last-child{min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
+.legend{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#777}
+.leg-dot{width:8px;height:8px;border-radius:50%}
+.leg-line{width:20px;height:2px;border-radius:1px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+button,select,input{touch-action:manipulation}
+@media (pointer:coarse){
+  button{padding:10px 16px;font-size:14px;min-height:44px}
+  select{min-height:40px;font-size:15px!important}
+  input[type=range]{height:30px}
+  .controls{gap:8px}
+  .unit-row,.hdr{grid-template-columns:14px repeat(3,1fr 48px);gap:8px}
+  .unit-row{font-size:13px}
+  .lbl,.hdr{font-size:12px}
+  .slider-row,.subtitle,.leg-item,.stat{font-size:13px}
+  .slider-row span:first-child{min-width:84px}
+  .slider-row span:last-child{min-width:56px}
+  .swatch{width:12px;height:12px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h2>Weighted hidden units</h2>
+    <p class="subtitle">φᵢ · ReLU(θᵢ₀ + θᵢ₁x) · dashed vertical = knot at −θᵢ₀/θᵢ₁ · gray = offset φ₀</p>
+    <div class="canvas-wrap">
+      <svg class="y-labels" id="yl2"></svg>
+      <div class="canvas-inner"><canvas id="c2"></canvas></div>
+    </div>
+    <div class="controls">
+      <div class="hdr"><span></span><span>knot −θᵢ₀/θᵢ₁</span><span></span><span>θᵢ₁ slope</span><span></span><span>φᵢ weight</span><span></span></div>
+      <div id="controls" style="display:flex;flex-direction:column;gap:5px"></div>
+      <div class="offset-row" style="grid-template-columns:12px 92px 1fr 44px">
+        <div class="swatch" style="background:#888"></div>
+        <span style="font-size:11px;color:#555">φ₀ overall offset</span>
+        <input type="range" id="p0-slider" min="-5" max="5" step="0.05" oninput="p0=+this.value;markManual();refresh()">
+        <span class="lbl" id="p0-lbl"></span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button onclick="addUnit()">Add unit</button>
+      <button onclick="removeUnit()">Remove unit</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Data and network output</h2>
+    <p class="subtitle">y = φ₀ + Σ φᵢ · ReLU(θᵢ₀ + θᵢ₁x)</p>
+    <div class="slider-row" style="margin-top:0;margin-bottom:8px">
+      <span>Target</span>
+      <select id="target-select" onchange="setTarget(this.value)" style="flex:1;font-size:12px;padding:3px 6px;border:0.5px solid #ccc;border-radius:5px;background:#fff;color:#444">
+        <option value="piecewise">Piecewise linear</option>
+        <option value="quadratic">Quadratic</option>
+        <option value="sine" selected>Sine wave</option>
+        <option value="mixed">Smooth and oscillating</option>
+      </select>
+      <span></span>
+    </div>
+    <div class="canvas-wrap">
+      <svg class="y-labels" id="yl1"></svg>
+      <div class="canvas-inner"><canvas id="c1"></canvas></div>
+    </div>
+    <div class="legend">
+      <span class="leg-item"><span class="leg-dot" style="background:#999"></span>data</span>
+      <span class="leg-item"><span class="leg-line" style="background:#ccc"></span>true function</span>
+      <span class="leg-item"><span class="leg-line" style="background:#4a7cdc"></span>network output</span>
+      <span class="leg-item"><span class="leg-line" style="background:rgba(200,80,80,0.5)"></span>residuals</span>
+    </div>
+    <div class="btn-row">
+      <button class="primary" id="step-btn" onclick="stepClick()">Step</button>
+      <button id="run-btn" onclick="toggleRun()">Run</button>
+      <button onclick="resetSteps()">Reset steps</button>
+      <button onclick="resetAll()">Reset all</button>
+    </div>
+    <div class="slider-row">
+      <span>Learning rate</span>
+      <input type="range" id="lr-slider" min="-3" max="-0.5" step="0.05" value="-2" oninput="updateLR(this.value)">
+      <span id="lr-val">0.0100</span>
+    </div>
+    <div class="slider-row">
+      <span>Steps / click</span>
+      <input type="range" id="steps-slider" min="1" max="200" step="1" value="10" oninput="updateSteps(this.value)">
+      <span id="steps-val">10</span>
+    </div>
+    <div class="slider-row">
+      <span>Optimizer</span>
+      <select id="opt-select" onchange="setOptimizer(this.value)" style="flex:1;font-size:12px;padding:3px 6px;border:0.5px solid #ccc;border-radius:5px;background:#fff;color:#444">
+        <option value="gd">Gradient descent</option>
+        <option value="momentum">Momentum (β = 0.9)</option>
+        <option value="adam">Adam</option>
+      </select>
+      <span></span>
+    </div>
+    <div class="stat" id="stat"></div>
+  </div>
+
+  <div class="panel wide">
+    <h2>Loss history</h2>
+    <p class="subtitle">log₁₀(MSE) against gradient descent step</p>
+    <div class="canvas-wrap" style="height:150px">
+      <svg class="y-labels" id="yl3"></svg>
+      <div class="canvas-inner"><canvas id="c3"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS=['#e05c5c','#4a9e6a','#d4820a','#9b59b6','#2ab5b5','#c0392b','#3b6fd1','#8a6d3b','#d14fa0','#5a8f29'];
+const XMIN=-5, XMAX=5, PAD=0.1;
+let lr=0.01, stepsPerClick=10, running=false;
+let optimizer='gd', optM=[], optV=[], optT=0;
+const DEFAULT_LR={gd:0.01,momentum:0.003,adam:0.03};
+function resetOpt(){optM=[];optV=[];optT=0;}
+function setOptimizer(v){
+  optimizer=v;resetOpt();
+  const s=document.getElementById('lr-slider');s.value=Math.log10(DEFAULT_LR[v]);updateLR(s.value);
+}
+
+function mulberry32(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+const rand=mulberry32(7);
+const PWL=[[-5,-1],[-2,2],[1,-1.5],[3,1],[5,0.5]];
+const TARGETS={
+  piecewise:{label:'Piecewise linear', f:x=>{for(let i=1;i<PWL.length;i++){const [x0,y0]=PWL[i-1],[x1,y1]=PWL[i];if(x<=x1)return y0+(y1-y0)*(x-x0)/(x1-x0);}return PWL[PWL.length-1][1];}},
+  quadratic:{label:'Quadratic',        f:x=>0.3*x*x-0.5*x-1},
+  sine:     {label:'Sine wave',        f:x=>2*Math.sin(0.9*x)},
+  mixed:    {label:'Smooth and oscillating', f:x=>0.3*x-1+1.2*Math.sin(4*x)/(1+Math.exp(-3*(x-0.5)))},
+};
+let target='sine', DATA=[];
+function makeData(name){
+  const r=mulberry32(11);DATA=[];
+  for(let i=0;i<60;i++){
+    const x=XMIN+(i/59)*(XMAX-XMIN);
+    DATA.push({x,y:TARGETS[name].f(x)+(r()-0.5)*0.4});
+  }
+}
+makeData(target);
+function setTarget(v){stopRun();target=v;makeData(v);snapshot=null;lossHistory=[];resetOpt();refresh();}
+
+const INIT={p0:0,units:Array.from({length:4},(_,i)=>{const k=-4.5+9*(i+0.5)/4,s=i%2?-1:1;return {t0:-k*s,t1:s,p:0.3*(i%2?-1:1)};})};
+let p0, units, lossHistory, snapshot;
+const clone=()=>({p0,units:units.map(u=>({...u}))});
+function load(s){p0=s.p0;units=s.units.map(u=>({...u}));}
+
+const h=(u,x)=>Math.max(0,u.t0+u.t1*x);
+const predict=x=>p0+units.reduce((s,u)=>s+u.p*h(u,x),0);
+const mse=()=>DATA.reduce((s,d)=>s+(predict(d.x)-d.y)**2,0)/DATA.length;
+
+function gdStep(){
+  const N=DATA.length;
+  let g0=0;
+  const g=units.map(()=>({t0:0,t1:0,p:0}));
+  for(const {x,y} of DATA){
+    const r=2*(predict(x)-y)/N;
+    g0+=r;
+    units.forEach((u,i)=>{
+      const z=u.t0+u.t1*x;
+      if(z>0){g[i].p+=r*z;g[i].t0+=r*u.p;g[i].t1+=r*u.p*x;}
+    });
+  }
+  const G=[g0];g.forEach(q=>G.push(q.t0,q.t1,q.p));
+  if(optM.length!==G.length){optM=G.map(()=>0);optV=G.map(()=>0);optT=0;}
+  optT++;
+  const D=G.map((gk,k)=>{
+    if(optimizer==='momentum'){optM[k]=0.9*optM[k]+gk;return optM[k];}
+    if(optimizer==='adam'){
+      optM[k]=0.9*optM[k]+0.1*gk;optV[k]=0.999*optV[k]+0.001*gk*gk;
+      return (optM[k]/(1-Math.pow(0.9,optT)))/(Math.sqrt(optV[k]/(1-Math.pow(0.999,optT)))+1e-8);
+    }
+    return gk;
+  });
+  p0-=lr*D[0];
+  units.forEach((u,i)=>{u.t0-=lr*D[1+3*i];u.t1-=lr*D[2+3*i];u.p-=lr*D[3+3*i];});
+  lossHistory.push(Math.log10(mse()));
+}
+
+function runSteps(n){
+  if(!snapshot) snapshot=clone();
+  if(lossHistory.length===0) lossHistory.push(Math.log10(mse()));
+  for(let i=0;i<n;i++) gdStep();
+  syncSliders();
+  refresh();
+}
+function stepClick(){runSteps(stepsPerClick);}
+function toggleRun(){
+  running=!running;
+  document.getElementById('run-btn').textContent=running?'Pause':'Run';
+  if(running) requestAnimationFrame(loop);
+}
+function loop(){if(!running)return;runSteps(stepsPerClick);requestAnimationFrame(loop);}
+function stopRun(){running=false;document.getElementById('run-btn').textContent='Run';}
+
+function markManual(){snapshot=null;lossHistory=[];resetOpt();}
+function resetSteps(){stopRun();resetOpt();if(snapshot)load(snapshot);snapshot=null;lossHistory=[];buildControls();refresh();}
+function resetAll(){stopRun();resetOpt();load(INIT);snapshot=null;lossHistory=[];buildControls();refresh();}
+function updateLR(v){lr=Math.pow(10,+v);document.getElementById('lr-val').textContent=lr.toFixed(4);}
+function updateSteps(v){stepsPerClick=+v;document.getElementById('steps-val').textContent=v;}
+
+function setupCanvas(id){
+  const c=document.getElementById(id),dpr=window.devicePixelRatio||1;
+  c.width=c.offsetWidth*dpr;c.height=c.offsetHeight*dpr;
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  return {ctx,w:c.offsetWidth,h:c.offsetHeight};
+}
+const toX=(x,w,a=XMIN,b=XMAX)=>(x-a)/(b-a)*w;
+const toY=(y,h,ymin,ymax)=>h-(y-ymin)/(ymax-ymin)*h;
+function niceStep(span,n){const r=span/n,m=Math.pow(10,Math.floor(Math.log10(r))),q=r/m;return q<1.5?m:q<3.5?2*m:q<7.5?5*m:10*m;}
+function rangeOf(vals,includeZero=true){
+  let mn=Infinity,mx=-Infinity;
+  for(const v of vals){if(v<mn)mn=v;if(v>mx)mx=v;}
+  if(includeZero){mn=Math.min(mn,0);mx=Math.max(mx,0);}
+  if(mx-mn<1e-6){mn-=0.5;mx+=0.5;}
+  const sp=mx-mn;return {ymin:mn-sp*PAD,ymax:mx+sp*PAD};
+}
+function drawGrid(ctx,w,h,ymin,ymax,xticks){
+  ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle='#f0f0ee';ctx.lineWidth=0.5;
+  for(const cx of xticks){ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,h);ctx.stroke();}
+  const st=niceStep(ymax-ymin,5);
+  for(let y=Math.ceil(ymin/st)*st;y<=ymax+1e-9;y+=st){const cy=toY(y,h,ymin,ymax);ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();}
+}
+function drawAxes(ctx,w,h,ymin,ymax){
+  ctx.strokeStyle='#ccc';ctx.lineWidth=1;
+  const ax=toX(0,w);ctx.beginPath();ctx.moveTo(ax,0);ctx.lineTo(ax,h);ctx.stroke();
+  const ay=toY(0,h,ymin,ymax);if(ay>=0&&ay<=h){ctx.beginPath();ctx.moveTo(0,ay);ctx.lineTo(w,ay);ctx.stroke();}
+}
+function yLabels(svgId,canvasId,ymin,ymax){
+  const svg=document.getElementById(svgId),hh=document.getElementById(canvasId).offsetHeight;
+  svg.setAttribute('width',36);svg.setAttribute('height',hh);
+  const st=niceStep(ymax-ymin,5),dec=st<1?Math.min(3,Math.ceil(-Math.log10(st))):0;
+  let s='';
+  for(let y=Math.ceil(ymin/st)*st;y<=ymax+1e-9;y+=st){
+    const cy=toY(y,hh,ymin,ymax),lbl=Math.abs(y)<1e-9?'0':y.toFixed(dec);
+    s+=`<text x="32" y="${cy+3.5}" text-anchor="end" font-size="10" fill="#aaa">${lbl}</text>`;
+  }
+  svg.innerHTML=s;
+}
+const xIntTicks=w=>{const t=[];for(let x=XMIN;x<=XMAX;x++)t.push(toX(x,w));return t;};
+function plotFn(ctx,w,h,ymin,ymax,f){
+  ctx.beginPath();
+  for(let px=0;px<=w;px++){const x=XMIN+(px/w)*(XMAX-XMIN),cy=toY(f(x),h,ymin,ymax);px?ctx.lineTo(px,cy):ctx.moveTo(px,cy);}
+  ctx.stroke();
+}
+
+function drawFit(){
+  const vals=DATA.map(d=>d.y);
+  for(let i=0;i<=100;i++)vals.push(predict(XMIN+i/100*(XMAX-XMIN)));
+  const {ymin,ymax}=rangeOf(vals);
+  const {ctx,w,h}=setupCanvas('c1');
+  drawGrid(ctx,w,h,ymin,ymax,xIntTicks(w));drawAxes(ctx,w,h,ymin,ymax);yLabels('yl1','c1',ymin,ymax);
+  ctx.strokeStyle='rgba(200,80,80,0.35)';ctx.lineWidth=1;
+  for(const d of DATA){const cx=toX(d.x,w);ctx.beginPath();ctx.moveTo(cx,toY(d.y,h,ymin,ymax));ctx.lineTo(cx,toY(predict(d.x),h,ymin,ymax));ctx.stroke();}
+  ctx.fillStyle='#999';
+  for(const d of DATA){ctx.beginPath();ctx.arc(toX(d.x,w),toY(d.y,h,ymin,ymax),2.8,0,2*Math.PI);ctx.fill();}
+  ctx.strokeStyle='#c8c8c4';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);plotFn(ctx,w,h,ymin,ymax,TARGETS[target].f);ctx.setLineDash([]);
+  ctx.strokeStyle='#4a7cdc';ctx.lineWidth=2;plotFn(ctx,w,h,ymin,ymax,predict);
+  const loss=mse();
+  document.getElementById('stat').textContent=`MSE ${loss.toFixed(4)} · log₁₀ ${Math.log10(loss).toFixed(2)} · steps ${Math.max(0,lossHistory.length-1)}`;
+}
+
+function drawUnits(){
+  const vals=[p0];
+  units.forEach(u=>{for(let i=0;i<=100;i++)vals.push(u.p*h(u,XMIN+i/100*(XMAX-XMIN)));});
+  const {ymin,ymax}=rangeOf(vals);
+  const {ctx,w,h:hh}=setupCanvas('c2');
+  drawGrid(ctx,w,hh,ymin,ymax,xIntTicks(w));drawAxes(ctx,w,hh,ymin,ymax);yLabels('yl2','c2',ymin,ymax);
+  ctx.strokeStyle='#888';ctx.lineWidth=2;ctx.setLineDash([6,4]);
+  const oy=toY(p0,hh,ymin,ymax);ctx.beginPath();ctx.moveTo(0,oy);ctx.lineTo(w,oy);ctx.stroke();ctx.setLineDash([]);
+  units.forEach((u,i)=>{
+    const col=COLORS[i%COLORS.length];
+    ctx.strokeStyle=col;ctx.lineWidth=2;plotFn(ctx,w,hh,ymin,ymax,x=>u.p*h(u,x));
+    if(Math.abs(u.t1)>1e-6){
+      const k=-u.t0/u.t1;
+      if(k>=XMIN&&k<=XMAX){
+        const kx=toX(k,w);
+        ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(kx,0);ctx.lineTo(kx,hh);ctx.stroke();ctx.setLineDash([]);
+        ctx.fillStyle=col;ctx.beginPath();ctx.arc(kx,toY(0,hh,ymin,ymax),3.5,0,2*Math.PI);ctx.fill();
+      }
+    }
+  });
+}
+
+function drawLoss(){
+  const {ctx,w,h}=setupCanvas('c3');
+  if(lossHistory.length<2){
+    ctx.clearRect(0,0,w,h);ctx.fillStyle='#bbb';ctx.font='12px system-ui';ctx.textAlign='center';
+    ctx.fillText('Press Step or Run to start gradient descent',w/2,h/2);
+    document.getElementById('yl3').innerHTML='';return;
+  }
+  const {ymin,ymax}=rangeOf(lossHistory,false);
+  const n=lossHistory.length-1,xst=niceStep(n,8),ticks=[];
+  for(let s=0;s<=n;s+=xst)ticks.push(s/n*w);
+  drawGrid(ctx,w,h,ymin,ymax,ticks);yLabels('yl3','c3',ymin,ymax);
+  ctx.fillStyle='#bbb';ctx.font='10px system-ui';ctx.textAlign='right';ctx.fillText(n+' steps',w-4,h-4);
+  ctx.strokeStyle='#e05c5c';ctx.lineWidth=1.5;ctx.beginPath();
+  const stride=Math.max(1,Math.floor(n/(w*2)));
+  for(let i=0;i<=n;i+=stride){const cx=i/n*w,cy=toY(lossHistory[i],h,ymin,ymax);i?ctx.lineTo(cx,cy):ctx.moveTo(cx,cy);}
+  ctx.lineTo(w,toY(lossHistory[n],h,ymin,ymax));ctx.stroke();
+}
+
+function sliderCell(i,key,min,max){
+  return `<input type="range" id="s-${key}-${i}" min="${min}" max="${max}" step="0.01" oninput="setParam(${i},'${key}',+this.value)"><span class="lbl" id="l-${key}-${i}"></span>`;
+}
+function knotOf(u){return Math.abs(u.t1)>1e-6?-u.t0/u.t1:(u._k??0);}
+const paramVal=(u,k)=>k==='k'?knotOf(u):u[k];
+function setParam(i,key,v){
+  const u=units[i];
+  if(key==='k'){u._k=v;u.t0=-v*u.t1;}
+  else if(key==='t1'){const k=knotOf(u);u._k=k;u.t1=v;u.t0=-k*v;}
+  else u[key]=v;
+  markManual();refresh();
+}
+function buildControls(){
+  const c=document.getElementById('controls');c.innerHTML='';
+  units.forEach((u,i)=>{
+    const row=document.createElement('div');row.className='unit-row';
+    row.innerHTML=`<div class="swatch" style="background:${COLORS[i%COLORS.length]}"></div>`+sliderCell(i,'k',-5,5)+sliderCell(i,'t1',-3,3)+sliderCell(i,'p',-5,5);
+    c.appendChild(row);
+  });
+  syncSliders();
+}
+function syncSliders(){
+  units.forEach((u,i)=>{
+    for(const k of ['k','t1','p']){
+      const s=document.getElementById(`s-${k}-${i}`);if(s)s.value=paramVal(u,k);
+    }
+  });
+  document.getElementById('p0-slider').value=p0;
+}
+function updateLabels(){
+  units.forEach((u,i)=>{for(const k of ['k','t1','p']){const l=document.getElementById(`l-${k}-${i}`);if(l)l.textContent=paramVal(u,k).toFixed(2);}});
+  document.getElementById('p0-lbl').textContent=p0.toFixed(2);
+}
+function addUnit(){
+  if(units.length>=10)return;stopRun();
+  const k=XMIN+rand()*(XMAX-XMIN),t1=rand()<0.5?-1:1;
+  units.push({t0:-k*t1,t1,p:+(rand()-0.5).toFixed(2)});
+  markManual();buildControls();refresh();
+}
+function removeUnit(){if(units.length<=1)return;stopRun();units.pop();markManual();buildControls();refresh();}
+
+function refresh(){updateLabels();drawFit();drawUnits();drawLoss();}
+window.addEventListener('resize',refresh);
+load(INIT);lossHistory=[];snapshot=null;buildControls();refresh();
+if(window.parent!==window){
+  const post=()=>parent.postMessage({type:'udl-resize',height:document.documentElement.scrollHeight},'*');
+  new ResizeObserver(post).observe(document.body);post();
+}
+</script>
+</body>
+</html>

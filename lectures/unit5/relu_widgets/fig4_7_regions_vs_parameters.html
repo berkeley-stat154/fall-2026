@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Linear regions vs. parameters – UDL Fig. 4.7</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:960px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
+.wide{grid-column:1/-1}
+h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
+.subtitle{font-size:11px;color:#999;margin-bottom:8px}
+svg.fig{display:block;width:100%;height:auto}
+.legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:12px;color:#666}
+.leg-line{width:20px;height:2px;border-radius:1px}
+.note{font-size:12px;color:#777;line-height:1.6}
+.cite{font-size:11px;color:#999;margin-top:8px;line-height:1.5;border-top:0.5px solid #eee;padding-top:8px}
+.cite a{color:#4a7cdc;text-decoration:none}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h2>a) One input (D<sub>i</sub> = 1)</h2>
+    <p class="subtitle">Each curve fixes the number of hidden layers K and varies the width D</p>
+    <svg class="fig" id="figA" viewBox="0 0 440 360"></svg>
+  </div>
+  <div class="panel">
+    <h2>b) Ten inputs (D<sub>i</sub> = 10)</h2>
+    <p class="subtitle">Each point along a curve adds ten hidden units per layer</p>
+    <svg class="fig" id="figB" viewBox="0 0 440 360"></svg>
+  </div>
+  <div class="panel wide">
+    <div class="legend" id="legend"></div>
+    <p class="note" style="margin-top:10px">For a fixed parameter budget (horizontal position), deeper networks can produce far more linear regions.
+      With one input, a network with K layers of D hidden units has at most (D + 1)<sup>K</sup> regions and 3D + 1 + (K − 1)D(D + 1) parameters.
+      The highlighted point in (a) is K = 5, D = 10: 471 parameters and 161,051 regions. In (b), K = 5, D = 50 has 10,801 parameters and more than 10<sup>40</sup> regions.</p>
+    <p class="note" style="margin-top:6px;font-size:11px;color:#999">Region counts are the maximum achievable: (⌊D/D<sub>i</sub>⌋ + 1)<sup>D<sub>i</sub>(K−1)</sup> · Σ<sub>j=0…D<sub>i</sub></sub> C(D, j), which reduces to (D + 1)<sup>K</sup> when D<sub>i</sub> = 1 (Montúfar et al., 2014). One output throughout.</p>
+    <p class="cite">Adapted from Figure 4.7 of Simon J. D. Prince, <i>Understanding Deep Learning</i>, MIT Press, 2023.
+      <a href="https://udlbook.github.io/udlbook/" target="_blank" rel="noopener">udlbook.github.io/udlbook</a>. Original figure licensed CC BY-NC-ND 4.0.</p>
+  </div>
+</div>
+<script>
+const COLORS = ['#bdbdbd','#7fc9c0','#d9845a','#7d8a93','#3f5b70'];   // as in the book
+const KS = [1, 2, 3, 4, 5];
+const SUP = {'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+const sup = n => String(n).split('').map(c => SUP[c]).join('');
+
+const log10C = (n, k) => { let s = 0; for (let i = 1; i <= k; i++) s += Math.log10(n - k + i) - Math.log10(i); return s; };
+function log10Regions(Di, D, K) {
+  // log10 of sum_{j=0}^{Di} C(D, j), via log-sum-exp
+  const terms = []; for (let j = 0; j <= Math.min(Di, D); j++) terms.push(log10C(D, j));
+  const m = Math.max(...terms), shallow = m + Math.log10(terms.reduce((s, t) => s + Math.pow(10, t - m), 0));
+  return Di * (K - 1) * Math.log10(Math.floor(D / Di) + 1) + shallow;
+}
+const params = (Di, D, K, Do = 1) => Di * D + D + (K - 1) * (D * D + D) + D * Do + Do;
+
+function plot(svgId, Di, Dstep, xmax, ymax, ystep, xticks, hl, hlLabel) {
+  const W = 440, H = 360, ml = 58, mr = 44, mt = 12, mb = 46;
+  const X = v => ml + v / xmax * (W - ml - mr);
+  const Y = v => H - mb - v / ymax * (H - mt - mb);
+  let s = '';
+  for (const t of xticks) {
+    s += `<line x1="${X(t)}" y1="${mt}" x2="${X(t)}" y2="${H - mb}" stroke="#f0f0ee"/>`;
+    s += `<text x="${X(t)}" y="${H - mb + 16}" text-anchor="middle" font-size="11" fill="#aaa">${t.toLocaleString('en-US')}</text>`;
+  }
+  for (let e = 0; e <= ymax; e += ystep) {
+    s += `<line x1="${ml}" y1="${Y(e)}" x2="${W - mr}" y2="${Y(e)}" stroke="#f0f0ee"/>`;
+    s += `<text x="${ml - 6}" y="${Y(e) + 3.5}" text-anchor="end" font-size="11" fill="#aaa">10${sup(e)}</text>`;
+  }
+  s += `<rect x="${ml}" y="${mt}" width="${W - ml - mr}" height="${H - mt - mb}" fill="none" stroke="#ccc"/>`;
+  s += `<text x="${(ml + W - mr) / 2}" y="${H - 8}" text-anchor="middle" font-size="12" fill="#777">Number of parameters</text>`;
+  s += `<text transform="translate(14 ${(mt + H - mb) / 2}) rotate(-90)" text-anchor="middle" font-size="12" fill="#777">Number of regions (log scale)</text>`;
+  s += `<clipPath id="clip-${svgId}"><rect x="${ml}" y="${mt}" width="${W - ml - mr}" height="${H - mt - mb}"/></clipPath><g clip-path="url(#clip-${svgId})">`;
+  const labels = [];
+  KS.forEach((K, i) => {
+    const pts = [];
+    for (let D = Dstep; ; D += Dstep) { const p = params(Di, D, K); pts.push({p, r: log10Regions(Di, D, K)}); if (p > xmax) break; }
+    const plain = Di === 1 && K === 1;   // the book draws the shallow curve in (a) as a plain grey line
+    s += `<polyline points="${pts.map(d => X(d.p) + ',' + Y(d.r)).join(' ')}" fill="none" stroke="${COLORS[i]}" stroke-width="2" stroke-linejoin="round"/>`;
+    if (!plain) pts.forEach(d => { if (d.p <= xmax) s += `<circle cx="${X(d.p)}" cy="${Y(d.r)}" r="2.2" fill="${COLORS[i]}"/>`; });
+    // label at the right edge
+    const last = pts[pts.length - 1], prev = pts[pts.length - 2] || last;
+    const ry = prev.r + (last.r - prev.r) * Math.min(1, (xmax - prev.p) / Math.max(1e-9, last.p - prev.p));
+    labels.push({K, y: Y(ry), col: COLORS[i]});
+  });
+  s += `</g>`;
+  labels.sort((a, b) => a.y - b.y).forEach((l, i, arr) => { if (i && l.y - arr[i - 1].y < 12) l.y = arr[i - 1].y + 12; });
+  labels.forEach(l => s += `<text x="${W - mr + 4}" y="${l.y + 4}" font-size="11" font-style="italic" fill="${l.col}">K=${l.K}</text>`);
+  const hp = params(Di, hl.D, hl.K), hr = log10Regions(Di, hl.D, hl.K);
+  s += `<circle cx="${X(hp)}" cy="${Y(hr)}" r="6" fill="${COLORS[4]}" stroke="#fff" stroke-width="1.5"/>`;
+  s += `<text x="${X(hp) - 10}" y="${Y(hr) - 24}" text-anchor="end" font-size="11" fill="#3a3a38">K = ${hl.K}, D = ${hl.D}</text>`;
+  s += `<text x="${X(hp) - 10}" y="${Y(hr) - 10}" text-anchor="end" font-size="11" fill="#777">${hp.toLocaleString('en-US')} params, ${hlLabel}</text>`;
+  document.getElementById(svgId).innerHTML = s;
+}
+
+plot('figA', 1, 1, 1000, 6, 1, [0, 250, 500, 750, 1000], {K:5, D:10}, Math.round(Math.pow(10, log10Regions(1, 10, 5))).toLocaleString('en-US') + ' regions');
+plot('figB', 10, 10, 20000, 50, 10, [0, 5000, 10000, 15000, 20000], {K:5, D:50}, '> 10⁴⁰ regions');
+
+document.getElementById('legend').innerHTML = KS.map((K, i) =>
+  `<span class="leg-item"><span class="leg-line" style="background:${COLORS[i]}"></span>K = ${K} layer${K > 1 ? 's' : ''}</span>`).join('');
+
+if (window.parent !== window) {
+  const post = () => parent.postMessage({type:'udl-resize', height:document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(post).observe(document.body); post();
+}
+</script>
+</body>
+</html>

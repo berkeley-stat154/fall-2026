@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReLU Composition – UDL Figure 3.1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+h2{font-size:15px;font-weight:500;margin-bottom:4px;color:#3a3a38}
+.subtitle{font-size:12px;color:#888;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:900px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px}
+.canvas-wrap{position:relative;width:100%;height:220px}
+canvas{display:block;width:100%;height:100%}
+.y-labels{position:absolute;left:0;top:0;height:100%;width:36px;pointer-events:none;font-size:10px;color:#aaa}
+.canvas-inner{position:absolute;left:36px;right:0;top:0;bottom:0}
+.controls{margin-top:14px;display:flex;flex-direction:column;gap:6px}
+.relu-row{display:grid;grid-template-columns:18px 1fr 52px 1fr 52px;align-items:center;gap:6px;font-size:12px;color:#555}
+.relu-row .swatch{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+input[type=range]{width:100%;accent-color:#4a7cdc;height:4px}
+.label{font-size:11px;color:#999;text-align:right}
+.add-btn,.reset-btn{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:4px 10px;cursor:pointer;color:#444}
+.add-btn:hover,.reset-btn:hover{background:#f0f0ee}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.sum-info{font-size:11px;color:#888;margin-top:6px;line-height:1.5}
+.legend{display:flex;align-items:center;gap:6px;font-size:11px;color:#777;margin-top:6px}
+.legend-line{display:inline-block;width:24px;height:2px;border-radius:1px;vertical-align:middle}
+@media(max-width:600px){.layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h2>Individual ReLUs</h2>
+    <p class="subtitle">Each ReLU: <em>a · max(0, x − b)</em> — drag sliders to adjust</p>
+    <div class="canvas-wrap">
+      <svg class="y-labels" id="yl1" width="36" height="220"></svg>
+      <div class="canvas-inner"><canvas id="c1"></canvas></div>
+    </div>
+    <div class="controls" id="controls"></div>
+    <div class="btn-row">
+      <button class="add-btn" onclick="addRelu()">+ Add ReLU</button>
+      <button class="reset-btn" onclick="resetAll()">Reset</button>
+    </div>
+    <div class="sum-info" id="sum-info"></div>
+  </div>
+  <div class="panel">
+    <h2>Sum of ReLUs</h2>
+    <p class="subtitle">f(x) = Σ aᵢ · max(0, x − bᵢ)</p>
+    <div class="canvas-wrap">
+      <svg class="y-labels" id="yl2" width="36" height="220"></svg>
+      <div class="canvas-inner"><canvas id="c2"></canvas></div>
+    </div>
+    <div class="legend">
+      <span class="legend-line" style="background:#4a7cdc"></span> sum &nbsp;
+    </div>
+  </div>
+</div>
+
+<script>
+const COLORS = ['#e05c5c','#4a9e6a','#4a7cdc','#c97d20','#9b59b6','#2ab5b5'];
+const XMIN = -5, XMAX = 5;
+const PAD = 0.12; // fractional padding around data range
+
+let relus = [
+  {bias: -2, scale: 1},
+  {bias:  0, scale: -1.5},
+  {bias:  2, scale: 1},
+];
+
+function relu(x, bias, scale){ return scale * Math.max(0, x - bias); }
+
+// Compute y range needed for a set of functions over x domain
+function computeYRange(fns) {
+  let mn = Infinity, mx = -Infinity;
+  const N = 300;
+  for(let i = 0; i <= N; i++){
+    const x = XMIN + (i/N)*(XMAX - XMIN);
+    fns.forEach(f => {
+      const y = f(x);
+      if(y < mn) mn = y;
+      if(y > mx) mx = y;
+    });
+  }
+  // always include 0
+  mn = Math.min(mn, 0); mx = Math.max(mx, 0);
+  if(mn === mx){ mn -= 1; mx += 1; }
+  const span = mx - mn;
+  return { ymin: mn - span*PAD, ymax: mx + span*PAD };
+}
+
+function setupCanvas(id){
+  const c = document.getElementById(id);
+  const dpr = window.devicePixelRatio||1;
+  c.width = c.offsetWidth * dpr;
+  c.height = c.offsetHeight * dpr;
+  const ctx = c.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return {c, ctx, w: c.offsetWidth, h: c.offsetHeight};
+}
+
+function toX(x, w){ return (x - XMIN)/(XMAX - XMIN) * w; }
+function toY(y, h, ymin, ymax){ return h - (y - ymin)/(ymax - ymin) * h; }
+
+function niceStep(span, targetTicks) {
+  const rough = span / targetTicks;
+  const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+  const norm = rough / mag;
+  if(norm < 1.5) return mag;
+  if(norm < 3.5) return 2*mag;
+  if(norm < 7.5) return 5*mag;
+  return 10*mag;
+}
+
+function drawGrid(ctx, w, h, ymin, ymax){
+  ctx.clearRect(0, 0, w, h);
+  const step = niceStep(ymax - ymin, 5);
+  const first = Math.ceil(ymin / step) * step;
+
+  ctx.strokeStyle = '#f0f0ee'; ctx.lineWidth = 0.5;
+  // vertical grid (x integers)
+  for(let x = Math.ceil(XMIN); x <= XMAX; x++){
+    const cx = toX(x, w);
+    ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
+  }
+  // horizontal grid (nice y steps)
+  for(let y = first; y <= ymax + 1e-9; y += step){
+    const cy = toY(y, h, ymin, ymax);
+    ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+  }
+  // axes
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+  const ax = toX(0, w), ay = toY(0, h, ymin, ymax);
+  ctx.beginPath(); ctx.moveTo(ax, 0); ctx.lineTo(ax, h); ctx.stroke();
+  if(ay >= 0 && ay <= h){
+    ctx.beginPath(); ctx.moveTo(0, ay); ctx.lineTo(w, ay); ctx.stroke();
+  }
+}
+
+function drawYLabels(svgId, canvasId, ymin, ymax){
+  const svg = document.getElementById(svgId);
+  const canvas = document.getElementById(canvasId);
+  const h = canvas.offsetHeight;
+  svg.setAttribute('height', h);
+  const step = niceStep(ymax - ymin, 5);
+  const first = Math.ceil(ymin / step) * step;
+  let html = '';
+  for(let y = first; y <= ymax + 1e-9; y += step){
+    const cy = toY(y, h, ymin, ymax);
+    const label = Math.abs(y) < 1e-9 ? '0' : (Number.isInteger(y) ? y : y.toFixed(1));
+    html += `<text x="33" y="${cy + 3.5}" text-anchor="end" font-size="10" fill="#bbb">${label}</text>`;
+  }
+  svg.innerHTML = html;
+}
+
+function drawRelus(){
+  const {bias: r0b, scale: r0s} = relus[0]; // unused but keep pattern
+  const fns = relus.map(({bias, scale}) => x => relu(x, bias, scale));
+  const {ymin, ymax} = computeYRange(fns);
+
+  const {ctx, w, h} = setupCanvas('c1');
+  drawGrid(ctx, w, h, ymin, ymax);
+  drawYLabels('yl1', 'c1', ymin, ymax);
+
+  relus.forEach(({bias, scale}, i) => {
+    ctx.strokeStyle = COLORS[i % COLORS.length];
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    let first = true;
+    for(let px = 0; px <= w; px++){
+      const x = XMIN + (px/w)*(XMAX - XMIN);
+      const y = relu(x, bias, scale);
+      const cy = toY(y, h, ymin, ymax);
+      if(first){ ctx.moveTo(px, cy); first=false; } else ctx.lineTo(px, cy);
+    }
+    ctx.stroke();
+    // dashed kink line
+    const bx = toX(bias, w);
+    const ky = toY(0, h, ymin, ymax);
+    ctx.strokeStyle = COLORS[i % COLORS.length];
+    ctx.lineWidth = 1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(bx, h); ctx.lineTo(bx, ky); ctx.stroke();
+    ctx.setLineDash([]);
+  });
+}
+
+function drawSum(){
+  const sumFn = x => relus.reduce((s, {bias, scale}) => s + relu(x, bias, scale), 0);
+  const {ymin, ymax} = computeYRange([sumFn]);
+
+  const {ctx, w, h} = setupCanvas('c2');
+  drawGrid(ctx, w, h, ymin, ymax);
+  drawYLabels('yl2', 'c2', ymin, ymax);
+
+  ctx.strokeStyle = '#4a7cdc';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  let first = true;
+  for(let px = 0; px <= w; px++){
+    const x = XMIN + (px/w)*(XMAX - XMIN);
+    const y = sumFn(x);
+    const cy = toY(y, h, ymin, ymax);
+    if(first){ ctx.moveTo(px, cy); first=false; } else ctx.lineTo(px, cy);
+  }
+  ctx.stroke();
+}
+
+function buildControls(){
+  const container = document.getElementById('controls');
+  container.innerHTML = '';
+  relus.forEach(({bias, scale}, i) => {
+    const color = COLORS[i % COLORS.length];
+    const row = document.createElement('div');
+    row.className = 'relu-row';
+    row.innerHTML = `
+      <div class="swatch" style="background:${color}"></div>
+      <input type="range" min="-4.5" max="4.5" step="0.1" value="${bias}"
+        oninput="relus[${i}].bias=+this.value;update()" title="translation b">
+      <span class="label" id="b${i}">b=${(+bias).toFixed(1)}</span>
+      <input type="range" min="-4" max="4" step="0.1" value="${scale}"
+        oninput="relus[${i}].scale=+this.value;update()" title="scale a">
+      <span class="label" id="s${i}">a=${(+scale).toFixed(1)}</span>
+    `;
+    container.appendChild(row);
+  });
+  updateLabels();
+}
+
+function updateLabels(){
+  relus.forEach(({bias, scale}, i) => {
+    const b = document.getElementById('b'+i);
+    const s = document.getElementById('s'+i);
+    if(b) b.textContent = `b=${(+bias).toFixed(1)}`;
+    if(s) s.textContent = `a=${(+scale).toFixed(1)}`;
+  });
+  const terms = relus.map(({bias, scale}) => {
+    const bv = +bias, sv = +scale;
+    const bs = bv >= 0 ? `x−${bv.toFixed(1)}` : `x+${Math.abs(bv).toFixed(1)}`;
+    return `${sv.toFixed(1)}·max(0,${bs})`;
+  }).join(' + ');
+  document.getElementById('sum-info').textContent = 'f(x) = ' + terms;
+}
+
+function update(){
+  updateLabels();
+  drawRelus();
+  drawSum();
+}
+
+function addRelu(){
+  if(relus.length >= 6) return;
+  relus.push({bias: +(Math.random()*6-3).toFixed(1), scale: +(Math.random()*2+0.5).toFixed(1)});
+  buildControls();
+  update();
+}
+
+function resetAll(){
+  relus = [{bias:-2,scale:1},{bias:0,scale:-1.5},{bias:2,scale:1}];
+  buildControls();
+  update();
+}
+
+window.addEventListener('resize', update);
+buildControls();
+update();
+</script>
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Deep networks as folding – UDL Fig. 4.3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:960px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
+.wide{grid-column:1/-1}
+h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
+.subtitle{font-size:11px;color:#999;margin-bottom:8px}
+.canvas-wrap{position:relative;width:100%;height:170px}
+.y-labels{position:absolute;left:0;top:0;height:100%;width:36px;pointer-events:none}
+.canvas-inner{position:absolute;left:36px;right:0;top:0;bottom:0}
+canvas{display:block;width:100%;height:100%}
+.main-wrap{position:relative;width:100%;height:400px}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
+button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
+button:hover{background:#f0f0ee}
+button.primary{background:#4a7cdc;color:#fff;border-color:#4a7cdc}
+button.primary:hover{background:#3a6cc0}
+.slider-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#666;margin-top:6px}
+.slider-row span:first-child{min-width:150px}
+.slider-row input{flex:1;accent-color:#4a7cdc}
+.slider-row span:last-child{min-width:40px;text-align:right;font-variant-numeric:tabular-nums}
+.stage{font-size:13px;color:#3a3a38;margin-top:8px;min-height:20px}
+.stage b{font-weight:600}
+.legend{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#777}
+.leg-line{width:20px;height:3px;border-radius:1px}
+.cite{font-size:11px;color:#999;line-height:1.5;margin-top:8px;border-top:0.5px solid #eee;padding-top:8px}
+.cite a{color:#4a7cdc;text-decoration:none}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.slider-row span:first-child{min-width:110px}}
+button,input{touch-action:manipulation}
+@media (pointer:coarse){button{padding:10px 16px;font-size:14px;min-height:44px}input[type=range]{height:30px}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel wide">
+    <h2>Deep networks as folding the input space</h2>
+    <p class="subtitle">The first network folds the x-axis onto itself, the second network applies its function to the folded space, and unfolding reveals the composed function</p>
+    <div class="main-wrap"><canvas id="main"></canvas></div>
+    <div class="stage" id="stage"></div>
+    <div class="btn-row">
+      <button class="primary" id="play-btn" onclick="togglePlay()">Play</button>
+      <button onclick="goTo(0)">a) Flat</button>
+      <button onclick="goTo(1)">a) Fold</button>
+      <button onclick="goTo(2)">b) Apply f₂</button>
+      <button onclick="goTo(3)">c) Unfold</button>
+    </div>
+    <div class="slider-row"><span>Timeline</span><input type="range" id="t-slider" min="0" max="3" step="0.001" value="0" oninput="stop();setT(+this.value)"><span id="t-val"></span></div>
+    <div class="legend">
+      <span class="leg-item"><span class="leg-line" style="background:#e05c5c"></span>region 1 of f₁ (slope up)</span>
+      <span class="leg-item"><span class="leg-line" style="background:#4a9e6a"></span>region 2 (slope down: flipped)</span>
+      <span class="leg-item"><span class="leg-line" style="background:#c97d20"></span>region 3 (slope up)</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>First network: y = f₁[x]</h2>
+    <p class="subtitle">Three regions with alternating slope · each maps onto y ∈ [−1, 1]</p>
+    <div class="canvas-wrap"><svg class="y-labels" id="yl1"></svg><div class="canvas-inner"><canvas id="c1"></canvas></div></div>
+  </div>
+  <div class="panel">
+    <h2>Second network: y′ = f₂[y]</h2>
+    <p class="subtitle">Applied once to the folded space, so it appears three times after unfolding</p>
+    <div class="canvas-wrap"><svg class="y-labels" id="yl2"></svg><div class="canvas-inner"><canvas id="c2"></canvas></div></div>
+  </div>
+  <div class="panel wide" style="padding-top:4px">
+    <p class="cite" style="border:none">Adapted from Figure 4.3 of Simon J. D. Prince, <i>Understanding Deep Learning</i>, MIT Press, 2023.
+      <a href="https://udlbook.github.io/udlbook/" target="_blank" rel="noopener">udlbook.github.io/udlbook</a>. Original figure licensed CC BY-NC-ND 4.0.
+      Networks are the same as in the Fig. 4.1 page.</p>
+  </div>
+</div>
+
+<script>
+// ---------- same networks as the Fig 4.1 page ----------
+const NET1 = {th:[[1.0,1],[0.0,1],[-0.6,1]], phi0:-1, phi:[2,-16/3,25/3]};   // values read off the book's figure
+const NET2 = {th:[[1.2,1],[0.2,1],[-0.32,1]], phi0:0.95, phi:[-1.75,3.826923,-2.694570]};
+// colour by the value of y, from orange (y = -1) through grey to slate (y = 1), as in the book
+const GA = [205, 130, 95], GB = [70, 100, 120];
+const grad = y => { const t = Math.max(0, Math.min(1, (y + 1) / 2)); return `rgb(${GA.map((a, i) => Math.round(a + (GB[i] - a) * t)).join(',')})`; };
+const relu = z => Math.max(0, z);
+const net = (N, x) => N.phi0 + N.th.reduce((s, [a, b], i) => s + N.phi[i] * relu(a + b * x), 0);
+const f1 = x => net(NET1, x), f2 = y => net(NET2, y);
+const SEG_COLORS = ['#e05c5c', '#4a9e6a', '#c97d20', '#9b59b6'];
+
+// linear pieces of f1 on [-1,1]
+const J = [-1, ...NET1.th.map(([a, b]) => -a / b).filter(k => k > -1 + 1e-9 && k < 1 - 1e-9).sort((a, b) => a - b), 1];
+const SEGS = [];
+for (let i = 0; i < J.length - 1; i++) SEGS.push({x0:J[i], x1:J[i + 1], y0:f1(J[i]), y1:f1(J[i + 1])});
+
+// ---------- geometry of the folding strip ----------
+// fold amount u in [0,1]. Each piece rotates in the (X, depth) plane: upward pieces stay at angle 0,
+// downward pieces turn to angle pi*u. Piece length morphs from its x-length to its y-length,
+// so at u=1 the horizontal position of each point is exactly y = f1(x).
+function stripPoint(x, u) {
+  let X = -1 + u * (SEGS[0].y0 + 1), Z = 0;
+  for (let i = 0; i < SEGS.length; i++) {
+    const s = SEGS[i], dx = s.x1 - s.x0, dy = s.y1 - s.y0;
+    const len = (1 - u) * dx + u * Math.abs(dy);
+    const ang = dy < 0 ? Math.PI * u : 0;
+    const frac = Math.min(1, Math.max(0, (x - s.x0) / dx));
+    const t = x >= s.x1 ? 1 : frac;
+    X += Math.cos(ang) * len * t; Z += Math.sin(ang) * len * t;
+    if (x <= s.x1) return {X, Z, seg:i};
+  }
+  return {X, Z, seg:SEGS.length - 1};
+}
+
+// ---------- timeline: 0→1 fold, 1→2 apply f2, 2→3 unfold ----------
+let T = 0, playing = false, lastT = 0, target = null;
+const ease = s => s < 0.5 ? 2 * s * s : 1 - Math.pow(-2 * s + 2, 2) / 2;
+function phase(T) {
+  const fold = T <= 1 ? ease(T) : T <= 2 ? 1 : ease(3 - T);
+  const apply = T <= 1 ? 0 : T <= 2 ? ease(T - 1) : 1;
+  return {fold, apply};
+}
+
+function setupCanvas(id) {
+  const c = document.getElementById(id), dpr = window.devicePixelRatio || 1;
+  c.width = c.offsetWidth * dpr; c.height = c.offsetHeight * dpr;
+  const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+  return {ctx, w:c.offsetWidth, h:c.offsetHeight};
+}
+
+function drawMain() {
+  const {fold, apply} = phase(T);
+  const {ctx, w, h} = setupCanvas('main');
+  ctx.clearRect(0, 0, w, h);
+  // view: X in [-1.25, 1.95]; screen scale chosen to fit
+  const XL = -1.15, XR = 1.95, ml = 20, mr = 20;
+  const sc = (w - ml - mr) / (XR - XL);
+  const base = h - 70;                     // baseline for the strip (depth 0)
+  const DEPTH_K = 0.28 * sc, OBL = 0.35;   // oblique projection of depth
+  const LAYER_GAP = 30;                    // separation of stacked layers when folded
+  const FUN = Math.min(55, sc * 0.4);      // vertical scale for y'
+  const proj = (p, layer) => {
+    const zc = p.Z * DEPTH_K + layer * LAYER_GAP * fold;
+    return {sx: ml + (p.X - XL) * sc + p.Z * OBL * sc * 0.3, sy: base - zc};
+  };
+  // axis under the strip
+  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(ml + (-1 - XL) * sc, base + 26); ctx.lineTo(ml + (1 - XL) * sc, base + 26); ctx.stroke();
+  ctx.fillStyle = '#aaa'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
+  for (const v of [-1, -0.5, 0, 0.5, 1]) {
+    const px = ml + (v - XL) * sc;
+    ctx.beginPath(); ctx.moveTo(px, base + 22); ctx.lineTo(px, base + 30); ctx.stroke();
+    ctx.fillText(v === 0 ? '0' : v.toFixed(1), px, base + 44);
+  }
+  const axisName = fold > 0.98 ? 'y  (folded: every point sits at its value f₁[x])' : fold < 0.02 ? 'x' : 'folding…';
+  ctx.fillStyle = '#888'; ctx.fillText(axisName, ml + (0 - XL) * sc, base + 62);
+
+  // draw each linear piece of the strip as a band, back layers first
+  const N = 160;
+  const order = SEGS.map((_, i) => i).sort((a, b) => b - a);
+  for (const i of order) {
+    const s = SEGS[i], col = SEG_COLORS[i % SEG_COLORS.length];
+    const pts = [];
+    for (let k = 0; k <= N; k++) {
+      const x = s.x0 + (s.x1 - s.x0) * k / N, p = stripPoint(x, fold), q = proj(p, i);
+      pts.push({x, ...q});
+    }
+    // the paper strip (a thick translucent band)
+    ctx.strokeStyle = col + '55'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); pts.forEach((q, k) => k ? ctx.lineTo(q.sx, q.sy) : ctx.moveTo(q.sx, q.sy)); ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+    ctx.beginPath(); pts.forEach((q, k) => k ? ctx.lineTo(q.sx, q.sy) : ctx.moveTo(q.sx, q.sy)); ctx.stroke();
+    // the function drawn on the paper
+    if (apply > 0) {
+      ctx.lineWidth = 2.6; ctx.lineCap = 'round'; ctx.globalAlpha = Math.min(1, apply * 1.5);
+      for (let k = 0; k < pts.length - 1; k++) {
+        const a = pts[k], b = pts[k + 1];
+        ctx.strokeStyle = grad(f1((a.x + b.x) / 2)); ctx.beginPath();
+        ctx.moveTo(a.sx, a.sy - 14 - (f2(f1(a.x)) + 1) * FUN * apply); ctx.lineTo(b.sx, b.sy - 14 - (f2(f1(b.x)) + 1) * FUN * apply); ctx.stroke();
+      }
+      // thin stems to the paper every few points
+      ctx.strokeStyle = col + '30'; ctx.lineWidth = 1;
+      for (let k = 0; k <= N; k += 8) { const q = pts[k]; ctx.beginPath(); ctx.moveTo(q.sx, q.sy); ctx.lineTo(q.sx, q.sy - 14 - (f2(f1(q.x)) + 1) * FUN * apply); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+    }
+  }
+  // creases between pieces
+  for (let i = 0; i < SEGS.length - 1; i++) {
+    const p = stripPoint(SEGS[i].x1, fold), a = proj(p, i), b = proj(p, i + 1);
+    ctx.strokeStyle = '#999'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(a.sx, a.sy); ctx.lineTo(b.sx, b.sy); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // label for f2 copies when folded
+  if (apply > 0.5 && fold > 0.9) {
+    ctx.fillStyle = '#888'; ctx.font = '12px system-ui'; ctx.textAlign = 'left';
+    ctx.fillText('f₂ is computed once on the folded space, so all three layers carry the same function', ml, 18);
+  }
+}
+
+// ---------- reference panels ----------
+function yLabels(svgId, canvasId, ymin, ymax) {
+  const svg = document.getElementById(svgId), hh = document.getElementById(canvasId).offsetHeight;
+  svg.setAttribute('width', 36); svg.setAttribute('height', hh);
+  let s = '';
+  for (let v = -1; v <= 1.001; v += 1) s += `<text x="32" y="${hh - (v - ymin) / (ymax - ymin) * hh + 3.5}" text-anchor="end" font-size="10" fill="#aaa">${v === 0 ? '0' : v.toFixed(1)}</text>`;
+  svg.innerHTML = s;
+}
+function refPanel(id, ylid, f, colorOf) {
+  const {ctx, w, h} = setupCanvas(id), ymin = -1.2, ymax = 1.2;
+  const tx = x => (x + 1) / 2 * w, ty = y => h - (y - ymin) / (ymax - ymin) * h;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = '#f0f0ee'; ctx.lineWidth = 0.5;
+  for (let v = -1; v <= 1.001; v += 0.5) { ctx.beginPath(); ctx.moveTo(tx(v), 0); ctx.lineTo(tx(v), h); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, ty(v)); ctx.lineTo(w, ty(v)); ctx.stroke(); }
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(tx(0), 0); ctx.lineTo(tx(0), h); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, ty(0)); ctx.lineTo(w, ty(0)); ctx.stroke();
+  for (let px = 0; px < w; px++) {
+    const x0 = px / w * 2 - 1, x1 = (px + 1) / w * 2 - 1;
+    ctx.strokeStyle = colorOf((x0 + x1) / 2); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(px, ty(f(x0))); ctx.lineTo(px + 1, ty(f(x1))); ctx.stroke();
+  }
+  yLabels(ylid, id, ymin, ymax);
+}
+const segOf = x => { for (let i = 0; i < SEGS.length; i++) if (x <= SEGS[i].x1) return i; return SEGS.length - 1; };
+
+const STAGES = [
+  '<b>a) Fold.</b> The first network maps three different ranges of x onto the same range of y, folding the x-axis back on itself. The middle piece has negative slope, so it is flipped.',
+  '<b>b) Apply.</b> The second network computes y′ = f₂[y] on the folded space. Every layer of the fold receives the same function.',
+  '<b>c) Unfold.</b> Unfolding carries the function with each piece: f₂ appears three times, flipped and rescaled, giving nine linear regions.'
+];
+function setT(v) {
+  T = Math.max(0, Math.min(3, v));
+  document.getElementById('t-slider').value = T;
+  document.getElementById('t-val').textContent = T.toFixed(2);
+  document.getElementById('stage').innerHTML = T < 0.001 ? 'Press <b>Play</b> or drag the timeline. The colored strip is the input axis x ∈ [−1, 1], colored by the linear regions of the first network.' : STAGES[Math.min(2, Math.floor(T - 1e-9))];
+  drawMain();
+}
+function goTo(k) { target = k; if (!playing) start(true); }
+function togglePlay() { playing ? stop() : (T >= 2.999 && setT(0), target = null, start(false)); }
+function start(toTarget) { playing = true; document.getElementById('play-btn').textContent = 'Pause'; lastT = performance.now(); if (!toTarget) target = null; requestAnimationFrame(tick); }
+function stop() { playing = false; target = null; document.getElementById('play-btn').textContent = 'Play'; }
+function tick(now) {
+  if (!playing) return;
+  const dt = Math.min(0.05, (now - lastT) / 1000); lastT = now;
+  const speed = 0.4;
+  if (target !== null) {
+    const d = target - T, step = Math.sign(d) * Math.min(Math.abs(d), dt * speed * 1.6);
+    setT(T + step);
+    if (Math.abs(target - T) < 1e-6) { stop(); return; }
+  } else {
+    setT(T + dt * speed);
+    if (T >= 3) { stop(); return; }
+  }
+  requestAnimationFrame(tick);
+}
+function refresh() {
+  refPanel('c1', 'yl1', f1, x => SEG_COLORS[segOf(x)]);
+  refPanel('c2', 'yl2', f2, grad);
+  setT(T);
+}
+window.addEventListener('resize', refresh);
+refresh();
+if (window.parent !== window) {
+  const post = () => parent.postMessage({type:'udl-resize', height:document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(post).observe(document.body); post();
+}
+</script>
+</body>
+</html>

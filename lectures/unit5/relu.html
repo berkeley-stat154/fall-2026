@@ -173,11 +173,18 @@ window.Quarto = {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#relu-activations-shallow-and-deep-networks" id="toc-relu-activations-shallow-and-deep-networks" class="nav-link active" data-scroll-target="#relu-activations-shallow-and-deep-networks">RELU activations, shallow and deep networks</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content page-columns page-full" id="quarto-document-content">
+<main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -204,24 +211,23 @@ window.Quarto = {
 </header>
 
 
-<iframe src="relu_composition.html" width="100%" height="500px" frameborder="0" scrolling="no">
-</iframe>
-<div class="column-page">
-<iframe class="udl-viz" src="relu_gd.html" loading="lazy" style="width:100%; height:1000px; border:0;"></iframe>
-<script>
-window.addEventListener('message', e => {
-  if (!e.data || e.data.type !== 'udl-resize') return;
-  document.querySelectorAll('iframe.udl-viz').forEach(f => {
-    if (f.contentWindow === e.source) f.style.height = e.data.height + 'px';
-  });
-});
-</script>
+<section id="relu-activations-shallow-and-deep-networks" class="level1">
+<h1>RELU activations, shallow and deep networks</h1>
+<ul>
+<li><a href="relu_widgets/relu_composition.html" target="_blank">RELU linear combinations</a></li>
+<li><a href="relu_widgets/relu_gd.html" target="_blank">RELU Optimization</a></li>
+<li><a href="relu_widgets/fig3_12_terminology.html" target="_blank">Shallow network terminology</a></li>
+<li><a href="relu_widgets/fig4_1_composition.html" target="_blank">Composing two networks</a></li>
+<li><a href="relu_widgets/fig4_3_folding.html" target="_blank">Deep networks as folding</a> <!-- [Computation in a deep network](relu_widgets/fig4_5_deep_computation.html){target="_blank"} --></li>
+<li><a href="relu_widgets/fig4_6_matrix_notation.html" target="_blank">Deep network matrix notation</a></li>
+<li><a href="relu_widgets/fig4_7_regions_vs_parameters.html" target="_blank">Linear regions vs.&nbsp;parameters</a></li>
+</ul>
+</section>
 <section id="references" class="level1">
 <h1>References</h1>
 
 
 </section>
-</div>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
