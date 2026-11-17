@@ -25,9 +25,9 @@ input[type=range]{width:100%;accent-color:#4a7cdc;height:3px;min-width:0}
 .hdr{font-size:10px;color:#aaa;display:grid;grid-template-columns:12px repeat(3,1fr 44px);gap:4px}
 .btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
 button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
-button:hover{background:#f0f0ee}
+@media(hover:hover){button:hover{background:#f0f0ee}}
 button.primary{background:#4a7cdc;color:#fff;border-color:#4a7cdc}
-button.primary:hover{background:#3a6cc0}
+@media(hover:hover){button.primary:hover{background:#3a6cc0}}
 .stat{font-size:11px;color:#888;margin-top:8px;font-variant-numeric:tabular-nums}
 .slider-row{display:flex;align-items:center;gap:8px;font-size:11px;color:#666;margin-top:6px}
 .slider-row span:first-child{min-width:64px}

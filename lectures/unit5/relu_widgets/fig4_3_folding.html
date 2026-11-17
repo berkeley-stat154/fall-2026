@@ -7,7 +7,10 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
-.layout{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:960px;margin:0 auto}
+.layout{display:grid;grid-template-columns:3fr 2fr;gap:12px;max-width:960px;margin:0 auto}
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.side .panel{flex:1;display:flex;flex-direction:column}
+.side .canvas-wrap{flex:1;height:auto;min-height:110px}
 .panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
 .wide{grid-column:1/-1}
 h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
@@ -16,12 +19,12 @@ h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
 .y-labels{position:absolute;left:0;top:0;height:100%;width:36px;pointer-events:none}
 .canvas-inner{position:absolute;left:36px;right:0;top:0;bottom:0}
 canvas{display:block;width:100%;height:100%}
-.main-wrap{position:relative;width:100%;height:400px}
+.main-wrap{position:relative;width:100%;height:360px}
 .btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
 button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
-button:hover{background:#f0f0ee}
+@media(hover:hover){button:hover{background:#f0f0ee}}
 button.primary{background:#4a7cdc;color:#fff;border-color:#4a7cdc}
-button.primary:hover{background:#3a6cc0}
+@media(hover:hover){button.primary:hover{background:#3a6cc0}}
 .slider-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#666;margin-top:6px}
 .slider-row span:first-child{min-width:150px}
 .slider-row input{flex:1;accent-color:#4a7cdc}
@@ -33,14 +36,14 @@ button.primary:hover{background:#3a6cc0}
 .leg-line{width:20px;height:3px;border-radius:1px}
 .cite{font-size:11px;color:#999;line-height:1.5;margin-top:8px;border-top:0.5px solid #eee;padding-top:8px}
 .cite a{color:#4a7cdc;text-decoration:none}
-@media(max-width:760px){.layout{grid-template-columns:1fr}.slider-row span:first-child{min-width:110px}}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.side .canvas-wrap{flex:none;height:170px}.slider-row span:first-child{min-width:110px}}
 button,input{touch-action:manipulation}
 @media (pointer:coarse){button{padding:10px 16px;font-size:14px;min-height:44px}input[type=range]{height:30px}}
 </style>
 </head>
 <body>
 <div class="layout">
-  <div class="panel wide">
+  <div class="panel">
     <h2>Deep networks as folding the input space</h2>
     <p class="subtitle">The first network folds the x-axis onto itself, the second network applies its function to the folded space, and unfolding reveals the composed function</p>
     <div class="main-wrap"><canvas id="main"></canvas></div>
@@ -59,6 +62,7 @@ button,input{touch-action:manipulation}
       <span class="leg-item"><span class="leg-line" style="background:#c97d20"></span>region 3 (slope up)</span>
     </div>
   </div>
+  <div class="side">
   <div class="panel">
     <h2>First network: y = f₁[x]</h2>
     <p class="subtitle">Three regions with alternating slope · each maps onto y ∈ [−1, 1]</p>
@@ -68,6 +72,7 @@ button,input{touch-action:manipulation}
     <h2>Second network: y′ = f₂[y]</h2>
     <p class="subtitle">Applied once to the folded space, so it appears three times after unfolding</p>
     <div class="canvas-wrap"><svg class="y-labels" id="yl2"></svg><div class="canvas-inner"><canvas id="c2"></canvas></div></div>
+  </div>
   </div>
   <div class="panel wide" style="padding-top:4px">
     <p class="cite" style="border:none">Adapted from Figure 4.3 of Simon J. D. Prince, <i>Understanding Deep Learning</i>, MIT Press, 2023.
@@ -192,7 +197,9 @@ function drawMain() {
   // label for f2 copies when folded
   if (apply > 0.5 && fold > 0.9) {
     ctx.fillStyle = '#888'; ctx.font = '12px system-ui'; ctx.textAlign = 'left';
-    ctx.fillText('f₂ is computed once on the folded space, so all three layers carry the same function', ml, 18);
+    const msg = 'f₂ is computed once on the folded space, so all three layers carry the same function';
+    if (ctx.measureText(msg).width <= w - ml - mr) ctx.fillText(msg, ml, 18);
+    else { ctx.fillText('f₂ is computed once on the folded space,', ml, 18); ctx.fillText('so all three layers carry the same function', ml, 34); }
   }
 }
 

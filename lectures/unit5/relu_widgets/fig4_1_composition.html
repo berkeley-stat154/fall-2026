@@ -20,21 +20,19 @@ canvas.drag{cursor:ew-resize;touch-action:none}
 svg.net{display:block;width:100%;height:auto}
 .btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}
 button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
-button:hover{background:#f0f0ee}
+@media(hover:hover){button:hover{background:#f0f0ee}}
 button.primary{background:#4a7cdc;color:#fff;border-color:#4a7cdc}
-button.primary:hover{background:#3a6cc0}
+@media(hover:hover){button.primary:hover{background:#3a6cc0}}
 .slider-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#666;flex:1;min-width:240px}
 .slider-row input{flex:1;accent-color:#4a7cdc}
 .slider-row span:last-child{min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
 .xlabel{font-size:11px;color:#aaa;text-align:center;margin-top:2px;padding-left:36px}
-.eqs{font-size:12px;color:#666;line-height:1.7;margin-top:8px;font-variant-numeric:tabular-nums;display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
-.eqs .off{color:#bbb}
 .legend{display:flex;gap:12px;margin-top:6px;flex-wrap:wrap}
 .leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#777}
 .leg-dot{width:9px;height:9px;border-radius:50%}
 .cite{font-size:11px;color:#999;line-height:1.5}
 .cite a{color:#4a7cdc;text-decoration:none}
-@media(max-width:860px){.layout{grid-template-columns:1fr}.eqs{grid-template-columns:1fr}}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
 button,input{touch-action:manipulation}
 @media (pointer:coarse){button{padding:10px 16px;font-size:14px;min-height:44px}input[type=range]{height:30px}}
 </style>
@@ -49,7 +47,6 @@ button,input{touch-action:manipulation}
       <div class="slider-row"><span>Input x</span><input type="range" id="x-slider" min="-1" max="1" step="0.002" value="-0.6" oninput="setX(+this.value)"><span id="x-val"></span></div>
       <button class="primary" id="play-btn" onclick="togglePlay()">Sweep x</button>
     </div>
-    <div class="eqs" id="eqs"></div>
   </div>
 
   <div class="panel">
@@ -243,17 +240,6 @@ function drawNet() {
   s += `<line x1="${cols[0] - 20}" y1="226" x2="${cols[2] - 8}" y2="226" stroke="#ddd"/><line x1="${cols[2] + 8}" y1="226" x2="${cols[4] + 20}" y2="226" stroke="#ddd"/>`;
   document.getElementById('net').innerHTML = s;
 
-  // equations with numbers
-  const line = (name, th, inName, inVal, z, a) =>
-    `<div class="${a > 0 ? '' : 'off'}">${name} = a[${fmt(th[0])} + ${fmt(th[1])}·${inName}] = a[${fmt(z)}] = ${fmt(a)}</div>`;
-  let e = '';
-  const L = [], Rr = [];
-  NET1.th.forEach((th, i) => L.push(line('h' + sub(i + 1), th, 'x', X, r1.pre[i], r1.act[i])));
-  NET2.th.forEach((th, i) => Rr.push(line('h′' + sub(i + 1), th, 'y', r1.out, r2.pre[i], r2.act[i])));
-  L.push(`<div>y = ${fmt(NET1.phi0)} + ${NET1.phi.map((p, i) => fmt(p) + '·h' + sub(i + 1)).join(' + ')} = <b style="color:${C.y}">${fmt(r1.out)}</b></div>`);
-  Rr.push(`<div>y′ = ${fmt(NET2.phi0)} + ${NET2.phi.map((p, i) => fmt(p) + '·h′' + sub(i + 1)).join(' + ')} = <b style="color:${C.yp}">${fmt(r2.out)}</b></div>`);
-  for (let i = 0; i < 4; i++) e += L[i] + Rr[i];
-  document.getElementById('eqs').innerHTML = e.replace(/\+ −/g, '− ');
 }
 
 function refresh() {
