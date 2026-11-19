@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gabor model loss landscape – UDL Fig. 6.4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px;-webkit-tap-highlight-color:transparent}
+.layout{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;max-width:1100px;margin:0 auto}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
+.wide{grid-column:1/-1}
+h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
+.subtitle{font-size:11px;color:#999;margin-bottom:8px}
+.land-wrap{position:relative;width:100%;aspect-ratio:1/1;max-height:560px}
+.land-wrap .y-labels{position:absolute;left:0;top:0;bottom:22px;width:40px;pointer-events:none}
+.land-wrap .x-labels{position:absolute;left:40px;right:0;bottom:0;height:22px;pointer-events:none}
+.land-inner{position:absolute;left:40px;right:0;top:0;bottom:22px}
+.land-inner canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#overlay{cursor:crosshair;touch-action:none}
+.fit-wrap{position:relative;width:100%;height:260px}
+.fit-wrap .y-labels{position:absolute;left:0;top:0;bottom:22px;width:36px;pointer-events:none}
+.fit-wrap .x-labels{position:absolute;left:36px;right:0;bottom:0;height:22px;pointer-events:none}
+.fit-inner{position:absolute;left:36px;right:0;top:0;bottom:22px}
+canvas{display:block;width:100%;height:100%}
+svg.y-labels,svg.x-labels{overflow:visible}
+.land-wrap{margin-top:6px}
+.axis-name{font-size:11px;color:#888;text-align:center;margin-top:2px}
+.readout{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:#555;font-variant-numeric:tabular-nums}
+.readout b{font-weight:600;color:#3a3a38}
+.loss-big{font-size:22px;font-weight:500;color:#3a3a38;font-variant-numeric:tabular-nums}
+.loss-row{display:flex;align-items:baseline;gap:10px;margin-top:8px;flex-wrap:wrap}
+.tag{font-size:12px;padding:2px 8px;border-radius:10px;background:#f3f3f1;color:#777}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{font-size:13px;border:0.5px solid #ccc;background:#fff;border-radius:6px;padding:7px 12px;cursor:pointer;color:#444;display:flex;align-items:center;gap:6px;min-height:36px}
+.chip:hover{background:#f0f0ee}
+.chip.on{border-color:#4a7cdc;box-shadow:0 0 0 1px #4a7cdc55}
+.dot{width:11px;height:11px;border-radius:50%;border:1.5px solid #fff;box-shadow:0 0 0 1px #888}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#777}
+.hint{font-size:12px;color:#888;margin-top:8px;line-height:1.5}
+.note{font-size:12px;color:#777;line-height:1.6}
+.cite{font-size:11px;color:#999;line-height:1.5;margin-top:8px;border-top:0.5px solid #eee;padding-top:8px}
+.cite a{color:#4a7cdc;text-decoration:none}
+.eq{font-family:'Cambria Math','STIX Two Math',Georgia,serif;font-size:14px;color:#3a3a38}
+@media(max-width:820px){.layout{grid-template-columns:1fr}}
+button,input{touch-action:manipulation}
+@media (pointer:coarse){.chip{padding:10px 14px;font-size:15px;min-height:44px}.readout{font-size:15px}.hint{font-size:14px}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h2>a) Loss L[φ] for the Gabor model</h2>
+    <p class="subtitle">Darker is lower loss · move over the surface (or drag on a tablet) to see the fit · tap a marker to jump to it</p>
+    <div class="land-wrap">
+      <svg class="y-labels" id="land-yl"></svg>
+      <div class="land-inner"><canvas id="heat"></canvas><canvas id="overlay"></canvas></div>
+      <svg class="x-labels" id="land-xl"></svg>
+    </div>
+    <div class="axis-name">φ₀ (horizontal, position) &nbsp;·&nbsp; φ₁ (vertical, frequency)</div>
+    <div class="legend">
+      <span class="leg-item"><span class="dot" style="background:#9fd8d3"></span>local minimum</span>
+      <span class="leg-item"><span class="dot" style="background:#8a8a8a"></span>global minimum</span>
+      <span class="leg-item"><span style="color:#3b6fd1;font-weight:700;font-size:15px;line-height:1">+</span>saddle point</span>
+      <span class="leg-item"><span class="dot" style="background:#fff;box-shadow:0 0 0 2px #1a1a18"></span>current φ</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2 id="fit-title">Model at the current parameters</h2>
+    <p class="subtitle"><span class="eq">f[x, φ] = sin[φ₀ + 0.06φ₁x] · exp[−(φ₀ + 0.06φ₁x)² / 32]</span></p>
+    <div class="fit-wrap">
+      <svg class="y-labels" id="fit-yl"></svg>
+      <div class="fit-inner"><canvas id="fit"></canvas></div>
+      <svg class="x-labels" id="fit-xl"></svg>
+    </div>
+    <div class="axis-name">input x</div>
+    <div class="loss-row"><span style="font-size:13px;color:#888">Loss</span><span class="loss-big" id="loss"></span><span class="tag" id="kind"></span></div>
+    <div class="readout"><span>φ₀ = <b id="p0"></b></span><span>φ₁ = <b id="p1"></b></span></div>
+    <div class="chips" id="chips"></div>
+    <p class="hint">Points labeled b–f are the ones the book shows as insets. The unlabeled cyan circles are other local minima. At every minimum no small change of φ lowers the loss, yet only c is the best fit. At the saddle point, the loss falls if you move φ₀ either way but rises if you move φ₁.</p>
+  </div>
+
+  <div class="panel wide">
+    <p class="note">The least-squares loss is <span class="eq">L[φ] = Σᵢ (f[xᵢ, φ] − yᵢ)²</span>, summed over the training data (orange). The data were generated from a Gabor model with φ = [0, 16.6] plus noise. φ₀ moves the function left and right, and φ₁ squeezes it along the x-axis.</p>
+    <p class="cite">Adapted from Figures 6.3 and 6.4 and Section 6.1.2 of Simon J. D. Prince, <i>Understanding Deep Learning</i>, MIT Press, 2023.
+      <a href="https://udlbook.github.io/udlbook/" target="_blank" rel="noopener">udlbook.github.io/udlbook</a>. Original figures licensed CC BY-NC-ND 4.0.
+      Training data were digitized from Fig. 6.3, so losses differ slightly from the values printed in the book.</p>
+  </div>
+</div>
+
+<script>
+// ---------- data (digitized from UDL Fig. 6.3) and model ----------
+const DATA = [[-14.156,-0.023],[-13.148,0.018],[-12.585,0.016],[-12.202,-0.051],[-11.842,0.206],[-11.234,-0.028],[-11.054,-0.016],[-9.546,-0.278],[-8.893,-0.002],[-8.600,-0.203],[-8.240,-0.045],[-7.047,-0.277],[-5.966,0.171],[-5.088,0.455],[-4.503,0.600],[-2.364,-0.940],[-2.161,-0.558],[-1.936,-0.491],[-0.180,-0.218],[0.135,0.035],[0.450,0.502],[0.855,0.830],[1.441,0.899],[2.927,0.173],[3.422,-0.078],[3.625,-0.316],[8.532,0.341],[10.333,0.065],[10.513,0.196]];
+const gabor = (p0, p1, x) => { const z = p0 + 0.06 * p1 * x; return Math.sin(z) * Math.exp(-z * z / 32); };
+const loss = (p0, p1) => { let s = 0; for (const [x, y] of DATA) { const r = gabor(p0, p1, x) - y; s += r * r; } return s; };
+
+const P0MIN = -10, P0MAX = 10, P1MIN = 2.5, P1MAX = 22.5;
+
+// ---------- special points ----------
+function refine(p) {   // pattern search to the nearest local minimum
+  let [a, b] = p, s = 0.25, L = loss(a, b);
+  while (s > 1e-6) {
+    let moved = false;
+    for (const [da, db] of [[s,0],[-s,0],[0,s],[0,-s],[s,s],[s,-s],[-s,s],[-s,-s]]) {
+      const l = loss(a + da, b + db); if (l < L) { a += da; b += db; L = l; moved = true; break; }
+    }
+    if (!moved) s /= 2;
+  }
+  return [a, b];
+}
+// the five minima the book shows as insets b–f, and its saddle point
+const LABELED = [
+  {id:'b', p:refine([6.5, 18.3]),  kind:'local minimum'},
+  {id:'c', p:refine([0.0, 16.2]),  kind:'global minimum'},
+  {id:'d', p:refine([-5.8, 13.9]), kind:'local minimum'},
+  {id:'e', p:refine([-0.1, 4.8]),  kind:'local minimum'},
+  {id:'f', p:refine([6.4, 8.3]),   kind:'local minimum'},
+];
+function saddle(p) {   // Newton's method on the gradient
+  let [a, b] = p; const h = 1e-4;
+  const g = (a, b) => [(loss(a + h, b) - loss(a - h, b)) / (2 * h), (loss(a, b + h) - loss(a, b - h)) / (2 * h)];
+  for (let it = 0; it < 40; it++) {
+    const g0 = g(a, b), ga = g(a + h, b), gb = g(a, b + h);
+    const J = [[(ga[0] - g0[0]) / h, (gb[0] - g0[0]) / h], [(ga[1] - g0[1]) / h, (gb[1] - g0[1]) / h]];
+    const det = J[0][0] * J[1][1] - J[0][1] * J[1][0]; if (Math.abs(det) < 1e-12) break;
+    a -= ( J[1][1] * g0[0] - J[0][1] * g0[1]) / det;
+    b -= (-J[1][0] * g0[0] + J[0][0] * g0[1]) / det;
+  }
+  return [a, b];
+}
+const SADDLE = {id:'saddle', p:saddle([-2.6, 9.0]), kind:'saddle point'};
+
+// ---------- loss grid, colour map, contours ----------
+const N = 220;
+const GRID = new Float32Array((N + 1) * (N + 1));
+let LMIN = Infinity, LMAX = -Infinity;
+for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) {
+  const v = loss(P0MIN + i / N * (P0MAX - P0MIN), P1MIN + j / N * (P1MAX - P1MIN));
+  GRID[j * (N + 1) + i] = v; if (v < LMIN) LMIN = v; if (v > LMAX) LMAX = v;
+}
+// other local minima visible in the window (unlabeled cyan circles)
+const OTHER = [];
+for (let j = 2; j < N - 1; j++) for (let i = 2; i < N - 1; i++) {
+  const v = GRID[j * (N + 1) + i]; let isMin = true;
+  for (let dj = -1; dj <= 1 && isMin; dj++) for (let di = -1; di <= 1; di++) if ((di || dj) && GRID[(j + dj) * (N + 1) + i + di] <= v) { isMin = false; break; }
+  if (!isMin) continue;
+  const p = refine([P0MIN + i / N * (P0MAX - P0MIN), P1MIN + j / N * (P1MAX - P1MIN)]);
+  if (p[0] < P0MIN || p[0] > P0MAX || p[1] < P1MIN || p[1] > P1MAX) continue;
+  const all = [...LABELED, ...OTHER];
+  if (all.every(q => Math.hypot(q.p[0] - p[0], (q.p[1] - p[1]) / 2) > 0.3)) OTHER.push({id:null, p, kind:'local minimum'});
+}
+
+const STOPS = [[0, [38, 20, 16]], [0.18, [110, 52, 36]], [0.42, [185, 100, 72]], [0.7, [226, 165, 128]], [1, [250, 236, 210]]];
+function cmap(t) {
+  t = Math.max(0, Math.min(1, t));
+  for (let k = 1; k < STOPS.length; k++) if (t <= STOPS[k][0]) {
+    const [t0, c0] = STOPS[k - 1], [t1, c1] = STOPS[k], u = (t - t0) / (t1 - t0);
+    return c0.map((c, i) => Math.round(c + (c1[i] - c) * u));
+  }
+  return STOPS[STOPS.length - 1][1];
+}
+const norm = v => Math.pow((v - LMIN) / (LMAX - LMIN), 0.85);
+
+function setupCanvas(c) {
+  const dpr = window.devicePixelRatio || 1;
+  c.width = Math.round(c.offsetWidth * dpr); c.height = Math.round(c.offsetHeight * dpr);
+  const ctx = c.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return {ctx, w:c.offsetWidth, h:c.offsetHeight};
+}
+const toPx = (p0, w) => (p0 - P0MIN) / (P0MAX - P0MIN) * w;
+const toPy = (p1, h) => h - (p1 - P1MIN) / (P1MAX - P1MIN) * h;
+const fromPx = (px, w) => P0MIN + px / w * (P0MAX - P0MIN);
+const fromPy = (py, h) => P1MIN + (h - py) / h * (P1MAX - P1MIN);
+
+function drawHeat() {
+  const c = document.getElementById('heat'), {ctx, w, h} = setupCanvas(c);
+  // heat map at grid resolution, scaled up smoothly
+  const off = document.createElement('canvas'); off.width = N + 1; off.height = N + 1;
+  const octx = off.getContext('2d'), img = octx.createImageData(N + 1, N + 1);
+  for (let j = 0; j <= N; j++) for (let i = 0; i <= N; i++) {
+    const [r, g, b] = cmap(norm(GRID[j * (N + 1) + i])), k = ((N - j) * (N + 1) + i) * 4;
+    img.data[k] = r; img.data[k + 1] = g; img.data[k + 2] = b; img.data[k + 3] = 255;
+  }
+  octx.putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = true; ctx.drawImage(off, 0, 0, w, h);
+  // contours (marching squares)
+  ctx.strokeStyle = 'rgba(150,160,165,0.75)'; ctx.lineWidth = 0.9;
+  const levels = []; for (let L = 1; L < LMAX; L += 1) levels.push(L);
+  const gx = i => i / N * w, gy = j => h - j / N * h;
+  ctx.beginPath();
+  for (const L of levels) for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+    const v = [GRID[j * (N + 1) + i], GRID[j * (N + 1) + i + 1], GRID[(j + 1) * (N + 1) + i + 1], GRID[(j + 1) * (N + 1) + i]];
+    const pts = [];
+    const E = [[0, 1, [i, j], [i + 1, j]], [1, 2, [i + 1, j], [i + 1, j + 1]], [2, 3, [i + 1, j + 1], [i, j + 1]], [3, 0, [i, j + 1], [i, j]]];
+    for (const [a, b, A, B] of E) if ((v[a] < L) !== (v[b] < L)) {
+      const t = (L - v[a]) / (v[b] - v[a]); pts.push([gx(A[0] + (B[0] - A[0]) * t), gy(A[1] + (B[1] - A[1]) * t)]);
+    }
+    for (let k = 0; k + 1 < pts.length; k += 2) { ctx.moveTo(pts[k][0], pts[k][1]); ctx.lineTo(pts[k + 1][0], pts[k + 1][1]); }
+  }
+  ctx.stroke();
+  // axis labels
+  const yl = document.getElementById('land-yl'), xl = document.getElementById('land-xl');
+  yl.setAttribute('width', 40); yl.setAttribute('height', h);
+  let s = ''; for (let v = 2.5; v <= 22.5 + 1e-9; v += 5) s += `<text x="35" y="${toPy(v, h) + 4}" text-anchor="end" font-size="11" fill="#aaa">${v.toFixed(1)}</text>`;
+  s += `<text transform="translate(10 ${toPy(20, h)}) rotate(-90)" text-anchor="middle" font-size="12" fill="#777" font-style="italic">φ₁</text>`;
+  yl.innerHTML = s;
+  xl.setAttribute('width', w); xl.setAttribute('height', 22);
+  s = ''; for (let v = -10; v <= 10; v += 5) s += `<text x="${Math.min(w - 12, Math.max(12, toPx(v, w)))}" y="15" text-anchor="middle" font-size="11" fill="#aaa">${v.toFixed(1)}</text>`;
+  s += `<text x="${toPx(-7.5, w)}" y="15" text-anchor="middle" font-size="12" fill="#777" font-style="italic">φ₀ →</text>`;
+  xl.innerHTML = s;
+}
+
+// ---------- interaction state ----------
+let cur = LABELED[1].p.slice(), pinned = cur.slice(), pinnedId = 'c', hovering = false;
+const ALL = () => [...LABELED, SADDLE, ...OTHER];
+
+function drawOverlay() {
+  const c = document.getElementById('overlay'), {ctx, w, h} = setupCanvas(c);
+  ctx.clearRect(0, 0, w, h);
+  const marker = (q) => {
+    const x = toPx(q.p[0], w), y = toPy(q.p[1], h);
+    if (q.id === 'saddle') {
+      ctx.strokeStyle = '#3b6fd1'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(x - 7, y); ctx.lineTo(x + 7, y); ctx.moveTo(x, y - 7); ctx.lineTo(x, y + 7); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.arc(x, y, 6, 0, 2 * Math.PI);
+      ctx.fillStyle = q.kind === 'global minimum' ? '#8a8a8a' : '#9fd8d3'; ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 0.75; ctx.stroke();
+    }
+    if (q.id) {
+      ctx.font = '600 13px system-ui'; ctx.textAlign = 'left'; ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.85)';
+      const lab = q.id === 'saddle' ? 'saddle' : q.id;
+      ctx.strokeText(lab, x + 9, y - 7); ctx.fillStyle = '#1a1a18'; ctx.fillText(lab, x + 9, y - 7);
+    }
+  };
+  ALL().forEach(marker);
+  // current point
+  const x = toPx(cur[0], w), y = toPy(cur[1], h);
+  ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); ctx.setLineDash([]);
+  ctx.beginPath(); ctx.arc(x, y, 9, 0, 2 * Math.PI); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.beginPath(); ctx.arc(x, y, 9, 0, 2 * Math.PI); ctx.strokeStyle = '#1a1a18'; ctx.lineWidth = 1.2; ctx.stroke();
+}
+
+function drawFit() {
+  const c = document.getElementById('fit'), {ctx, w, h} = setupCanvas(c);
+  const XMIN = -15, XMAX = 15, YMIN = -1.05, YMAX = 1.05;
+  const tx = x => (x - XMIN) / (XMAX - XMIN) * w, ty = y => h - (y - YMIN) / (YMAX - YMIN) * h;
+  ctx.clearRect(0, 0, w, h);
+  ctx.strokeStyle = '#f0f0ee'; ctx.lineWidth = 0.5;
+  for (let v = -15; v <= 15; v += 5) { ctx.beginPath(); ctx.moveTo(tx(v), 0); ctx.lineTo(tx(v), h); ctx.stroke(); }
+  for (let v = -1; v <= 1.001; v += 0.5) { ctx.beginPath(); ctx.moveTo(0, ty(v)); ctx.lineTo(w, ty(v)); ctx.stroke(); }
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, ty(0)); ctx.lineTo(w, ty(0)); ctx.moveTo(tx(0), 0); ctx.lineTo(tx(0), h); ctx.stroke();
+  // residuals
+  ctx.strokeStyle = 'rgba(200,80,80,0.35)'; ctx.lineWidth = 1;
+  for (const [x, y] of DATA) { ctx.beginPath(); ctx.moveTo(tx(x), ty(y)); ctx.lineTo(tx(x), ty(gabor(cur[0], cur[1], x))); ctx.stroke(); }
+  // model
+  const L = loss(cur[0], cur[1]), isGlobal = Math.hypot(cur[0] - LABELED[1].p[0], cur[1] - LABELED[1].p[1]) < 0.05;
+  ctx.strokeStyle = isGlobal ? '#7f7f7f' : '#8fd0c8'; ctx.lineWidth = 3; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  for (let px = 0; px <= w; px++) { const x = XMIN + px / w * (XMAX - XMIN), y = ty(gabor(cur[0], cur[1], x)); px ? ctx.lineTo(px, y) : ctx.moveTo(px, y); }
+  ctx.stroke();
+  // data
+  for (const [x, y] of DATA) {
+    ctx.beginPath(); ctx.arc(tx(x), ty(y), 4.5, 0, 2 * Math.PI);
+    ctx.fillStyle = '#d1835f'; ctx.fill(); ctx.strokeStyle = '#7a3c23'; ctx.lineWidth = 0.8; ctx.stroke();
+  }
+  // labels
+  const yl = document.getElementById('fit-yl'), xl = document.getElementById('fit-xl');
+  yl.setAttribute('width', 36); yl.setAttribute('height', h);
+  let s = ''; for (const v of [-1, -0.5, 0, 0.5, 1]) s += `<text x="31" y="${ty(v) + 4}" text-anchor="end" font-size="11" fill="#aaa">${v === 0 ? '0' : v.toFixed(1)}</text>`;
+  yl.innerHTML = s;
+  xl.setAttribute('width', w); xl.setAttribute('height', 22);
+  s = ''; for (let v = -15; v <= 15; v += 5) s += `<text x="${Math.min(w - 10, Math.max(10, tx(v)))}" y="15" text-anchor="middle" font-size="11" fill="#aaa">${v}</text>`;
+  xl.innerHTML = s;
+  // readouts
+  document.getElementById('loss').textContent = L.toFixed(2);
+  document.getElementById('p0').textContent = cur[0].toFixed(2);
+  document.getElementById('p1').textContent = cur[1].toFixed(2);
+  const near = ALL().find(q => Math.hypot(cur[0] - q.p[0], cur[1] - q.p[1]) < 0.05);
+  document.getElementById('kind').textContent = near ? (near.id && near.id !== 'saddle' ? `${near.id}) ` : '') + near.kind : hovering ? 'exploring' : 'chosen point';
+  document.getElementById('fit-title').textContent = near && near.id && near.id !== 'saddle' ? `${near.id}) Model at ${near.kind === 'global minimum' ? 'the global minimum' : 'a local minimum'}` : near && near.id === 'saddle' ? 'Model at the saddle point' : 'Model at the current parameters';
+}
+
+function buildChips() {
+  const items = [...LABELED, SADDLE];
+  document.getElementById('chips').innerHTML = items.map(q => {
+    const col = q.id === 'saddle' ? null : q.kind === 'global minimum' ? '#8a8a8a' : '#9fd8d3';
+    const sw = col ? `<span class="dot" style="background:${col}"></span>` : `<span style="color:#3b6fd1;font-weight:700;font-size:16px;line-height:1">+</span>`;
+    const name = q.id === 'saddle' ? 'Saddle' : `${q.id}) ${q.kind === 'global minimum' ? 'global min' : 'local min'}`;
+    return `<button class="chip ${pinnedId === q.id ? 'on' : ''}" onclick="pick('${q.id}')">${sw}${name} · ${loss(...q.p).toFixed(2)}</button>`;
+  }).join('');
+}
+function pick(id) {
+  const q = ALL().find(q => q.id === id); if (!q) return;
+  pinned = q.p.slice(); pinnedId = id; cur = pinned.slice(); hovering = false;
+  buildChips(); drawOverlay(); drawFit();
+}
+
+// pointer handling: mouse hover previews, click pins; touch/pen drag moves and pins
+const ov = document.getElementById('overlay');
+function posFromEvent(e) {
+  const r = ov.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+  return {px, py, w:r.width, h:r.height};
+}
+function snap({px, py, w, h}) {   // snap to a marker if close
+  let best = null, bd = 18;
+  for (const q of ALL()) { const d = Math.hypot(toPx(q.p[0], w) - px, toPy(q.p[1], h) - py); if (d < bd) { bd = d; best = q; } }
+  return best;
+}
+function setFromPos(pos) {
+  const p0 = Math.max(P0MIN, Math.min(P0MAX, fromPx(pos.px, pos.w))), p1 = Math.max(P1MIN, Math.min(P1MAX, fromPy(pos.py, pos.h)));
+  cur = [p0, p1]; drawOverlay(); drawFit();
+}
+let dragging = false;
+ov.addEventListener('pointerdown', e => {
+  e.preventDefault(); ov.setPointerCapture(e.pointerId); dragging = true;
+  const pos = posFromEvent(e), q = snap(pos);
+  if (q) { pick(q.id); return; }
+  pinnedId = null; buildChips(); setFromPos(pos); pinned = cur.slice();
+});
+ov.addEventListener('pointermove', e => {
+  const pos = posFromEvent(e);
+  if (dragging) { setFromPos(pos); pinned = cur.slice(); pinnedId = null; return; }
+  if (e.pointerType === 'mouse') { hovering = true; const q = snap(pos); ov.style.cursor = q ? 'pointer' : 'crosshair'; setFromPos(pos); }
+});
+const endDrag = () => { if (dragging) { dragging = false; buildChips(); } };
+ov.addEventListener('pointerup', endDrag); ov.addEventListener('pointercancel', endDrag);
+ov.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse' && !dragging) { hovering = false; cur = pinned.slice(); drawOverlay(); drawFit(); } });
+
+function refresh() { drawHeat(); drawOverlay(); drawFit(); }
+window.addEventListener('resize', refresh);
+buildChips(); refresh();
+if (window.parent !== window) {
+  const post = () => parent.postMessage({type:'udl-resize', height:document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(post).observe(document.body); post();
+}
+</script>
+</body>
+</html>
