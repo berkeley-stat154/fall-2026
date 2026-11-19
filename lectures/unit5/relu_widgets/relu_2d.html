@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ReLU of a linear function in 2D</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f8f8f6;color:#1a1a18;padding:16px}
+.layout{display:grid;grid-template-columns:minmax(230px,1fr) 2.6fr;gap:12px;max-width:1100px;margin:0 auto;align-items:start}
+.panel{background:#fff;border:0.5px solid #ddd;border-radius:8px;padding:12px;min-width:0}
+h2{font-size:14px;font-weight:500;margin-bottom:3px;color:#3a3a38}
+h3{font-size:13px;font-weight:500;color:#3a3a38;margin-bottom:4px}
+.subtitle{font-size:11px;color:#999;margin-bottom:8px;line-height:1.5}
+.unit{border-top:0.5px solid #eee;padding-top:10px;margin-top:10px}
+.unit-head{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:#3a3a38;margin-bottom:4px}
+.swatch{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+svg.pad{display:block;width:100%;max-width:180px;margin:0 auto;aspect-ratio:1/1;touch-action:none;cursor:crosshair}
+.two svg.pad{max-width:140px}
+.readout{font-size:12px;color:#666;text-align:center;margin-top:2px;font-variant-numeric:tabular-nums}
+.slider-row{display:flex;align-items:center;gap:8px;font-size:12px;color:#666;margin-top:6px}
+.slider-row input{flex:1;min-width:0;accent-color:#4a7cdc}
+.slider-row span:last-child{min-width:36px;text-align:right;font-variant-numeric:tabular-nums}
+.btn-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center}
+button{font-size:12px;border:0.5px solid #ccc;background:#fff;border-radius:5px;padding:5px 12px;cursor:pointer;color:#444}
+@media(hover:hover){button:hover{background:#f0f0ee}}
+.seg{display:inline-flex;border:0.5px solid #ccc;border-radius:5px;overflow:hidden}
+.seg button{border:none;border-radius:0;border-right:0.5px solid #ccc}
+.seg button:last-child{border-right:none}
+.seg button.on{background:#4a7cdc;color:#fff}
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.showing{font-size:12px;color:#666;font-variant-numeric:tabular-nums}
+.plots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.plot-wrap{position:relative;width:100%;aspect-ratio:1/1}
+.plot-wrap canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+#c3d{touch-action:none;cursor:grab}
+.note{font-size:11px;color:#999;margin-top:4px;line-height:1.5}
+.legend{display:flex;gap:4px 12px;flex-wrap:wrap;margin-top:6px}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:#777}
+.leg-sw{width:12px;height:12px;border-radius:2px;flex-shrink:0}
+.link{border:none;background:none;padding:0;color:#4a7cdc;font-size:11px;min-height:0}
+@media(max-width:860px){.layout{grid-template-columns:1fr}}
+@media(max-width:560px){.plots{grid-template-columns:1fr}}
+button,input{touch-action:manipulation}
+@media (pointer:coarse){button{padding:10px 16px;font-size:14px;min-height:44px}input[type=range]{height:30px}.link{padding:6px 0;font-size:13px;min-height:0}}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="panel" id="left">
+    <h2>Parameters</h2>
+    <p class="subtitle">Drag in the square to set the vector α = (α₁, α₂); use the slider to set the offset α₀.</p>
+    <div id="units"></div>
+    <div class="btn-row"><button id="add-btn" onclick="toggleSecond()"></button></div>
+  </div>
+
+  <div class="panel">
+    <div class="top-row">
+      <span class="showing" id="showing"></span>
+      <span class="seg" id="view-seg"></span>
+    </div>
+    <div class="plots">
+      <div>
+        <h3>Level curves</h3>
+        <div class="plot-wrap"><canvas id="cc"></canvas></div>
+        <div class="legend" id="legend"></div>
+        <p class="note" id="contour-note"></p>
+      </div>
+      <div>
+        <h3>Surface</h3>
+        <div class="plot-wrap"><canvas id="c3d"></canvas></div>
+        <p class="note">Drag to rotate. Vertical axis fixed at 0–5; the surface is not drawn where it goes above 5. Colors as in the level-curve legend. <button class="link" onclick="resetView()">Reset view</button></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const COL = ['#e05c5c', '#4a9e6a'];
+const R = 2;                                   // domain: x in [-R, R]^2
+const Z_FIXED = {zTop: 5, tick: 1};           // fixed vertical axis (and colour scale) for the surface
+const DEFAULTS = [{a0: 0.5, a: [1, 0.5]}, {a0: 0, a: [-0.8, 1]}];
+let units = DEFAULTS.map(u => ({a0: u.a0, a: [...u.a]}));
+let nUnits = 1, view = 'sum';
+const VIEW0 = {az: -0.6, el: 0.55};
+let az = VIEW0.az, el = VIEW0.el;
+
+const SUB = '₀₁₂₃₄₅₆₇₈₉', sub = n => String(n).split('').map(c => SUB[+c]).join('');
+const fmt = v => (v < -1e-9 ? '−' : '') + Math.abs(v).toFixed(1);
+const relu = v => v > 0 ? v : 0;
+const unitVal = (u, x1, x2) => relu(u.a0 + u.a[0] * x1 + u.a[1] * x2);
+const shown = () => nUnits === 1 ? [0] : view === 'sum' ? [0, 1] : [view];
+function F(x1, x2) { let s = 0; for (const i of shown()) s += unitVal(units[i], x1, x2); return s; }
+
+function niceStep(span, target) {
+  const rough = span / target, mag = Math.pow(10, Math.floor(Math.log10(rough))), n = rough / mag;
+  return (n < 1.5 ? 1 : n < 3.5 ? 2 : n < 7.5 ? 5 : 10) * mag;
+}
+// F is convex (a sum of ReLUs of affine functions), so its max over the square is at a corner
+function zRange() {
+  const zmax = Math.max(...[[-R, -R], [-R, R], [R, -R], [R, R]].map(([a, b]) => F(a, b)));
+  if (zmax < 1e-6) return {zmax: 0, zTop: 1, tick: 0.5};
+  const tick = niceStep(zmax, 3);
+  return {zmax, zTop: Math.ceil(zmax / tick - 1e-9) * tick, tick};
+}
+// Colour depends on which units are active (bit i of mask = unit i active);
+// within a region, colour gets darker with height.
+const ZERO = [236, 236, 232];
+const PAL = {1: [[251, 226, 226], [170, 50, 50]],     // unit 1 only (red)
+             2: [[222, 242, 229], [40, 120, 70]],     // unit 2 only (green)
+             3: [[227, 236, 251], [31, 79, 168]]};    // both (blue)
+const pre = (u, x1, x2) => u.a0 + u.a[0] * x1 + u.a[1] * x2;
+const maskAt = (x1, x2) => shown().reduce((m, i) => m | (pre(units[i], x1, x2) > 0 ? 1 << i : 0), 0);
+function color(z, zTop, shade, mask) {
+  const p = PAL[mask], c = mask ? p[0].map((a, i) => a + (p[1][i] - a) * Math.min(1, z / zTop)) : ZERO;
+  return `rgb(${c.map(v => Math.round(v * shade)).join(',')})`;
+}
+function setupCanvas(id) {
+  const c = document.getElementById(id), dpr = window.devicePixelRatio || 1;
+  c.width = c.offsetWidth * dpr; c.height = c.offsetHeight * dpr;
+  const ctx = c.getContext('2d'); ctx.scale(dpr, dpr);
+  return {ctx, w: c.offsetWidth, h: c.offsetHeight};
+}
+function arrow(ctx, x0, y0, x1, y1, col, lw = 2) {
+  const L = Math.hypot(x1 - x0, y1 - y0); if (L < 3) return;
+  const ux = (x1 - x0) / L, uy = (y1 - y0) / L, hl = 8;
+  ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = lw;
+  ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1 - ux * hl * 0.8, y1 - uy * hl * 0.8); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x1, y1);
+  ctx.lineTo(x1 - ux * hl - uy * hl * 0.45, y1 - uy * hl + ux * hl * 0.45);
+  ctx.lineTo(x1 - ux * hl + uy * hl * 0.45, y1 - uy * hl - ux * hl * 0.45); ctx.closePath(); ctx.fill();
+}
+// the kink line a0 + a·x = 0, clipped to the square
+function kinkSegment(u) {
+  const [a1, a2] = u.a, pts = [];
+  if (Math.abs(a2) > 1e-9) for (const x of [-R, R]) { const y = -(u.a0 + a1 * x) / a2; if (Math.abs(y) <= R + 1e-9) pts.push([x, y]); }
+  if (Math.abs(a1) > 1e-9) for (const y of [-R, R]) { const x = -(u.a0 + a2 * y) / a1; if (Math.abs(x) <= R + 1e-9) pts.push([x, y]); }
+  for (let i = 1; i < pts.length; i++) if (Math.hypot(pts[i][0] - pts[0][0], pts[i][1] - pts[0][1]) > 1e-6) return [pts[0], pts[i]];
+  return null;
+}
+
+// ---------------- left panel ----------------
+function buildUnits() {
+  const box = document.getElementById('units');
+  document.getElementById('left').classList.toggle('two', nUnits === 2);
+  box.innerHTML = Array.from({length: nUnits}, (_, i) => `
+    <div class="unit">
+      <div class="unit-head"><span class="swatch" style="background:${COL[i]}"></span>${nUnits === 1 ? 'ReLU unit' : 'Unit ' + (i + 1)}</div>
+      <svg class="pad" id="pad${i}" viewBox="-2.5 -2.5 5 5"></svg>
+      <div class="readout" id="ro${i}"></div>
+      <div class="slider-row"><span>α₀</span><input type="range" id="a0-${i}" min="-3" max="3" step="0.1" value="${units[i].a0}"
+        oninput="units[${i}].a0=+this.value;render()"><span id="a0v${i}"></span></div>
+    </div>`).join('');
+  for (let i = 0; i < nUnits; i++) {
+    const pad = document.getElementById('pad' + i);
+    const go = e => {
+      const r = pad.getBoundingClientRect(), snap = v => Math.max(-R, Math.min(R, Math.round(v * 10) / 10));
+      units[i].a = [snap(-2.5 + (e.clientX - r.left) / r.width * 5), snap(2.5 - (e.clientY - r.top) / r.height * 5)];
+      render();
+    };
+    pad.addEventListener('pointerdown', e => { pad.setPointerCapture(e.pointerId); go(e); });
+    pad.addEventListener('pointermove', e => { if (e.buttons) go(e); });
+  }
+  document.getElementById('add-btn').textContent = nUnits === 1 ? '+ Add second unit' : '− Remove second unit';
+  document.getElementById('view-seg').innerHTML = nUnits === 1 ? '' :
+    [['0', 'Unit 1'], ['1', 'Unit 2'], ['sum', 'Sum']].map(([v, t]) =>
+      `<button class="${String(view) === v ? 'on' : ''}" onclick="setView('${v}')">${t}</button>`).join('');
+}
+function drawPad(i) {
+  const u = units[i], c = COL[i], [a1, a2] = u.a;
+  let s = '';
+  for (let v = -2; v <= 2; v++) {
+    const st = v === 0 ? 'stroke="#c8c8c4" stroke-width="0.03"' : 'stroke="#eee" stroke-width="0.02"';
+    s += `<line x1="${v}" y1="-2" x2="${v}" y2="2" ${st}/><line x1="-2" y1="${v}" x2="2" y2="${v}" ${st}/>`;
+  }
+  s += `<rect x="-2" y="-2" width="4" height="4" fill="none" stroke="#ddd" stroke-width="0.02"/>`;
+  s += `<text x="2.42" y="0.1" font-size="0.32" fill="#999" text-anchor="end" dy="-0.12">α₁</text>`;
+  s += `<text x="0.12" y="-2.12" font-size="0.32" fill="#999">α₂</text>`;
+  const L = Math.hypot(a1, a2);
+  if (L > 0.05) {
+    const ux = a1 / L, uy = -a2 / L, tx = a1 - ux * 0.18, ty = -a2 - uy * 0.18;
+    s += `<line x1="0" y1="0" x2="${tx}" y2="${ty}" stroke="${c}" stroke-width="0.07"/>`;
+  }
+  s += `<circle cx="${a1}" cy="${-a2}" r="0.17" fill="${c}" stroke="#fff" stroke-width="0.05"/>`;
+  document.getElementById('pad' + i).innerHTML = s;
+  document.getElementById('ro' + i).textContent = `α = (${fmt(a1)}, ${fmt(a2)})`;
+  document.getElementById('a0v' + i).textContent = fmt(u.a0);
+}
+function toggleSecond() { nUnits = 3 - nUnits; view = 'sum'; buildUnits(); render(); }
+function setView(v) { view = v === 'sum' ? 'sum' : +v; buildUnits(); render(); }
+
+// ---------------- level-curve plot ----------------
+function drawContour(zr) {
+  const {ctx, w, h} = setupCanvas('cc');
+  ctx.clearRect(0, 0, w, h);
+  const ml = 30, mt = 6, pw = Math.min(w - ml - 8, h - mt - 34);
+  const tx = x => ml + (x + R) / (2 * R) * pw, ty = y => mt + (R - y) / (2 * R) * pw;
+  const N = 90, d = 2 * R / N, cell = pw / N;
+  // shading
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    const x = -R + (i + 0.5) * d, y = -R + (j + 0.5) * d;
+    ctx.fillStyle = color(F(x, y), Z_FIXED.zTop, 1, maskAt(x, y));
+    ctx.fillRect(ml + i * cell, mt + (N - 1 - j) * cell, cell + 0.6, cell + 0.6);
+  }
+  // contour lines (marching squares on node values)
+  const V = [];
+  for (let i = 0; i <= N; i++) { V.push([]); for (let j = 0; j <= N; j++) V[i].push(F(-R + i * d, -R + j * d)); }
+  const step = zr.zmax > 0 ? niceStep(zr.zmax, 6) : 0;
+  ctx.strokeStyle = 'rgba(20,35,70,0.5)'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  if (step > 0) for (let L = step; L < zr.zmax; L += step) {
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const P = [[i, j], [i + 1, j], [i + 1, j + 1], [i, j + 1]], pts = [];
+      for (let k = 0; k < 4; k++) {
+        const [ia, ja] = P[k], [ib, jb] = P[(k + 1) % 4], va = V[ia][ja], vb = V[ib][jb];
+        if ((va - L) * (vb - L) < 0) {
+          const t = (L - va) / (vb - va);
+          pts.push([tx(-R + (ia + (ib - ia) * t) * d), ty(-R + (ja + (jb - ja) * t) * d)]);
+        }
+      }
+      for (let k = 0; k + 1 < pts.length; k += 2) { ctx.moveTo(...pts[k]); ctx.lineTo(...pts[k + 1]); }
+    }
+  }
+  ctx.stroke();
+  // axes through the origin
+  ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(tx(0), ty(R)); ctx.lineTo(tx(0), ty(-R)); ctx.moveTo(tx(-R), ty(0)); ctx.lineTo(tx(R), ty(0)); ctx.stroke();
+  // kink lines and alpha arrows of the units being shown
+  for (const i of shown()) {
+    const seg = kinkSegment(units[i]);
+    if (seg) {
+      ctx.beginPath(); ctx.moveTo(tx(seg[0][0]), ty(seg[0][1])); ctx.lineTo(tx(seg[1][0]), ty(seg[1][1]));
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.stroke();
+      ctx.strokeStyle = COL[i]; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    arrow(ctx, tx(0), ty(0), tx(units[i].a[0]), ty(units[i].a[1]), '#fff', 5.5);
+    arrow(ctx, tx(0), ty(0), tx(units[i].a[0]), ty(units[i].a[1]), COL[i], 2.5);
+  }
+  // frame and ticks
+  ctx.strokeStyle = '#ccc'; ctx.lineWidth = 1; ctx.strokeRect(ml, mt, pw, pw);
+  ctx.fillStyle = '#999'; ctx.font = '10px system-ui';
+  for (let v = -R; v <= R; v++) {
+    ctx.textAlign = 'center'; ctx.fillText(v < 0 ? '−' + -v : v, tx(v), mt + pw + 13);
+    ctx.textAlign = 'right'; ctx.fillText(v < 0 ? '−' + -v : v, ml - 5, ty(v) + 3.5);
+  }
+  ctx.fillStyle = '#777'; ctx.font = 'italic 12px system-ui'; ctx.textAlign = 'center';
+  ctx.fillText('x₁', tx(0), mt + pw + 28);
+  ctx.save(); ctx.translate(10, ty(0)); ctx.fillText('x₂', 0, 4); ctx.restore();
+  document.getElementById('contour-note').textContent = step > 0
+    ? `Contours every ${+step.toPrecision(3)}. Dashed: kink α₀ + αᵀx = 0. Arrow: α, the direction of steepest increase.`
+    : 'The function is 0 everywhere on this square. Dashed: kink α₀ + αᵀx = 0.';
+}
+
+// ---------------- rotatable surface ----------------
+function drawSurface(zr) {
+  const {ctx, w, h} = setupCanvas('c3d');
+  ctx.clearRect(0, 0, w, h);
+  const H = 1.1, S = Math.SQRT2;
+  const ca = Math.cos(az), sa = Math.sin(az), ce = Math.cos(el), se = Math.sin(el);
+  const sc = Math.min((w - 50) / (2 * S), (h - 40) / (2 * S * se + H * ce));
+  const cx = w / 2, cy = h / 2 + 4;
+  // x, y in [-1, 1] (normalised by R); z in [0, H]
+  const proj = (x, y, z) => {
+    const X = x * ca - y * sa, Y = x * sa + y * ca;
+    return {sx: cx + X * sc, sy: cy + (-Y * se - z * ce + H * ce / 2) * sc, d: Y * ce - z * se};
+  };
+  const zN = z => Math.min(z, zr.zTop) / zr.zTop * H;   // (surface points above zTop are clipped away before this is used)
+  const corners = [[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([x, y]) => ({x, y, ...proj(x, y, 0)}));
+  const back = corners.reduce((a, b) => b.d > a.d ? b : a), front = corners.reduce((a, b) => b.d < a.d ? b : a);
+
+  // floor outline and vertical axis at the back corner (drawn first: they are behind the surface)
+  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+  ctx.beginPath(); corners.forEach((p, k) => k ? ctx.lineTo(p.sx, p.sy) : ctx.moveTo(p.sx, p.sy)); ctx.closePath(); ctx.stroke();
+  const top = proj(back.x, back.y, H);
+  ctx.strokeStyle = '#ccc';
+  ctx.beginPath(); ctx.moveTo(back.sx, back.sy); ctx.lineTo(top.sx, top.sy); ctx.stroke();
+  ctx.fillStyle = '#aaa'; ctx.font = '10px system-ui';
+  const right = back.sx >= cx; ctx.textAlign = right ? 'left' : 'right';
+  for (let z = 0; z <= zr.zTop + 1e-9; z += zr.tick) {
+    const p = proj(back.x, back.y, zN(z));
+    ctx.beginPath(); ctx.moveTo(p.sx, p.sy); ctx.lineTo(p.sx + (right ? 4 : -4), p.sy); ctx.stroke();
+    ctx.fillText(+z.toPrecision(3), p.sx + (right ? 7 : -7), p.sy + 3.5);
+  }
+
+  // surface mesh, painter's algorithm. Parts of the surface above zTop are not drawn:
+  // each grid cell is clipped against the plane z = zTop (linear interpolation along its edges).
+  const N = 44, G = [];
+  for (let i = 0; i <= N; i++) {
+    G.push([]);
+    for (let j = 0; j <= N; j++) {
+      const x = -1 + 2 * i / N, y = -1 + 2 * j / N;
+      G[i].push({x, y, z: F(x * R, y * R)});
+    }
+  }
+  const zT = zr.zTop;
+  const cut = (p, q) => { const t = (zT - p.z) / (q.z - p.z); return {x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t, z: zT}; };
+  function clipPoly(pts) {
+    const out = [];
+    pts.forEach((p, k) => {
+      const q = pts[(k + 1) % pts.length], pin = p.z <= zT, qin = q.z <= zT;
+      if (pin) out.push(p);
+      if (pin !== qin) out.push(cut(p, q));
+    });
+    return out;
+  }
+  const P3 = p => proj(p.x, p.y, zN(p.z));
+  const Lx = -0.35, Ly = -0.45, Lz = 0.82;      // light direction (world)
+  const quads = [];
+  // split a polygon along unit u's kink line; new vertices get their exact height
+  function splitBy(poly, u) {
+    const A = [], B = [];
+    poly.forEach((p, k) => {
+      const q = poly[(k + 1) % poly.length], gp = pre(u, p.x * R, p.y * R), gq = pre(u, q.x * R, q.y * R);
+      (gp >= 0 ? A : B).push(p);
+      if ((gp >= 0) !== (gq >= 0)) {
+        const t = gp / (gp - gq), r = {x: p.x + (q.x - p.x) * t, y: p.y + (q.y - p.y) * t};
+        r.z = F(r.x * R, r.y * R); A.push(r); B.push(r);
+      }
+    });
+    return [A, B].filter(P => P.length >= 3);
+  }
+  const act = shown();
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+    const c = [G[i][j], G[i + 1][j], G[i + 1][j + 1], G[i][j + 1]];
+    if (c.every(p => p.z > zT)) continue;
+    let pieces = [c];
+    for (const k of act) pieces = pieces.flatMap(P => splitBy(P, units[k]));
+    for (const piece of pieces) {
+      // each piece lies in one linear region, so its activation pattern and slope are exact
+      const mx = piece.reduce((s, p) => s + p.x, 0) / piece.length * R, my = piece.reduce((s, p) => s + p.y, 0) / piece.length * R;
+      const mask = maskAt(mx, my);
+      const poly = piece.some(p => p.z > zT) ? clipPoly(piece) : piece;
+      if (poly.length < 3) continue;
+      const q = poly.map(P3);
+      const zc = poly.reduce((s, p) => s + p.z, 0) / poly.length;
+      let g1 = 0, g2 = 0;
+      for (const k of act) if (mask & (1 << k)) { g1 += units[k].a[0]; g2 += units[k].a[1]; }
+      const dzx = g1 * R * H / zT, dzy = g2 * R * H / zT;   // slope in the plotted (normalised) coordinates
+      const nl = Math.hypot(dzx, dzy, 1), lam = Math.max(0, (-dzx * Lx - dzy * Ly + Lz) / nl);
+      quads.push({q, d: q.reduce((s, p) => s + p.d, 0) / q.length, col: color(zc, zT, 0.72 + 0.28 * lam, mask)});
+    }
+  }
+  quads.sort((a, b) => b.d - a.d);
+  ctx.lineWidth = 0.6; ctx.lineJoin = 'round';
+  for (const {q, col} of quads) {
+    ctx.fillStyle = col; ctx.strokeStyle = col;
+    ctx.beginPath(); ctx.moveTo(q[0].sx, q[0].sy); for (let k = 1; k < q.length; k++) ctx.lineTo(q[k].sx, q[k].sy); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  }
+  // faint mesh lines for depth cues (also clipped at zTop)
+  ctx.strokeStyle = 'rgba(0,0,0,0.07)'; ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  const seg = (p, q) => {
+    if (p.z > zT && q.z > zT) return;
+    const a = p.z > zT ? cut(q, p) : p, b = q.z > zT ? cut(p, q) : q, A = P3(a), B = P3(b);
+    ctx.moveTo(A.sx, A.sy); ctx.lineTo(B.sx, B.sy);
+  };
+  for (let i = 0; i <= N; i += 4) for (let j = 0; j < N; j++) seg(G[i][j], G[i][j + 1]);
+  for (let j = 0; j <= N; j += 4) for (let i = 0; i < N; i++) seg(G[i][j], G[i + 1][j]);
+  ctx.stroke();
+
+  // axis names on the two front floor edges
+  ctx.fillStyle = '#777'; ctx.font = 'italic 12px system-ui'; ctx.textAlign = 'center';
+  const l1 = proj(0, front.y * 1.22, 0), l2 = proj(front.x * 1.22, 0, 0);
+  ctx.fillText('x₁', l1.sx, l1.sy + 4); ctx.fillText('x₂', l2.sx, l2.sy + 4);
+}
+function resetView() { az = VIEW0.az; el = VIEW0.el; drawSurface(Z_FIXED); }
+{
+  const c = document.getElementById('c3d');
+  let last = null;
+  c.addEventListener('pointerdown', e => { c.setPointerCapture(e.pointerId); last = [e.clientX, e.clientY]; c.style.cursor = 'grabbing'; });
+  c.addEventListener('pointermove', e => {
+    if (!last || !e.buttons) return;
+    az -= (e.clientX - last[0]) * 0.01;
+    el = Math.max(0.05, Math.min(1.55, el + (e.clientY - last[1]) * 0.01));
+    last = [e.clientX, e.clientY];
+    requestDraw(true);
+  });
+  const end = () => { last = null; c.style.cursor = 'grab'; };
+  c.addEventListener('pointerup', end); c.addEventListener('pointercancel', end);
+}
+
+// ---------------- render loop ----------------
+let pending = 0;   // 1 = surface only, 2 = everything
+function requestDraw(surfaceOnly) {
+  const lvl = surfaceOnly ? 1 : 2;
+  if (pending) { pending = Math.max(pending, lvl); return; }
+  pending = lvl;
+  requestAnimationFrame(() => {
+    const zr = zRange();
+    if (pending === 2) {
+      for (let i = 0; i < nUnits; i++) drawPad(i);
+      const term = i => `ReLU(${fmt(units[i].a0)} + ${fmt(units[i].a[0])}·x₁ + ${fmt(units[i].a[1])}·x₂)`.replace(/\+ −/g, '− ');
+      document.getElementById('showing').textContent = 'f(x) = ' + shown().map(term).join(' + ');
+      drawContour(zr);
+      const act = shown(), two = act.length === 2, nm = i => nUnits === 1 ? '' : 'unit ' + (i + 1) + ' ';
+      const items = two ? [[0, 'none active'], [1, 'unit 1 only'], [2, 'unit 2 only'], [3, 'both active']]
+                        : [[0, nm(act[0]) + 'inactive'], [1 << act[0], nm(act[0]) + 'active']];
+      document.getElementById('legend').innerHTML = items.map(([m, t]) =>
+        `<span class="leg-item"><span class="leg-sw" style="background:${color(2, 5, 1, m)}"></span>${t}</span>`).join('');
+    }
+    drawSurface(Z_FIXED);
+    pending = 0;
+  });
+}
+const render = () => requestDraw(false);
+
+window.addEventListener('resize', render);
+buildUnits();
+render();
+if (window.parent !== window) {
+  const post = () => parent.postMessage({type:'udl-resize', height:document.documentElement.scrollHeight}, '*');
+  new ResizeObserver(post).observe(document.body); post();
+}
+</script>
+</body>
+</html>
