@@ -371,7 +371,7 @@ f^{\star}(\boldsymbol{x}) = \underset{c \in \mathcal{Y}}{\mathrm{argmax}}\, \mat
 <section id="third-version-unconstraining-parameterizations-for-probabilities" class="level2">
 <h2 class="anchored" data-anchor-id="third-version-unconstraining-parameterizations-for-probabilities">Third version: Unconstraining parameterizations for probabilities</h2>
 <p>The problem with the preceding approach is that we have a whole host of tools from regression for flexibily returning functions in <span class="math inline">\(\mathbb{R}^{}\)</span> which we would like to deploy to estimate probabilities. The trick to using these functions is to differentiably transform the real line into a probability. A classic example is the expit function (which is confusingly also known as the “logistic function”).</p>
-<p>Supose we have <span class="math inline">\(f\in \mathbb{R}^{}\)</span>. Then</p>
+<p>Suppose we have <span class="math inline">\(f\in \mathbb{R}^{}\)</span>. Then</p>
 <p><span class="math display">\[
 \pi(f) = \frac{\exp(f)}{1 + \exp(f)} =: \mathrm{Expit}\left(f\right).
 \]</span></p>
