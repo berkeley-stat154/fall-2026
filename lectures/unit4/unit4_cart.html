@@ -208,6 +208,7 @@ window.Quarto = {
   <li><a href="#in-higher-dimesions" id="toc-in-higher-dimesions" class="nav-link" data-scroll-target="#in-higher-dimesions">In higher dimesions</a></li>
   </ul></li>
   <li><a href="#node-impurity" id="toc-node-impurity" class="nav-link" data-scroll-target="#node-impurity">Node impurity</a></li>
+  <li><a href="#the-cart-algorithm-step-by-step" id="toc-the-cart-algorithm-step-by-step" class="nav-link" data-scroll-target="#the-cart-algorithm-step-by-step">The CART algorithm step by step</a></li>
   <li><a href="#the-arboretum-tree-zoo" id="toc-the-arboretum-tree-zoo" class="nav-link" data-scroll-target="#the-arboretum-tree-zoo">The arboretum (tree zoo)</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
@@ -256,7 +257,7 @@ window.Quarto = {
 </section>
 <section id="reading" class="level1">
 <h1>Reading</h1>
-<p>The primary reading is <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.1. The reading in <span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> section 9.2 may also be useful. These notes are intended only as a supplement to the primary reading and a reminder to myself of what to talk about in lecture.</p>
+<p>The primary reading is <span class="citation" data-cites="isl:2021:gareth">James et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.1. The reading in <span class="citation" data-cites="esl:2009:hastie">Hastie et al. (<a href="#ref-esl:2009:hastie" role="doc-biblioref">2009</a>)</span> section 9.2 may also be useful. These notes are intended only as a supplement to the primary reading and a reminder to myself of what to talk about in lecture.</p>
 </section>
 <section id="context" class="level1">
 <h1>Context</h1>
@@ -306,18 +307,18 @@ window.Quarto = {
 </section>
 <section id="in-higher-dimesions" class="level2">
 <h2 class="anchored" data-anchor-id="in-higher-dimesions">In higher dimesions</h2>
-<p>The one–dimensional example above is simple but a little misleading, since in one dimension every partition is a tree. In higher dimensions, tree–based partitions are a subset of all partitions, as shown in this picture from <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span>. (The bottom right plot of the figure is misleading — it seems like the prediction surface slopes up between partitions, but this is only an artifact of how the authors plotted the surface using a coarse, finite grid and a plotter that automatically interpolates.)</p>
+<p>The one–dimensional example above is simple but a little misleading, since in one dimension every partition is a tree. In higher dimensions, tree–based partitions are a subset of all partitions, as shown in this picture from <span class="citation" data-cites="isl:2021:gareth">James et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span>. (The bottom right plot of the figure is misleading — it seems like the prediction surface slopes up between partitions, but this is only an artifact of how the authors plotted the surface using a coarse, finite grid and a plotter that automatically interpolates.)</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="../../assets/unit4_cart/isl_2d.png" class="img-fluid figure-img" style="width:6in"></p>
-<figcaption>Figure 8.3 from <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span></figcaption>
+<figcaption>Figure 8.3 from <span class="citation" data-cites="isl:2021:gareth">James et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span></figcaption>
 </figure>
 </div>
 </section>
 </section>
 <section id="node-impurity" class="level1">
 <h1>Node impurity</h1>
-<p>The above example is for regression, but trees can be used for classification as well. The main reference is <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> chapter 8, but I will review the procedure in lecture. These details can be readily extended to regression trees where squared loss replaces classification losses.</p>
+<p>The above example is for regression, but trees can be used for classification as well. The main reference is <span class="citation" data-cites="isl:2021:gareth">James et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> chapter 8, but I will review the procedure in lecture. These details can be readily extended to regression trees where squared loss replaces classification losses.</p>
 <p>Given a tree, we can produce a classifier by just taking the majority vote in the leaf. However, it can also be useful to produce a probability estimate <span class="math inline">\(\hat{\pi}_t\)</span> which is the proportion of <span class="math inline">\(y_n = 1\)</span> among <span class="math inline">\(n \in t\)</span>. Note that these correspond exactly to optimizing cross–entropy or least–squared classification loss using the partition indicators as regressors.</p>
 <p>The tree is built greedily by minimizing a notion of “node impurity” at each step. Suppose you are considering how to split a leaf <span class="math inline">\(t\)</span> (applying the same reasoning to the root node tells how to start the tree). For a given regressor <span class="math inline">\(x_{nk}\)</span>, and a given split point <span class="math inline">\(c\)</span>, let</p>
 <p><span class="math display">\[
@@ -367,6 +368,80 @@ N_c^{-} R_c^{-} + N_c^{+} R_c^{+} - N_tR_t,
 \]</span></p>
 <p>which is the sum of the variances of each indicator. The Gini index can be seen to be minimal with <span class="math inline">\(\hat{\pi}_{k} = 1\)</span> for some <span class="math inline">\(k\)</span>, so the “purest” node has only a single class in it.</p>
 </section>
+<section id="the-cart-algorithm-step-by-step" class="level1">
+<h1>The CART algorithm step by step</h1>
+<p>Let us put the pieces above together into a single procedure known as the CART algorithm, introduced by <span class="citation" data-cites="breiman:1984:cart">Breiman et al. (<a href="#ref-breiman:1984:cart" role="doc-biblioref">1984</a>)</span>. Regression and classification trees use exactly the same algorithm, and differ only in (a) the node impurity <span class="math inline">\(R_t\)</span> and (b) what is predicted in a leaf.</p>
+<p>For a node <span class="math inline">\(t\)</span> containing <span class="math inline">\(N_t\)</span> observations:</p>
+<ul>
+<li><strong>Regression:</strong> The impurity is <span class="math inline">\(R_t= \frac{1}{N_t} \sum_{n \in t} (y_n - \bar{y}_t)^2\)</span>, so that <span class="math inline">\(N_tR_t\)</span> is the sum of squared errors in the node. The leaf predicts <span class="math inline">\(\bar{y}_t\)</span>.</li>
+<li><strong>Classification with <span class="math inline">\(K\)</span> classes:</strong> Let <span class="math inline">\(\hat{\pi}_{tk}\)</span> be the proportion of observations in <span class="math inline">\(t\)</span> with class <span class="math inline">\(k\)</span>. The impurity <span class="math inline">\(R_t\)</span> is the Gini index, the entropy, or the misclassification rate of <span class="math inline">\((\hat{\pi}_{t1}, \ldots, \hat{\pi}_{tK})\)</span>. The leaf predicts the probabilities <span class="math inline">\(\hat{\pi}_{tk}\)</span>, or the majority class <span class="math inline">\(\underset{k}{\mathrm{argmax}}\, \hat{\pi}_{tk}\)</span> if a hard classification is needed.</li>
+</ul>
+<p>In both cases, the total risk that a tree <span class="math inline">\(T\)</span> is minimizing is <span class="math inline">\(\sum_{t\in T} N_tR_t\)</span>, where the sum is over the leaves. Note that the risk may be a proxy risk, especially in classification — for example, when the Gini index is used, you will probably want to select tuning parameters using the test set zero-one loss rather than test set Gini index. The tuning parameters are the stopping rules for growing (for example, a minimum number of observations per leaf) and the cost complexity parameter <span class="math inline">\(\alpha\)</span> for pruning.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="The CART algorithm">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>The CART algorithm
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>Step 1: Grow a large tree.</strong></p>
+<ol type="1">
+<li>Start with a tree <span class="math inline">\(T\)</span> consisting of a single leaf (the root), which contains all <span class="math inline">\(N\)</span> observations.</li>
+<li>For each leaf <span class="math inline">\(t\)</span> of <span class="math inline">\(T\)</span> that has not been marked as terminal:
+<ol type="a">
+<li>For each regressor <span class="math inline">\(k = 1, \ldots, P\)</span>:
+<ul>
+<li>Sort the distinct values of <span class="math inline">\(x_{nk}\)</span> for <span class="math inline">\(n \in t\)</span>. (<strong>Note:</strong> this sorting can be done in advance and re-used to save time.)</li>
+<li>For each split point <span class="math inline">\(c\)</span> halfway between adjacent distinct values, split <span class="math inline">\(t\)</span> into a left child <span class="math inline">\(\{n \in t: x_{nk} &lt; c\}\)</span> and a right child <span class="math inline">\(\{n \in t: x_{nk} \ge c\}\)</span>, and compute the loss after splitting, <span class="math inline">\(N_c^- R_c^- + N_c^+ R_c^+\)</span>.</li>
+</ul></li>
+<li>Let <span class="math inline">\((k^*, c^*)\)</span> be the regressor and split point that achieve the smallest loss after splitting, over all <span class="math inline">\(k\)</span> and <span class="math inline">\(c\)</span>.</li>
+<li>If the split <span class="math inline">\((k^*, c^*)\)</span> violates a stopping rule, mark <span class="math inline">\(t\)</span> as terminal. Example stopping rules: a child would have fewer than some minimum number of observations, the decrease in loss <span class="math inline">\(N_tR_t- (N_{c^*}^- R_{c^*}^- + N_{c^*}^+ R_{c^*}^+)\)</span> is below a threshold, or <span class="math inline">\(t\)</span> is at a maximum depth. Also mark <span class="math inline">\(t\)</span> as terminal if it cannot be split at all (for example, all its <span class="math inline">\(x_n\)</span> are identical).</li>
+<li>Otherwise, replace <span class="math inline">\(t\)</span> in <span class="math inline">\(T\)</span> with its two children.</li>
+</ol></li>
+<li>Repeat step 2 until every leaf is terminal. Call the result <span class="math inline">\(T_0\)</span>.</li>
+</ol>
+<p><strong>Step 2: Prune the tree.</strong> For a given <span class="math inline">\(\alpha \ge 0\)</span>, find the subtree <span class="math inline">\(T' \subseteq T_0\)</span> that minimizes the cost complexity loss <span class="math display">\[
+\sum_{t\in T'} N_tR_t+ \alpha |T'|,
+\]</span> where <span class="math inline">\(|T'|\)</span> is the number of leaves of <span class="math inline">\(T'\)</span>. A “subtree” is any tree obtained by collapsing some internal nodes of <span class="math inline">\(T_0\)</span> into leaves.</p>
+<p><strong>Step 3: Choose <span class="math inline">\(\alpha\)</span> by cross-validation.</strong> For each fold, run Steps 1 and 2 on the data outside the fold for a grid of <span class="math inline">\(\alpha\)</span> values. Then evaluate the loss of each pruned tree on the held-out fold, and choose the <span class="math inline">\(\alpha\)</span> with the smallest average held-out loss. Finally, prune the tree <span class="math inline">\(T_0\)</span> grown on the full dataset using the chosen <span class="math inline">\(\alpha\)</span>.</p>
+<p><strong>Step 4: Predict.</strong> For a new <span class="math inline">\(x\)</span>, follow the splits from the root down to a leaf <span class="math inline">\(t\)</span>, and return that leaf’s prediction (<span class="math inline">\(\bar{y}_t\)</span> or <span class="math inline">\(\hat{\pi}_{tk}\)</span>).</p>
+</div>
+</div>
+<p>Note that, though Steps 2 and 3 are part of the original CART algorithm (<span class="citation" data-cites="breiman:1984:cart">Breiman et al. (<a href="#ref-breiman:1984:cart" role="doc-biblioref">1984</a>)</span>, Chapter 3), different implementations may regularize trees differently, or leave the regularization up to the user. The core of Step 1, which is greedily choosing binary, axis-aligned splits to minimize node impurity, is common to essentially all tree implementations. They differ in details such as stopping rules, the handling of categorical and missing values, and whether every split point is searched or only a binned subset.</p>
+<!--
+Some remarks:
+
+- The split chosen in a leaf depends only on the observations in that leaf.
+  So as long as the stopping rules also depend only on the leaf (e.g., minimum
+  leaf size, maximum depth, or minimum decrease in loss), the order in which
+  leaves are split during growing doesn't matter.  In that case the algorithm is
+  often written recursively: split the root, then grow a tree on each child.
+  The order *does* matter under a global stopping rule, such as a maximum total
+  number of leaves.  Implementations then typically grow "best-first", always
+  splitting the leaf whose best split decreases the loss the most.
+- The search in Step 1 is greedy.  Each split is optimal given the previous
+  splits, but the final tree need not be the best tree of its size.  This is why
+  we grow a large tree and then prune it, rather than simply stopping early.  A split
+  that looks unhelpful on its own may enable very helpful splits below it.
+- Step 1 is computationally feasible because each search is
+  one-dimensional.  With $N_\t$ observations in a leaf there are at most $N_\t - 1$
+  candidate split points per regressor.  After sorting, the left and right
+  means (or class counts) can be updated incrementally as $c$ moves from left to right.
+- Pruning does not require searching over every subtree.  "Weakest link pruning"
+  repeatedly collapses the internal node whose removal increases the total
+  loss $\sum_{\t} N_\t R_\t$ the least per leaf removed.  This produces a nested
+  sequence of subtrees, and the optimal subtree for every $\alpha$ is in this
+  sequence (@esl:2009:hastie 9.2.2).
+- For classification, the Gini index or entropy is typically used for
+  growing.  The misclassification rate is insensitive to changes in node
+  proportions that don't change the majority class, so it can fail to reward
+  splits that produce purer nodes.  Any of the three can be used for pruning and
+  cross-validation, and the misclassification rate is common there when the goal is
+  classification accuracy (@esl:2009:hastie 9.2.3). -->
+</section>
 <section id="the-arboretum-tree-zoo" class="level1">
 <h1>The arboretum (tree zoo)</h1>
 <p>Over the years, a lot of variants of the above procedure have been developed. Even a coarse survey is beyond the scope of the class, but <span class="citation" data-cites="loh:2014:fiftyyearsoftrees">Loh (<a href="#ref-loh:2014:fiftyyearsoftrees" role="doc-biblioref">2014</a>)</span> is a nice survey.</p>
@@ -393,11 +468,14 @@ N_c^{-} R_c^{-} + N_c^{+} R_c^{+} - N_tR_t,
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-isl:2021:gareth" class="csl-entry" role="listitem">
-Gareth, J., W. Daniela, H. Trevor, and T. Robert. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
+<div id="ref-breiman:1984:cart" class="csl-entry" role="listitem">
+Breiman, Leo, Jerome H. Friedman, Richard A. Olshen, and Charles J. Stone. 1984. <em>Classification and Regression Trees</em>. Wadsworth.
 </div>
 <div id="ref-esl:2009:hastie" class="csl-entry" role="listitem">
 Hastie, T., R. Tibshirani, and J. Friedman. 2009. <em>The Elements of Statistical Learning: Data Mining, Inference and Prediction</em>. 2nd ed. Springer.
+</div>
+<div id="ref-isl:2021:gareth" class="csl-entry" role="listitem">
+James, G., D. Witten, T. Hastie, and R. Tibshirani. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
 </div>
 <div id="ref-loh:2014:fiftyyearsoftrees" class="csl-entry" role="listitem">
 Loh, W. 2014. <span>“Fifty Years of Classification and Regression Trees.”</span> <em>International Statistical Review</em> 82 (3): 329–48.

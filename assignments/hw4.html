@@ -196,8 +196,8 @@ window.Quarto = {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#draw-your-own-partitions-based-on-isl2021gareth-8.4.1" id="toc-draw-your-own-partitions-based-on-isl2021gareth-8.4.1" class="nav-link active" data-scroll-target="#draw-your-own-partitions-based-on-isl2021gareth-8.4.1"><span class="header-section-number">1</span> Draw your own partitions (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (2021)</span> 8.4.1)</a></li>
-  <li><a href="#aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" id="toc-aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" class="nav-link" data-scroll-target="#aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5"><span class="header-section-number">2</span> Aggregating bagged classifiers (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (2021)</span> 8.4.5)</a></li>
+  <li><a href="#draw-your-own-partitions-based-on-isl2021gareth-8.4.1" id="toc-draw-your-own-partitions-based-on-isl2021gareth-8.4.1" class="nav-link active" data-scroll-target="#draw-your-own-partitions-based-on-isl2021gareth-8.4.1"><span class="header-section-number">1</span> Draw your own partitions (based on <span class="citation" data-cites="isl:2021:gareth">James et al. (2021)</span> 8.4.1)</a></li>
+  <li><a href="#aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" id="toc-aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" class="nav-link" data-scroll-target="#aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5"><span class="header-section-number">2</span> Aggregating bagged classifiers (based on <span class="citation" data-cites="isl:2021:gareth">James et al. (2021)</span> 8.4.5)</a></li>
   <li><a href="#trees-as-regression-on-partition-indicators" id="toc-trees-as-regression-on-partition-indicators" class="nav-link" data-scroll-target="#trees-as-regression-on-partition-indicators"><span class="header-section-number">3</span> Trees as regression on partition indicators</a></li>
   <li><a href="#interpretability-of-regression-trees" id="toc-interpretability-of-regression-trees" class="nav-link" data-scroll-target="#interpretability-of-regression-trees"><span class="header-section-number">4</span> Interpretability of regression trees</a></li>
   <li><a href="#monotonic-transformations-based-on-a-problem-from-erez-buchweitz" id="toc-monotonic-transformations-based-on-a-problem-from-erez-buchweitz" class="nav-link" data-scroll-target="#monotonic-transformations-based-on-a-problem-from-erez-buchweitz"><span class="header-section-number">5</span> Monotonic transformations (based on a problem from Erez Buchweitz)</a></li>
@@ -231,7 +231,7 @@ window.Quarto = {
 
 
 <section id="draw-your-own-partitions-based-on-isl2021gareth-8.4.1" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Draw your own partitions (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.4.1)</h1>
+<h1 data-number="1"><span class="header-section-number">1</span> Draw your own partitions (based on <span class="citation" data-cites="isl:2021:gareth">James et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.4.1)</h1>
 <section id="a" class="level4">
 <h4 class="anchored" data-anchor-id="a">(a)</h4>
 <p>Draw an example of your own invention of a partition of a two–dimensional feature space that could result from a recurive binary splitting. Your example should contain at least six regions. Draw a decision tree corresponding to this partition. Be sure to label all aspects of your figures, including the regions, the cutpoints, and which region corresponds to which leaf of the tree.</p>
@@ -245,7 +245,7 @@ window.Quarto = {
 </section>
 </section>
 <section id="aggregating-bagged-classifiers-based-on-isl2021gareth-8.4.5" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Aggregating bagged classifiers (based on <span class="citation" data-cites="isl:2021:gareth">Gareth et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.4.5)</h1>
+<h1 data-number="2"><span class="header-section-number">2</span> Aggregating bagged classifiers (based on <span class="citation" data-cites="isl:2021:gareth">James et al. (<a href="#ref-isl:2021:gareth" role="doc-biblioref">2021</a>)</span> 8.4.5)</h1>
 <p>Suppose we fit classification trees to each of ten bootstrapped datasets containing regressors <span class="math inline">\(\boldsymbol{x}\)</span> and red and green classes. For a particular observation <span class="math inline">\(\boldsymbol{x}_n\)</span>, each tree gives an estimate of <span class="math inline">\(p(\textrm{Red} \vert \boldsymbol{x}_n)\)</span>, which are:</p>
 <p>0.1, 0.15, 0.2, 0.2, 0.55, 0.6, 0.6, 0.65, 0.7, and 0.75.</p>
 <p>There are two way to combine these scores to make a single score:</p>
@@ -459,7 +459,7 @@ Let <span class="math inline">\(\bar{x}= \frac{1}{N} \sum_{n=1}^Nx_n\)</span>. U
 Bühlmann, Peter, and Bin Yu. 2002. <span>“<span class="nocase">Analyzing bagging</span>.”</span> <em>The Annals of Statistics</em> 30 (4): 927–61. <a href="https://doi.org/10.1214/aos/1031689014">https://doi.org/10.1214/aos/1031689014</a>.
 </div>
 <div id="ref-isl:2021:gareth" class="csl-entry" role="listitem">
-Gareth, J., W. Daniela, H. Trevor, and T. Robert. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
+James, G., D. Witten, T. Hastie, and R. Tibshirani. 2021. <em>An Introduction to Statistical Learning: <span>W</span>ith Applications in <span>Python</span></em>. Spinger.
 </div>
 </div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
