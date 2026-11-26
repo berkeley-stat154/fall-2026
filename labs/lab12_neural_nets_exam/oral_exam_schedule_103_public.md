@@ -1,4 +1,4 @@
-## 1:00 PM - 1:12 PM
+## 1:12 PM - 1:24 PM
 
 - Wu, Michael
 - Sayag, Ethan
